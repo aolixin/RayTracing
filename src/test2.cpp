@@ -79,7 +79,7 @@
 //
 //    // build and compile shaders
 //    // -------------------------
-//    Shader ourShader("F:/document/visualProject/opengl_test/shader.vs", "F:/document/visualProject/opengl_test/shader.frag");
+//    Shader ourShader("F:/document/visualProject/opengl_test/shader.vert", "F:/document/visualProject/opengl_test/shader.frag");
 //
 //    // load models
 //    // -----------
@@ -87,7 +87,7 @@
 //    Model ourModel("cornellbox/left.obj");
 //    //Model ourModel("test.obj");
 //    //Model ourModel("bunny.obj");
-//    //std::cout << "meshÊýÁ¿:    " << ourModel.meshes.size() << endl;    
+//    //std::cout << "meshï¿½ï¿½ï¿½ï¿½:    " << ourModel.meshes.size() << endl;    
 //   /* for (int i = 0; i < 2; i++)
 //    {
 //        for (int j = 0; j < 3; j++)
@@ -138,7 +138,7 @@
 //        ourShader.setInt("width", SCR_WIDTH);
 //        ourShader.setInt("height", SCR_HEIGHT);
 //
-//        //std::cout <<"×ø±ê:   " << camera.Position.x << "  " << camera.Position.y << "   " << camera.Position.z << endl;
+//        //std::cout <<"ï¿½ï¿½ï¿½ï¿½:   " << camera.Position.x << "  " << camera.Position.y << "   " << camera.Position.z << endl;
 //
 //        ourShader.setVec3("eye_pos",camera.Position);
 //        ourShader.setVec3("lightPos", vec3(0.5, 0.5, 1));

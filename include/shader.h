@@ -95,7 +95,7 @@ public:
         if (geometryPath != nullptr)
             glDeleteShader(geometry);
 
-        std::cout << vertexPath << "±àÒë³É¹¦\n";
+        std::cout << vertexPath << "load success\n";
 
     }
     // activate the shader

@@ -1,8 +1,5 @@
 # ninja log v6
-42	726	7440198895549682	build.ninja	72e3dab303ed2a67
-5	744	7440198317507694	CMakeFiles/RayTracing.dir/main.cpp.obj	b440ee5371323243
-10	1211	7440197512656089	CMakeFiles/RayTracing.dir/src/glad.c.obj	7ca6552923351612
-744	874	7440198324902185	RayTracing.exe	6e961e2b5f3ffa49
-4	215	7440199124340430	CMakeFiles/RayTracing.dir/main.cpp.obj	bf625d79f347da21
-12	644	7440199124425502	CMakeFiles/RayTracing.dir/src/glad.c.obj	8072304ce68deb44
-645	732	7440199130765702	RayTracing.exe	173b9a3f1cec0681
+1	306	7440485911141211	build.ninja	72e3dab303ed2a67
+5	1958	7440308609863953	CMakeFiles/RayTracing.dir/src/test1.cpp.obj	eb9e196e5330711c
+10	576	7440298922793057	CMakeFiles/RayTracing.dir/src/glad.c.obj	cb4345d430c2a4c7
+1959	5729	7440308629395237	RayTracing.exe	24b3e9314118fddd
