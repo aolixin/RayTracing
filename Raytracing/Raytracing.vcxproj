@@ -20,7 +20,51 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\PBRTest.cpp" />
     <ClCompile Include="src\Raytracing.cpp" />
+    <ClCompile Include="src\test.cpp" />
+    <ClCompile Include="src\test1.cpp" />
+    <ClCompile Include="src\test2.cpp" />
+    <ClCompile Include="src\test3.cpp" />
+    <ClCompile Include="src\test4.cpp" />
+    <ClCompile Include="src\test5.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\BVH.h" />
+    <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\Material.h" />
+    <ClInclude Include="include\Mesh.h" />
+    <ClInclude Include="include\Model.h" />
+    <ClInclude Include="include\resource.h" />
+    <ClInclude Include="include\Scene.h" />
+    <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\Triangle.h" />
+    <ClInclude Include="include\Utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="forward.frag" />
+    <None Include="forward.vert" />
+    <None Include="Resources\shaders\background.frag" />
+    <None Include="Resources\shaders\background.vert" />
+    <None Include="Resources\shaders\cubemap.frag" />
+    <None Include="Resources\shaders\cubemap.vert" />
+    <None Include="Resources\shaders\equirectangular_to_cubemap.frag" />
+    <None Include="Resources\shaders\fboTestShader.frag" />
+    <None Include="Resources\shaders\fboTestShader.vert" />
+    <None Include="Resources\shaders\forward.frag" />
+    <None Include="Resources\shaders\forward.vert" />
+    <None Include="Resources\shaders\hdrToSkyobox.frag" />
+    <None Include="Resources\shaders\hdrToSkyobox.vert" />
+    <None Include="Resources\shaders\irradiance_convolution.frag" />
+    <None Include="Resources\shaders\passToScreen.frag" />
+    <None Include="Resources\shaders\passToScreen.vert" />
+    <None Include="Resources\shaders\pbr.frag" />
+    <None Include="Resources\shaders\pbr.vert" />
+    <None Include="Resources\shaders\RT.frag" />
+    <None Include="Resources\shaders\RT.vert" />
+    <None Include="Resources\shaders\shader.frag" />
+    <None Include="Resources\shaders\shader.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -86,7 +130,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Raytracing\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -105,7 +149,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Raytracing\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -120,7 +164,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Raytracing\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,7 +183,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Raytracing\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

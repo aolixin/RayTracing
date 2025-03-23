@@ -7,6 +7,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{c0f75f60-18dd-4c16-b02f-b2b3e471c349}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{b7e487b5-7d55-44c5-866c-f68bb002c96d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -15,5 +18,125 @@
     <ClCompile Include="src\Raytracing.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\PBRTest.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test1.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test2.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test3.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test4.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test5.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\BVH.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Camera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Material.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Mesh.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Model.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\resource.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scene.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Shader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stb_image.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Triangle.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shaders\background.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\background.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\cubemap.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\cubemap.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\equirectangular_to_cubemap.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\fboTestShader.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\fboTestShader.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\hdrToSkyobox.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\hdrToSkyobox.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\irradiance_convolution.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\passToScreen.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\passToScreen.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\pbr.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\pbr.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\RT.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\RT.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\shader.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\shader.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="forward.vert" />
+    <None Include="forward.frag" />
+    <None Include="Resources\shaders\forward.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\forward.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
