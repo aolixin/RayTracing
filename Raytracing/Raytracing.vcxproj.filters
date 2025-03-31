@@ -39,6 +39,10 @@
     <ClCompile Include="src\test5.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BVH.h">
@@ -72,6 +76,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\Utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Renderer.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

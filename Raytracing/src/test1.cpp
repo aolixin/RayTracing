@@ -1,4 +1,4 @@
-#if 1
+#if 0
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -7,7 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
-#include "camera.h"
+#include "Camera.h"
 #include "Model.h"
 
 #include <iostream>
@@ -80,12 +80,11 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader ourShader("Resources/shaders/shader.vert", "Resources/shaders/shader.frag");
+    Shader ourShader("Resources/shaders/forward.vert", "Resources/shaders/forward.frag");
 
     // load models
     // -----------
-    //Model ourModel("F:/work/temp/nanosuit/nanosuit.obj");
-    Model ourModel("Resources/models/bunny.obj");
+    Model ourModel("Resources/models/backpack/backpack.obj");
     std::cout << ourModel.meshes.size();
 
     // draw in wireframe
@@ -93,6 +92,7 @@ int main()
 
     // render loop
     // -----------
+    int frame = 0;
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
@@ -100,6 +100,7 @@ int main()
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        // cout<<frame++<<endl;
 
         // input
         // -----

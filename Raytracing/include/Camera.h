@@ -1,14 +1,7 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>  //需要什么变换，就导入什么文件，具体可以去官网看
-#include <glm/gtc/type_ptr.hpp>
-#include <vector>
+#include <glm/ext/matrix_transform.hpp>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {

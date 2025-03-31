@@ -30,11 +30,11 @@ public:
     vector<unsigned int> indices;
     vector<Texture>      textures;
 
-    Material             material; //һ��mesh��Ӧһ������  
+    Material             material; 
 
-    vector<Triangle>     triangles;//���������������Σ����ڼ���׷
+    vector<Triangle>     triangles;
 
-    BVH                  myBVH;
+    // BVH                  myBVH;
 
     unsigned int VAO;
     GLuint trianglesTextureBuffer;
@@ -58,14 +58,14 @@ public:
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures,vector<Triangle>triangles)
     {
         this->myShader = (Shader*)malloc(sizeof(Shader));
-        std::cout << "�������   " << vertices.size() << "    �����θ���" << triangles.size() << endl;
+        std::cout << "vertices num: " << vertices.size() << "    triangles num: " << triangles.size() << endl;
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
 
         this->triangles = triangles;
 
-        this->myBVH.triangles = this->triangles;
+        // this->myBVH.triangles = this->triangles;
         //this->myBVH.buildBVH(0,this->triangles.size()-1);
         
         //this->myBVH.buildBVHwithSAH(0,this->triangles.size()-1);

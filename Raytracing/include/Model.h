@@ -111,7 +111,6 @@ private:
         vector<unsigned int> indices;
         vector<Texture> textures;
 
-        //������
         vector<Triangle> triangles;
 
         // walk through each of the mesh's vertices
@@ -158,7 +157,7 @@ private:
             vertices.push_back(vertex);
         }
         // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
-        std::cout << "����:    " << mesh->mNumFaces << endl;
+        std::cout << "faces num: " << mesh->mNumFaces << endl;
         for (unsigned int i = 0; i < mesh->mNumFaces; i++)
         {
 
@@ -169,7 +168,6 @@ private:
             // retrieve all indices of the face and store them in the indices vector
             for (unsigned int j = 0; j < face.mNumIndices; j++) {
                 indices.push_back(face.mIndices[j]);
-                //����������
                 atriangle.vertex.push_back(vertices[face.mIndices[j]]);
             }
             triangles.push_back(atriangle);
