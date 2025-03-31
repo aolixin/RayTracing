@@ -10,6 +10,7 @@ float lastFrame = 0.0f;
 
 int main()
 {
+    
     const shared_ptr<Renderer> renderer = Renderer::GetRenderer();
 
     Shader fwdShader("Resources/shaders/forward.vert", "Resources/shaders/forward.frag");

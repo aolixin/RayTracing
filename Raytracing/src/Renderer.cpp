@@ -1,5 +1,8 @@
 ﻿#include "Renderer.h"
 
+
+
+
 bool Renderer::already_init = false;
 std::shared_ptr<Renderer> Renderer::renderer = nullptr;
 GLFWwindow* Renderer::window = nullptr;
@@ -47,7 +50,7 @@ void Renderer::InitRenderer()
         return;
     }
 
-    // stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(true);
 
     glEnable(GL_DEPTH_TEST);
 }
@@ -62,7 +65,7 @@ glm::mat4 Renderer::Perspective()
     return glm::perspective(glm::radians(camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 }
 
- glm::mat4 Renderer::View()
+glm::mat4 Renderer::View()
 {
     return camera->GetViewMatrix();
 }
