@@ -1,4 +1,4 @@
-﻿#if 0
+﻿#if 1
 
 #include "Shader.h"
 #include "Model.h"
@@ -10,10 +10,9 @@ float lastFrame = 0.0f;
 
 int main()
 {
-    
     const shared_ptr<Renderer> renderer = Renderer::GetRenderer();
 
-    Shader fwdShader("Resources/shaders/forward.vert", "Resources/shaders/forward.frag");
+    Shader phongShader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
 
     // Model ourModel("Resources/models/backpack/backpack.obj");
     Model ourModel("Resources/models/spot.obj");
@@ -36,16 +35,18 @@ int main()
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        fwdShader.use();
+        phongShader.use();
 
         glm::mat4 projection = renderer->Perspective();
         glm::mat4 view = renderer->View();
-        fwdShader.setMat4("projection", projection);
-        fwdShader.setMat4("view", view);
+        phongShader.setMat4("projection", projection);
+        phongShader.setMat4("view", view);
 
 
-        fwdShader.setMat4("model", model);
-        ourModel.Draw(fwdShader);
+        phongShader.setMat4("model", model);
+
+        phongShader.setVec3("viewPos", camera->Position);
+        ourModel.Draw(phongShader);
 
 
         renderer->SwapBuffers();

@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="main_phong.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\PBRTest.cpp" />
     <ClCompile Include="src\Raytracing.cpp" />
@@ -46,15 +47,13 @@
     <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="forward.frag" />
-    <None Include="forward.vert" />
     <None Include="Resources\shaders\background.frag" />
     <None Include="Resources\shaders\background.vert" />
     <None Include="Resources\shaders\cubemap.frag" />
     <None Include="Resources\shaders\cubemap.vert" />
     <None Include="Resources\shaders\equirectangular_to_cubemap.frag" />
-    <None Include="Resources\shaders\fboTestShader.frag" />
-    <None Include="Resources\shaders\fboTestShader.vert" />
+    <None Include="Resources\shaders\phong.frag" />
+    <None Include="Resources\shaders\phong.vert" />
     <None Include="Resources\shaders\forward.frag" />
     <None Include="Resources\shaders\forward.vert" />
     <None Include="Resources\shaders\hdrToSkyobox.frag" />
