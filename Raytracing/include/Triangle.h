@@ -35,16 +35,15 @@ struct Vertex {
     }
 };
 
-// �����ζ���
 class Triangle {
 public:
-    //vec3 p1, p2, p3;    // ��������
-    //vec3 n1, n2, n3;    // ���㷨��
+    //vec3 p1, p2, p3;   
+    //vec3 n1, n2, n3;    
     std::vector<Vertex> vertex;
 };
 
 struct Triangle_encoded {
-    vec3 p1, p2, p3;    // ��������
-    vec3 n1, n2, n3;    // ���㷨��
+    vec3 p1, p2, p3;    
+    vec3 n1, n2, n3;    
 };
 

@@ -8,7 +8,7 @@ out vec4 FragColor;
 uniform vec3 lightPos = vec3(1.0, 1.0, 1.0);
 uniform vec3 viewPos;
 uniform vec3 lightColor = vec3(1.0, 1.0, 1.0);
-uniform vec3 objectColor = vec3(1.0, 0.5, 0.31);
+uniform vec3 objectColor = vec3(0.5, 0.5, 0.5);
 uniform float ambientStrength = 0.1;
 uniform float diffuseStrength = 0.8;
 uniform float specularStrength = 0.5;
@@ -16,6 +16,7 @@ uniform int shininess = 32;
 
 void main()
 {
+
     vec3 ambient = ambientStrength * lightColor;
 
     vec3 norm = normalize(Normal);

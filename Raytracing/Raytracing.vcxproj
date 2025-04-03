@@ -19,18 +19,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\RenderNode.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_phong.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\PBRTest.cpp" />
     <ClCompile Include="src\Raytracing.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\test.cpp" />
     <ClCompile Include="src\test1.cpp" />
     <ClCompile Include="src\test2.cpp" />
     <ClCompile Include="src\test3.cpp" />
     <ClCompile Include="src\test4.cpp" />
     <ClCompile Include="src\test5.cpp" />
+    <ClCompile Include="src\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BVH.h" />
@@ -39,6 +43,7 @@
     <ClInclude Include="include\Mesh.h" />
     <ClInclude Include="include\Model.h" />
     <ClInclude Include="include\Renderer.h" />
+    <ClInclude Include="include\RenderNode.h" />
     <ClInclude Include="include\resource.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\Shader.h" />

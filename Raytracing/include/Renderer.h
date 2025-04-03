@@ -4,8 +4,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/ext/matrix_clip_space.hpp>
-#include "stb_image.h"
 #include "Camera.h"
+#include "Shader.h"
+#include "stb_image.h"
+
+class Shader;
 
 class Renderer
 {
@@ -39,6 +42,9 @@ public:
     int RendererClose();
 
     void processInput(float deltaTime);
+    
+    void DrawSkybox(Shader passToScreenShader, GLint envCubemap);
+
 
     glm::mat4 Perspective();
 

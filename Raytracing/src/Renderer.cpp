@@ -1,7 +1,9 @@
-﻿#include "Renderer.h"
+﻿#pragma once
 
 
+#include "Renderer.h"
 
+#include "Utils.h"
 
 bool Renderer::already_init = false;
 std::shared_ptr<Renderer> Renderer::renderer = nullptr;
@@ -143,4 +145,27 @@ void Renderer::processInput(float deltaTime)
         camera->ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera->ProcessKeyboard(RIGHT, deltaTime);
+}
+
+void Renderer::DrawSkybox(Shader passToScreenShader, GLint envCubemap)
+{
+    glDepthFunc(GL_LEQUAL);
+    passToScreenShader.use();
+    glm::mat4 passToProjection = glm::perspective(glm::radians(camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 passToView = camera->GetViewMatrix();
+
+    passToScreenShader.setMat4("projection", passToProjection);
+    passToScreenShader.setMat4("view", passToView);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+    passToScreenShader.setInt("environmentMap", 0);
+    
+    
+    
+    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    
+    drawCube(passToScreenShader);
+
+    glDepthFunc(GL_LESS);
 }

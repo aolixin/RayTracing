@@ -34,7 +34,7 @@ public:
 
     vector<Triangle>     triangles;
 
-    // BVH                  myBVH;
+    BVH                  myBVH;
 
     unsigned int VAO;
     GLuint trianglesTextureBuffer;
@@ -47,7 +47,7 @@ public:
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
     {
         
-        this->myShader = (Shader*)malloc(sizeof(Shader));;
+        this->myShader = (Shader*)malloc(sizeof(Shader));
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
@@ -65,8 +65,7 @@ public:
 
         this->triangles = triangles;
 
-        // this->myBVH.triangles = this->triangles;
-        //this->myBVH.buildBVH(0,this->triangles.size()-1);
+
         
         //this->myBVH.buildBVHwithSAH(0,this->triangles.size()-1);
 
@@ -74,6 +73,12 @@ public:
         //std::cout <<"SAH BVHNode����:    " << this->myBVH.nodes.size() << endl;
         
         setupMesh();
+    }
+
+    void BuildBVH()
+    {
+        this->myBVH.triangles = this->triangles;
+        this->myBVH.buildBVH(0,this->triangles.size()-1);
     }
 
     void setupMaterial(Material material) {
