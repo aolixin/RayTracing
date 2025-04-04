@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "stb_image.h"
+#include "Scene.h"
 
 class Shader;
 
@@ -19,6 +20,7 @@ public:
 
     static std::shared_ptr<Renderer> renderer;
     std::shared_ptr<Camera> camera;
+    std::shared_ptr<Scene>scene;
 
     static constexpr unsigned int SCR_WIDTH = 800;
     static constexpr unsigned int SCR_HEIGHT = 600;
@@ -34,6 +36,8 @@ public:
     static std::shared_ptr<Renderer> GetRenderer();
 
     void InitRenderer();
+
+    void SetupGIScene( std::shared_ptr<Scene> scene);
 
     static void DestroyRenderer();
 

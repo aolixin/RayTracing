@@ -90,18 +90,18 @@ public:
     }
     void setupDataOfShader(GLint trianglesTextureBuffer, GLint nodesTextureBuffer, GLint materialsTextureBuffer)
     {
-        Shader shader = *this->myShader;
-  /*      glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_BUFFER, trianglesTextureBuffer);
-        glUniform1i(glGetUniformLocation(shader.ID, "triangles"), 2);
-
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_BUFFER, nodesTextureBuffer);
-        glUniform1i(glGetUniformLocation(shader.ID, "nodes"), 3);
-
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_BUFFER, materialsTextureBuffer);
-        glUniform1i(glGetUniformLocation(shader.ID, "materials"), 4);*/
+        // Shader shader = *this->myShader;
+        // glActiveTexture(GL_TEXTURE2);
+        // glBindTexture(GL_TEXTURE_BUFFER, trianglesTextureBuffer);
+        // glUniform1i(glGetUniformLocation(shader.ID, "triangles"), 2);
+        //
+        // glActiveTexture(GL_TEXTURE3);
+        // glBindTexture(GL_TEXTURE_BUFFER, nodesTextureBuffer);
+        // glUniform1i(glGetUniformLocation(shader.ID, "nodes"), 3);
+        //
+        // glActiveTexture(GL_TEXTURE4);
+        // glBindTexture(GL_TEXTURE_BUFFER, materialsTextureBuffer);
+        // glUniform1i(glGetUniformLocation(shader.ID, "materials"), 4);
         this->trianglesTextureBuffer = trianglesTextureBuffer;
         this->nodesTextureBuffer = nodesTextureBuffer;
         this->materialsTextureBuffer = materialsTextureBuffer;

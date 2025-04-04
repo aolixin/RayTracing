@@ -27,6 +27,7 @@
     <ClCompile Include="src\PBRTest.cpp" />
     <ClCompile Include="src\Raytracing.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\test.cpp" />
     <ClCompile Include="src\test1.cpp" />
@@ -72,6 +73,10 @@
     <None Include="Resources\shaders\RT.vert" />
     <None Include="Resources\shaders\shader.frag" />
     <None Include="Resources\shaders\shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\shaders\DebugBVH.frag" />
+    <Content Include="Resources\shaders\DebugBVH.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

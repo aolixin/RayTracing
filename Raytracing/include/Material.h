@@ -1,14 +1,6 @@
 #pragma once
 
-#include <glad/glad.h> // holds all OpenGL type declarations
-
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include "Shader.h"
-
-#include <string>
-#include <vector>
 using namespace std;
 using namespace glm;
 
@@ -25,7 +17,10 @@ struct Material_encoded {
 
 class Material {
 public:
-    vec3 emissive = vec3(0, 0, 0);  // ��Ϊ��Դʱ�ķ�����ɫ
+
+    shared_ptr<Shader>shader;
+    
+    vec3 emissive = vec3(0, 0, 0);  
     vec3 baseColor = vec3(0.2, 0.2, 0.5);
     float subsurface = 0.0;
     float metallic = 0.0;
@@ -42,6 +37,13 @@ public:
     float clearcoatGloss = 0.0;
     float IOR = 1.0;
     float transmission = 0.0;
+
+    Material() {
+    }
+    
+    Material(const Shader& shader) {
+        this->shader = make_shared<Shader>(shader);
+    }
 
     Material_encoded encoded() {
         Material_encoded m;
