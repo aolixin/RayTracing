@@ -33,8 +33,8 @@ public:
 
 
     // draws the model, and thus all its meshes
-    void Draw(Shader& shader);
-    void Draw();
+    // void Draw(Shader& shader);
+    // void Draw();
 
     void setupDataOfShader(GLint trianglesTextureBuffer, GLint nodesTextureBuffer, GLint materialsTextureBuffer);
 

@@ -20,16 +20,16 @@ public:
 
 public:
     vector<RenderNode>render_nodes;
-    vector<Model> models;
-    vector<Triangle> triangles;
-    vector<Material> materials;
+    // vector<Model> models;
+    vector<Triangle> triangles_expand;
+    vector<Material> materials_expand;
     BVH myBVH;
 
     void Add(Model model,Material material);
 
-    void SetupScene();
+    void SetupGIScene();
 
     void Draw();
 
-    void BuildDatas();
+    void GenBuffers();
 };

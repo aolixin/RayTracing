@@ -29,26 +29,26 @@ void Model::BuildBVH()
 }
 
 // draws the model, and thus all its meshes
-void Model::Draw(Shader& shader)
-{
-    for (unsigned int i = 0; i < meshes.size(); i++)
-        meshes[i].Draw(shader);
-    //meshes[i].Draw(*this->myShader);
-}
+// void Model::Draw(Shader& shader)
+// {
+//     for (unsigned int i = 0; i < meshes.size(); i++)
+//         meshes[i].Draw(shader);
+//     //meshes[i].Draw(*this->myShader);
+// }
 
-void Model::Draw()
-{
-    for (unsigned int i = 0; i < meshes.size(); i++)
-        meshes[i].Draw();
-}
+// void Model::Draw()
+// {
+//     for (unsigned int i = 0; i < meshes.size(); i++)
+//         meshes[i].Draw();
+// }
 
-void Model::setupDataOfShader(GLint trianglesTextureBuffer, GLint nodesTextureBuffer, GLint materialsTextureBuffer)
-{
-    for (int i = 0; i < meshes.size(); i++)
-    {
-        meshes[i].setupDataOfShader(trianglesTextureBuffer, nodesTextureBuffer, materialsTextureBuffer);
-    }
-}
+// void Model::setupDataOfShader(GLint trianglesTextureBuffer, GLint nodesTextureBuffer, GLint materialsTextureBuffer)
+// {
+//     for (int i = 0; i < meshes.size(); i++)
+//     {
+//         meshes[i].setupDataOfShader(trianglesTextureBuffer, nodesTextureBuffer, materialsTextureBuffer);
+//     }
+// }
 
 // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
 void Model::loadModel(string const& path)

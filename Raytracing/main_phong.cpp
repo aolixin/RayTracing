@@ -29,12 +29,12 @@ int main()
     shared_ptr<Scene>myScene = make_shared<Scene>();
     myScene->Add(ourModel,phongMaterial);
 
-    renderer->SetupGIScene(myScene);
+    renderer->SetupScene(myScene);
 
     
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    // model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
     
     shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -62,7 +62,10 @@ int main()
         phongShader.setMat4("model", model);
 
         phongShader.setVec3("viewPos", camera->Position);
-        ourModel.Draw(phongShader);
+        // ourModel.Draw(phongShader);
+
+        renderer->Draw();
+        
         // myScene.Draw();
         
         renderer->DrawSkybox(pass2SrcShader,envCubeMap);

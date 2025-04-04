@@ -175,6 +175,14 @@ public:
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
+    void setTexture(const std::string& name, GLint texId, int i = 0)
+    {
+        // now set the sampler to the correct texture unit
+        glUniform1i(glGetUniformLocation(ID, name.c_str()), i);
+        // and finally bind the texture
+        glBindTexture(GL_TEXTURE_2D, texId);
+    }
+
 private:
     // utility function for checking shader compilation/linking errors.
     // ------------------------------------------------------------------------

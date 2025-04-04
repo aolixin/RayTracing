@@ -2,43 +2,34 @@
 
 void Scene::Add(Model model, Material material)
 {
-    models.push_back(model);
-    for (int i = 0; i < models.size(); i++)
+    // models.push_back(model);
+    for (auto& mesh : model.meshes)
     {
         render_nodes.emplace_back(
-            make_shared<Mesh>(model.meshes[i]),
+            make_shared<Mesh>(mesh),
             make_shared<Material>(material)
         );
     }
 }
 
-void Scene::SetupScene()
+void Scene::SetupGIScene()
 {
-    for (int i = 0; i < models.size(); i++)
+    for (const auto& render_node : render_nodes)
     {
-        for (int j = 0; j < models[i].meshes.size(); j++)
+        triangles_expand.insert(triangles_expand.end(), render_node.mesh->triangles.begin(),
+                                render_node.mesh->triangles.end());
+        
+        int len = render_node.mesh->triangles.size();
+        for (int k = 0; k < len; k++)
         {
-            triangles.insert(triangles.end(), models[i].meshes[j].triangles.begin(),
-                             models[i].meshes[j].triangles.end());
-            int len = models[i].meshes[j].triangles.size();
-            for (int k = 0; k < len; k++)
-            {
-                materials.insert(materials.end(), models[i].meshes[j].material);
-            }
+            materials_expand.insert(materials_expand.end(), *render_node.material);
         }
-        //
-        // vector<int> vec1 = {10, 20, 30, 40};
-        // vector<char> vec2;
-        //
-        // // inserts at the beginning of vec2 
-        // vec2.insert(vec2.end(), 3, 4);
     }
 
-    this->myBVH.triangles = this->triangles;
-    // this->myBVH.buildBVHwithSAH(0, this->triangles.size() - 1);
-    this->myBVH.buildBVH(0, this->triangles.size() - 1);
+    this->myBVH.triangles = this->triangles_expand;
+    this->myBVH.buildBVH(0, this->triangles_expand.size() - 1);
     std::cout << "SAH BVHNode:    " << this->myBVH.nodes.size() << endl;
-    BuildDatas();
+    GenBuffers();
 }
 
 // void Scene::Draw()
@@ -49,12 +40,12 @@ void Scene::SetupScene()
 //     }
 // }
 
-void Scene::BuildDatas()
+void Scene::GenBuffers()
 {
-    vector<Triangle_encoded> triangles_encoded(triangles.size());
-    for (int i = 0; i < triangles.size(); i++)
+    vector<Triangle_encoded> triangles_encoded(triangles_expand.size());
+    for (int i = 0; i < triangles_expand.size(); i++)
     {
-        Triangle& t = triangles[i];
+        Triangle& t = triangles_expand[i];
 
         triangles_encoded[i].p1 = t.vertex[0].Position;
         triangles_encoded[i].p2 = t.vertex[1].Position;
@@ -75,10 +66,10 @@ void Scene::BuildDatas()
     }
 
 
-    vector<Material_encoded> materials_encoded(this->materials.size());
+    vector<Material_encoded> materials_encoded(this->materials_expand.size());
     for (int i = 0; i < materials_encoded.size(); i++)
     {
-        materials_encoded[i] = materials[i].encoded();
+        materials_encoded[i] = materials_expand[i].encoded();
     }
 
     GLuint tbo0;

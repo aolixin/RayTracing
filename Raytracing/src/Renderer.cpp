@@ -61,12 +61,29 @@ void Renderer::DestroyRenderer()
 {
 }
 
-void Renderer::SetupGIScene(std::shared_ptr<Scene> scene)
+void Renderer::SetupScene(std::shared_ptr<Scene> scene, RenderPath path /*= RenderPath::Forward*/)
 {
+    renderPath = path;
     this->scene = scene;
-    this->scene->SetupScene();
-    
-    
+    if(path == RenderPath::GI)
+    {
+        this->scene->SetupGIScene();
+    }
+}
+
+void Renderer::Draw()
+{
+    if(renderPath==RenderPath::Forward)
+    {
+        for(auto & render_node : scene->render_nodes)
+        {
+            render_node.Draw();
+        }
+    }
+    else if(renderPath==RenderPath::GI)
+    {
+       
+    }
 }
 
 glm::mat4 Renderer::Perspective()

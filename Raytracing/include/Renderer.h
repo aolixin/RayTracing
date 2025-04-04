@@ -11,16 +11,24 @@
 
 class Shader;
 
+enum RenderPath
+{
+    Forward,
+    GI
+};
+
 class Renderer
 {
+private:
+    RenderPath renderPath = RenderPath::Forward;
 public:
     Renderer()
     {
     }
-
+    
     static std::shared_ptr<Renderer> renderer;
     std::shared_ptr<Camera> camera;
-    std::shared_ptr<Scene>scene;
+    std::shared_ptr<Scene> scene;
 
     static constexpr unsigned int SCR_WIDTH = 800;
     static constexpr unsigned int SCR_HEIGHT = 600;
@@ -37,7 +45,9 @@ public:
 
     void InitRenderer();
 
-    void SetupGIScene( std::shared_ptr<Scene> scene);
+    void SetupScene(std::shared_ptr<Scene> scene, RenderPath path = RenderPath::Forward);
+
+    void Draw();
 
     static void DestroyRenderer();
 
@@ -46,7 +56,7 @@ public:
     int RendererClose();
 
     void processInput(float deltaTime);
-    
+
     void DrawSkybox(Shader passToScreenShader, GLint envCubemap);
 
 
