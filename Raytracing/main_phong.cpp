@@ -12,7 +12,7 @@ float lastFrame = 0.0f;
 
 int main()
 {
-    const shared_ptr<Renderer> renderer = Renderer::GetRenderer();
+    const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RenderPath::GI);
 
     
     
@@ -49,25 +49,7 @@ int main()
 
         renderer->processInput(deltaTime);
 
-        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // phongShader.use();
-        //
-        // glm::mat4 projection = renderer->Perspective();
-        // glm::mat4 view = renderer->View();
-        // phongShader.setMat4("projection", projection);
-        // phongShader.setMat4("view", view);
-        //
-        //
-        // phongShader.setMat4("model", model);
-        //
-        // phongShader.setVec3("viewPos", camera->Position);
-        // ourModel.Draw(phongShader);
-
         renderer->Draw();
-        
-        // myScene.Draw();
         
         // renderer->DrawSkybox(pass2SrcShader,envCubeMap);
 

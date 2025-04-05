@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include <vector>
 #include <glad/glad.h>
 #include "Shader.h"
 #include "stb_image.h"
@@ -8,16 +9,21 @@
 #include <glm/ext/matrix_transform.hpp>
 
 extern GLfloat cubeVertices[];
-
 extern GLuint cubeIndices[];
 
+extern GLfloat quadVertices[];
+extern GLuint quadIndices[];
 
 
-void drawCube(Shader shader);
+void DrawCube(const Shader& shader);
+
+void DrawQuad(const Shader& shader);
+
+GLuint GetFrameBuffer(int SCR_WIDTH, int SCR_HEIGHT, std::vector<GLuint>& frameTextures,
+                     int nColorAttachments = 1, int nDepthAttachments = 0);
 
 unsigned int load_hdr_img(std::string path);
 
-GLint buildEnvCubMap();
+GLuint buildEnvCubMap();
 
-GLint buildIrradianceMap(GLint envCubeMap = -9999);
-
+GLuint buildIrradianceMap(GLint envCubeMap = -9999);

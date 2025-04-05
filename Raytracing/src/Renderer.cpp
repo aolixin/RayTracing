@@ -4,16 +4,16 @@
 #include "Renderer.h"
 
 
-
 bool Renderer::already_init = false;
 std::shared_ptr<Renderer> Renderer::renderer = nullptr;
 GLFWwindow* Renderer::window = nullptr;
 
-std::shared_ptr<Renderer> Renderer::GetRenderer()
+std::shared_ptr<Renderer> Renderer::GetRenderer(RenderPath path)
 {
     if (renderer == nullptr)
     {
         renderer = std::make_shared<Renderer>();
+        renderer->renderPath = path;
         renderer->InitRenderer();
     }
     return renderer;
@@ -55,17 +55,21 @@ void Renderer::InitRenderer()
     stbi_set_flip_vertically_on_load(true);
 
     glEnable(GL_DEPTH_TEST);
+
+    // init shader
+    screenShader = Shader("Resources/shaders/framebuffers_screen.vert", "Resources/shaders/framebuffers_screen.frag");
+
+    frameBuffer0 = GetFrameBuffer(SCR_WIDTH, SCR_HEIGHT, frameTextures, 1, 1);
 }
 
 void Renderer::DestroyRenderer()
 {
 }
 
-void Renderer::SetupScene(std::shared_ptr<Scene> scene, RenderPath path /*= RenderPath::Forward*/)
+void Renderer::SetupScene(std::shared_ptr<Scene> scene)
 {
-    renderPath = path;
     this->scene = scene;
-    if(path == RenderPath::GI)
+    if (renderPath == RenderPath::GI)
     {
         this->scene->SetupGIScene();
     }
@@ -73,23 +77,46 @@ void Renderer::SetupScene(std::shared_ptr<Scene> scene, RenderPath path /*= Rend
 
 void Renderer::Draw()
 {
+
+
     RenderContext context;
     context.projection = Perspective();
     context.view = View();
-    
-    if(renderPath==RenderPath::Forward)
+    context.viewPos = camera->Position;
+
+    if (renderPath == RenderPath::Forward)
     {
-        for(auto & render_node : scene->render_nodes)
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        for (auto& render_node : scene->render_nodes)
         {
             render_node.Draw(context);
         }
     }
-    else if(renderPath==RenderPath::GI)
+    else if (renderPath == RenderPath::GI)
     {
-        for(auto & render_node : scene->render_nodes)
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer0);
+        glEnable(GL_DEPTH_TEST);
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        for (auto& render_node : scene->render_nodes)
         {
             render_node.Draw(context);
         }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT); 
+
+        screenShader.use();
+        screenShader.setTexture("screenTexture", frameTextures[0], 6);
+
+        DrawQuad(screenShader);
     }
 }
 
@@ -197,7 +224,7 @@ void Renderer::DrawSkybox(Shader passToScreenShader, GLint envCubemap)
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-    drawCube(passToScreenShader);
+    DrawCube(passToScreenShader);
 
     glDepthFunc(GL_LESS);
 }

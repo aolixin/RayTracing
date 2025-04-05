@@ -12,6 +12,9 @@ class Shader
 {
 public:
     unsigned int ID;
+
+    Shader(){}
+    
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
     Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
@@ -178,6 +181,7 @@ public:
 
     void setTexture(const std::string& name, GLint texId, int i = 0)
     {
+        glActiveTexture(GL_TEXTURE0 + i);
         // now set the sampler to the correct texture unit
         glUniform1i(glGetUniformLocation(ID, name.c_str()), i);
         // and finally bind the texture

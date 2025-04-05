@@ -26,6 +26,8 @@ struct RenderNode
         glm::mat4 view = context.view;
         material->shader->setMat4("projection", projection);
         material->shader->setMat4("view", view);
+        material->shader->setMat4("model", model);
+        material->shader->setVec3("eye_pos", context.viewPos);
 
 
         unsigned int diffuseNr = 1;
@@ -34,7 +36,7 @@ struct RenderNode
         unsigned int heightNr = 1;
         for (unsigned int i = 0; i < mesh->textures.size(); i++)
         {
-            glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
+            // active proper texture unit before binding
             // retrieve texture number (the N in diffuse_textureN)
             string number;
             string name = mesh->textures[i].type;
@@ -47,29 +49,8 @@ struct RenderNode
             else if (name == "texture_height")
                 number = std::to_string(heightNr++); // transfer unsigned int to string
 
-            // now set the sampler to the correct texture unit
-            // glUniform1i(glGetUniformLocation(material->shader->ID, (name + number).c_str()), i);
-            // // and finally bind the texture
-            // glBindTexture(GL_TEXTURE_2D, mesh->textures[i].id);
             material->shader->setTexture(name + number, mesh->textures[i].id, i);
         }
-
-        //Material material;
-        //material.baseColor = vec3(1, 0, 0);
-
-        // material->shader->setVec3("material.baseColor", material->baseColor);
-        // material->shader->setVec3("material.emissive", material->emissive);
-        //
-        // glActiveTexture(GL_TEXTURE2);
-        // glBindTexture(GL_TEXTURE_BUFFER, mesh->trianglesTextureBuffer);
-        // glUniform1i(glGetUniformLocation(material->shader->ID, "triangles"), 2);
-        //
-        // material->shader->setTexture();
-        //
-        // glActiveTexture(GL_TEXTURE3);
-        // glBindTexture(GL_TEXTURE_BUFFER, mesh->nodesTextureBuffer);
-        // glUniform1i(glGetUniformLocation(material->shader->ID, "nodes"), 3);
-
 
         // draw mesh
         glBindVertexArray(mesh->VAO);

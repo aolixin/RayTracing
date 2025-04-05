@@ -23,7 +23,24 @@ GLuint cubeIndices[] = {
 };
 
 
-void drawCube(Shader shader)
+GLfloat quadVertices[] = {
+    // positions   // texCoords
+    -1.0f, 1.0f, 0.0f, 1.0f,
+    -1.0f, -1.0f, 0.0f, 0.0f,
+    1.0f, -1.0f, 1.0f, 0.0f,
+
+    -1.0f, 1.0f, 0.0f, 1.0f,
+    1.0f, -1.0f, 1.0f, 0.0f,
+    1.0f, 1.0f, 1.0f, 1.0f
+};
+
+GLuint quadIndices[] = {
+    0, 1, 2, // 第一个三角形
+    3, 4, 5 // 第二个三角形
+};
+
+
+void DrawCube(const Shader& shader)
 {
     // shader.use();
     GLuint VAO;
@@ -42,9 +59,8 @@ void drawCube(Shader shader)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
     glEnableVertexAttribArray(0);
-
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
     
 
 
@@ -54,7 +70,79 @@ void drawCube(Shader shader)
 
     glBindVertexArray(0);
 
+}
+
+void DrawQuad(const Shader& shader)
+{
+    // shader.use();
+    GLuint VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+
+    GLuint VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+
+    GLuint EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadIndices), quadIndices, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+
+    glBindVertexArray(VAO);
+
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
     glBindVertexArray(0);
+}
+
+GLuint GetFrameBuffer(int SCR_WIDTH, int SCR_HEIGHT, std::vector<GLuint>& frameTextures,
+                     int nColorAttachments, int nDepthAttachments)
+
+{
+    // framebuffer configuration
+    // -------------------------
+    unsigned int framebuffer;
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+    for (int i = 0; i < nColorAttachments; i++)
+    {
+        // create a color attachment texture
+        unsigned int textureColorbuffer;
+        glGenTextures(1, &textureColorbuffer);
+        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureColorbuffer, 0);
+        frameTextures.push_back(textureColorbuffer);
+    }
+
+    for (int i = 0; i < nDepthAttachments; i++)
+    {
+        unsigned int rbo;
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+    }
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    return framebuffer;
 }
 
 unsigned int load_hdr_img(std::string path)
@@ -83,7 +171,7 @@ unsigned int load_hdr_img(std::string path)
     return hdrTexture;
 }
 
-GLint buildEnvCubMap()
+GLuint buildEnvCubMap()
 {
     Shader buildSkyboxShader("Resources/shaders/hdrToSkyobox.vert", "Resources/shaders/hdrToSkyobox.frag");
     //fbo
@@ -160,14 +248,14 @@ GLint buildEnvCubMap()
                                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        drawCube(buildSkyboxShader); // renders a 1x1 cube
+        DrawCube(buildSkyboxShader); // renders a 1x1 cube
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     return envCubemap;
 }
 
-GLint buildIrradianceMap(GLint envCubeMap)
+GLuint buildIrradianceMap(GLint envCubeMap)
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     //glClearColor(0.8f, 0.0f, 0.0f, 1.0f);
@@ -253,7 +341,7 @@ GLint buildIrradianceMap(GLint envCubeMap)
                                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, IrradianceMap, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        drawCube(buildIrradianceMapShader); // renders a 1x1 cube
+        DrawCube(buildIrradianceMapShader); // renders a 1x1 cube
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

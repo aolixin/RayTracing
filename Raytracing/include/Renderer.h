@@ -23,7 +23,14 @@ class Renderer
 {
 private:
     RenderPath renderPath = RenderPath::Forward;
+
+    Shader screenShader;
+
+    GLuint frameBuffer0;
+    vector<GLuint>frameTextures;
+    
 public:
+
     Renderer()
     {
     }
@@ -43,11 +50,11 @@ public:
     static bool already_init;
 
 public:
-    static std::shared_ptr<Renderer> GetRenderer();
+    static std::shared_ptr<Renderer> GetRenderer( RenderPath path = RenderPath::Forward);
 
     void InitRenderer();
 
-    void SetupScene(std::shared_ptr<Scene> scene, RenderPath path = RenderPath::Forward);
+    void SetupScene(std::shared_ptr<Scene> scene);
 
     void Draw();
 

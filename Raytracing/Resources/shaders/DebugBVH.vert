@@ -11,14 +11,12 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-out vec4 inColor;
+//out vec4 inColor;
 
 void main()
 {
     TexCoords = aTexCoords;
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     FragPos = (model * vec4(aPos,1.0f)).xyz;
-    //fragNormal = aNormal;
     fragNormal = mat3(transpose(inverse(model))) * aNormal;
-
 }

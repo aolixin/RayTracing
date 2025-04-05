@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 
 #define PI              3.1415926
 #define INF             114514.0
@@ -364,11 +364,12 @@ void main()
     vec4 worldPos = getWorldPos(pix);
     ray.direction = normalize(worldPos.xyz - eye_pos);
     ray.startPoint = eye_pos;
+    
 
     vec3 result = vec3(0);
     
     HitResult res = hitArray(ray,0,ntriangles-1);
     
-    if(res.ishit)FragColor = vec4(0.6,0.3,0.3,1.0);
-    else FragColor = vec4(0,0,0,1);
+    if(res.isHit)FragColor = vec4(1,0,0,1);
+    else FragColor = vec4(0,0,1,1);
 }

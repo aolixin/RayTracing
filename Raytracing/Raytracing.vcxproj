@@ -155,6 +155,8 @@
   <ItemGroup>
     <Content Include="Resources\shaders\DebugBVH.frag" />
     <Content Include="Resources\shaders\DebugBVH.vert" />
+    <Content Include="Resources\shaders\framebuffers_screen.frag" />
+    <Content Include="Resources\shaders\framebuffers_screen.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
