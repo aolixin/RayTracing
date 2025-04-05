@@ -3,7 +3,7 @@
 
 #include "Renderer.h"
 
-#include "Utils.h"
+
 
 bool Renderer::already_init = false;
 std::shared_ptr<Renderer> Renderer::renderer = nullptr;
@@ -73,16 +73,23 @@ void Renderer::SetupScene(std::shared_ptr<Scene> scene, RenderPath path /*= Rend
 
 void Renderer::Draw()
 {
+    RenderContext context;
+    context.projection = Perspective();
+    context.view = View();
+    
     if(renderPath==RenderPath::Forward)
     {
         for(auto & render_node : scene->render_nodes)
         {
-            render_node.Draw();
+            render_node.Draw(context);
         }
     }
     else if(renderPath==RenderPath::GI)
     {
-       
+        for(auto & render_node : scene->render_nodes)
+        {
+            render_node.Draw(context);
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include <memory>
-#include "Mesh.h"
+#include "RenderContext.h"
 
+class Mesh;
 class Material;
 
 struct RenderNode
@@ -14,11 +14,20 @@ struct RenderNode
     {
     }
 
-    inline void Draw()
+    inline void Draw(const RenderContext& context)
     {
         // mesh->Draw();
 
         // bind appropriate textures
+
+        material->shader->use();
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 projection = context.projection;
+        glm::mat4 view = context.view;
+        material->shader->setMat4("projection", projection);
+        material->shader->setMat4("view", view);
+
+
         unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;
         unsigned int normalNr = 1;
@@ -48,15 +57,18 @@ struct RenderNode
         //Material material;
         //material.baseColor = vec3(1, 0, 0);
 
-        material->shader->setVec3("material.baseColor", material->baseColor);
-        material->shader->setVec3("material.emissive", material->emissive);
-
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_BUFFER, mesh->trianglesTextureBuffer);
-        glUniform1i(glGetUniformLocation(material->shader->ID, "triangles"), 2);
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_BUFFER, mesh->nodesTextureBuffer);
-        glUniform1i(glGetUniformLocation(material->shader->ID, "nodes"), 3);
+        // material->shader->setVec3("material.baseColor", material->baseColor);
+        // material->shader->setVec3("material.emissive", material->emissive);
+        //
+        // glActiveTexture(GL_TEXTURE2);
+        // glBindTexture(GL_TEXTURE_BUFFER, mesh->trianglesTextureBuffer);
+        // glUniform1i(glGetUniformLocation(material->shader->ID, "triangles"), 2);
+        //
+        // material->shader->setTexture();
+        //
+        // glActiveTexture(GL_TEXTURE3);
+        // glBindTexture(GL_TEXTURE_BUFFER, mesh->nodesTextureBuffer);
+        // glUniform1i(glGetUniformLocation(material->shader->ID, "nodes"), 3);
 
 
         // draw mesh

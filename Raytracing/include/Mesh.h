@@ -34,12 +34,12 @@ public:
 
     vector<Triangle>     triangles;
 
-    BVH                  myBVH;
+    // BVH                  myBVH;
 
     unsigned int VAO;
-    GLuint trianglesTextureBuffer;
-    GLuint nodesTextureBuffer;
-    GLuint materialsTextureBuffer;
+    // GLuint trianglesTextureBuffer;
+    // GLuint nodesTextureBuffer;
+    // GLuint materialsTextureBuffer;
 
     Shader* myShader;
 
@@ -47,16 +47,16 @@ public:
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures,vector<Triangle>triangles);
 
-    void BuildBVH();
+    // void BuildBVH();
 
     // void setupMaterial(Material material);
     // void setShader(Shader &shader);
     // void setupDataOfShader(GLint trianglesTextureBuffer, GLint nodesTextureBuffer, GLint materialsTextureBuffer);
 
     // render the mesh
-    void Draw(Shader& shader);
-    
-    void Draw();
+    // void Draw(Shader& shader);
+    //
+    // void Draw();
 
 private:
     // render data 

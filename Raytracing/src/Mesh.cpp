@@ -32,11 +32,11 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture
     SetupMesh();
 }
 
-void Mesh::BuildBVH()
-{
-    this->myBVH.triangles = this->triangles;
-    this->myBVH.buildBVH(0, this->triangles.size() - 1);
-}
+// void Mesh::BuildBVH()
+// {
+//     this->myBVH.triangles = this->triangles;
+//     this->myBVH.buildBVH(0, this->triangles.size() - 1);
+// }
 
 // void Mesh::setupMaterial(Material material)
 // {
@@ -68,6 +68,9 @@ void Mesh::BuildBVH()
 // }
 
 // render the mesh
+
+#if 0
+
 void Mesh::Draw(Shader& shader)
 {
     // bind appropriate textures
@@ -99,15 +102,15 @@ void Mesh::Draw(Shader& shader)
     //Material material;
     //material.baseColor = vec3(1, 0, 0);
 
-    shader.setVec3("material.baseColor", material.baseColor);
-    shader.setVec3("material.emissive", material.emissive);
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_BUFFER, trianglesTextureBuffer);
-    glUniform1i(glGetUniformLocation(shader.ID, "triangles"), 2);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_BUFFER, nodesTextureBuffer);
-    glUniform1i(glGetUniformLocation(shader.ID, "nodes"), 3);
+    // shader.setVec3("material.baseColor", material.baseColor);
+    // shader.setVec3("material.emissive", material.emissive);
+    //
+    // glActiveTexture(GL_TEXTURE2);
+    // glBindTexture(GL_TEXTURE_BUFFER, trianglesTextureBuffer);
+    // glUniform1i(glGetUniformLocation(shader.ID, "triangles"), 2);
+    // glActiveTexture(GL_TEXTURE3);
+    // glBindTexture(GL_TEXTURE_BUFFER, nodesTextureBuffer);
+    // glUniform1i(glGetUniformLocation(shader.ID, "nodes"), 3);
 
 
     // draw mesh
@@ -166,7 +169,7 @@ void Mesh::Draw()
     // always good practice to set everything back to defaults once configured.
     glActiveTexture(GL_TEXTURE0);
 }
-
+#endif
 
 // initializes all the buffer objects/arrays
 void Mesh::SetupMesh()

@@ -29,7 +29,7 @@ public:
     // constructor, expects a filepath to a 3D model.
     Model(string const& path, bool gamma = false);
 
-    void BuildBVH();
+    // void BuildBVH();
 
 
     // draws the model, and thus all its meshes

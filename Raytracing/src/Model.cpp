@@ -22,11 +22,11 @@ Model::Model(string const& path, bool gamma ) : gammaCorrection(gamma)
     loadModel(path);
 }
 
-void Model::BuildBVH()
-{
-    for (unsigned int i = 0; i < meshes.size(); i++)
-        meshes[i].BuildBVH();
-}
+// void Model::BuildBVH()
+// {
+//     for (unsigned int i = 0; i < meshes.size(); i++)
+//         meshes[i].BuildBVH();
+// }
 
 // draws the model, and thus all its meshes
 // void Model::Draw(Shader& shader)

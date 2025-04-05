@@ -3,19 +3,21 @@
 #include <memory>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/ext/matrix_clip_space.hpp>
 #include "Camera.h"
 #include "Shader.h"
 #include "stb_image.h"
 #include "Scene.h"
-
-class Shader;
+#include "Utils.h"
+#include "RenderContext.h"
 
 enum RenderPath
 {
     Forward,
     GI
 };
+
+
+
 
 class Renderer
 {
@@ -25,7 +27,7 @@ public:
     Renderer()
     {
     }
-    
+
     static std::shared_ptr<Renderer> renderer;
     std::shared_ptr<Camera> camera;
     std::shared_ptr<Scene> scene;
