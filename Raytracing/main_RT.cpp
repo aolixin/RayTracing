@@ -1,4 +1,4 @@
-﻿#if 1
+#if 1
 
 #include "Shader.h"
 #include "Model.h"
@@ -13,8 +13,6 @@ float lastFrame = 0.0f;
 int main()
 {
     const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RenderPath::GI);
-
-    
     
     Shader phongShader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     // Shader DebugBVHShader("Resources/shaders/DebugBVH.vert", "Resources/shaders/DebugBVH.frag");
@@ -31,18 +29,15 @@ int main()
     myScene->Add(ourModel,phongMaterial);
 
     renderer->SetupScene(myScene);
-
     
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-    
-    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 1.0f));
+    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 4.0f));
 
     renderer->camera = camera;
 
+    int frameCount = 0;
     while (!renderer->RendererClose())
     {
+        cout<<"Frame: " << frameCount++ << endl;
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;

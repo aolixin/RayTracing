@@ -25,6 +25,7 @@ private:
     RenderPath renderPath = RenderPath::Forward;
 
     Shader screenShader;
+    Shader RTShader;
 
     GLuint frameBuffer0;
     vector<GLuint>frameTextures;

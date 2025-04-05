@@ -57,7 +57,8 @@ void Renderer::InitRenderer()
     glEnable(GL_DEPTH_TEST);
 
     // init shader
-    screenShader = Shader("Resources/shaders/framebuffers_screen.vert", "Resources/shaders/framebuffers_screen.frag");
+    RTShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/DebugBVH.frag");
+    screenShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/framebuffers_screen.frag");
 
     frameBuffer0 = GetFrameBuffer(SCR_WIDTH, SCR_HEIGHT, frameTextures, 1, 1);
 }
@@ -77,8 +78,6 @@ void Renderer::SetupScene(std::shared_ptr<Scene> scene)
 
 void Renderer::Draw()
 {
-
-
     RenderContext context;
     context.projection = Perspective();
     context.view = View();
@@ -99,18 +98,21 @@ void Renderer::Draw()
     {
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer0);
-        glEnable(GL_DEPTH_TEST);
-        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        // glEnable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(0.3f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        RTShader.use();
+
+        RTShader.setTextureBuffer("triangles", scene->trianglesTextureBuffer, 2);
+        RTShader.setInt("nTriangles", scene->nTriangles);
         
-        for (auto& render_node : scene->render_nodes)
-        {
-            render_node.Draw(context);
-        }
+        DrawQuad(RTShader);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);
-        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClearColor(0.05f, 0.3f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT); 
 
         screenShader.use();
