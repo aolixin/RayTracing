@@ -36,7 +36,7 @@ public:
     // void Draw(Shader& shader);
     // void Draw();
 
-    void setupDataOfShader(GLint trianglesTextureBuffer, GLint nodesTextureBuffer, GLint materialsTextureBuffer);
+    // void setupDataOfShader(GLint trianglesTextureBuffer, GLint nodesTextureBuffer, GLint materialsTextureBuffer);
 
 private:
     void loadModel(string const& path);

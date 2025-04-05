@@ -98,8 +98,8 @@ public:
         if (geometryPath != nullptr)
             glDeleteShader(geometry);
 
-        std::cout << vertexPath << "compile vert success" << std::endl;
-        std::cout << vertexPath << "compile frag success" << std::endl;
+        std::cout << vertexPath << " compile vert success" << std::endl;
+        std::cout << fragmentPath << " compile frag success" << std::endl;
     }
 
     // activate the shader
@@ -186,6 +186,15 @@ public:
         glUniform1i(glGetUniformLocation(ID, name.c_str()), i);
         // and finally bind the texture
         glBindTexture(GL_TEXTURE_2D, texId);
+    }
+
+    void setTextureBuffer(const std::string& name, GLint texId, int i = 0)
+    {
+        glActiveTexture(GL_TEXTURE0 + i);
+        // now set the sampler to the correct texture unit
+        glUniform1i(glGetUniformLocation(ID, name.c_str()), i);
+        // and finally bind the texture
+        glBindTexture(GL_TEXTURE_BUFFER, texId);
     }
 
 private:

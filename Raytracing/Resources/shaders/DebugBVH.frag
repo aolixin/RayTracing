@@ -19,6 +19,8 @@ out vec4 FragColor;
 in vec2 TexCoords;
 in vec3 FragPos;
 
+in vec3 WorldPos;
+
 //uniform float width;
 //uniform float height;
 uniform mat4 view_inverse;
@@ -34,33 +36,33 @@ uint frameCounter1 = uint(0);
 
 
 // ndc
-vec3 pix = vec3((gl_FragCoord.xy /vec2(WIDTH,HEIGHT) ) * 2 - vec2(1),gl_FragCoord.z*2-1);
+vec3 pix = vec3((gl_FragCoord.xy / vec2(WIDTH, HEIGHT)) * 2 - vec2(1), gl_FragCoord.z * 2 - 1);
 
 
 
 struct Material {
     vec3 emissive;
-    vec3 baseColor ;
+    vec3 baseColor;
     float subsurface;
-    float metallic ;
+    float metallic;
     float specular;
     float specularTint;
-    float roughness ;
-    float anisotropic ;
+    float roughness;
+    float anisotropic;
     float sheen;
-    float sheenTint ;
+    float sheenTint;
     float clearcoat;
-    float clearcoatGloss ;
+    float clearcoatGloss;
     float IOR;
-    float transmission ;
+    float transmission;
 };
-uniform Material material; 
+uniform Material material;
 
 uniform samplerBuffer triangles;
 uniform samplerBuffer nodes;
 uniform samplerBuffer materials;
 
-uniform int ntriangles;
+uniform int nTriangles;
 
 uniform vec3 eye_pos;
 
@@ -114,44 +116,44 @@ HitResult hitTriangle(Triangle triangle, Ray ray) {
     //p2 = vec3(-1,-1,0);
     //p3 = vec3(1,-1,0);
 
-    vec3 S = ray.startPoint;   
-    vec3 d = ray.direction;     
-    vec3 N = normalize(cross(p2-p1, p3-p1));   
+    vec3 S = ray.startPoint;
+    vec3 d = ray.direction;
+    vec3 N = normalize(cross(p2 - p1, p3 - p1));
 
-    
+
     if (dot(N, d) > 0.0f) {
         N = -N;
         res.isInside = true;
     }
 
-    
+
     if (abs(dot(N, d)) < 0.00001f) return res;
 
-    
+
     float t = (dot(N, p1) - dot(S, N)) / dot(d, N);
     if (t < 0.0005f) return res;    // ?????????????????
 
-    
+
     vec3 P = S + d * t;
 
-    
+
     vec3 c1 = cross(p2 - p1, P - p1);
     vec3 c2 = cross(p3 - p2, P - p2);
     vec3 c3 = cross(p1 - p3, P - p3);
     bool r1 = (dot(c1, N) > 0 && dot(c2, N) > 0 && dot(c3, N) > 0);
     bool r2 = (dot(c1, N) < 0 && dot(c2, N) < 0 && dot(c3, N) < 0);
 
-    
+
     if (r1 || r2) {
         res.isHit = true;
         res.hitPoint = P;
         res.distance = t;
         res.normal = N;
         res.viewDir = d;
-        
-        float alpha = (-(P.x-p2.x)*(p3.y-p2.y) + (P.y-p2.y)*(p3.x-p2.x)) / (-(p1.x-p2.x-0.00005)*(p3.y-p2.y+0.00005) + (p1.y-p2.y+0.00005)*(p3.x-p2.x+0.00005));
-        float beta  = (-(P.x-p3.x)*(p1.y-p3.y) + (P.y-p3.y)*(p1.x-p3.x)) / (-(p2.x-p3.x-0.00005)*(p1.y-p3.y+0.00005) + (p2.y-p3.y+0.00005)*(p1.x-p3.x+0.00005));
-        float gama  = 1.0 - alpha - beta;
+
+        float alpha = (-(P.x - p2.x) * (p3.y - p2.y) + (P.y - p2.y) * (p3.x - p2.x)) / (-(p1.x - p2.x - 0.00005) * (p3.y - p2.y + 0.00005) + (p1.y - p2.y + 0.00005) * (p3.x - p2.x + 0.00005));
+        float beta = (-(P.x - p3.x) * (p1.y - p3.y) + (P.y - p3.y) * (p1.x - p3.x)) / (-(p2.x - p3.x - 0.00005) * (p1.y - p3.y + 0.00005) + (p2.y - p3.y + 0.00005) * (p1.x - p3.x + 0.00005));
+        float gama = 1.0 - alpha - beta;
         vec3 Nsmooth = alpha * triangle.n1 + beta * triangle.n2 + gama * triangle.n3;
         Nsmooth = normalize(Nsmooth);
         res.normal = (res.isInside) ? (-Nsmooth) : (Nsmooth);
@@ -180,7 +182,7 @@ float hitAABB(Ray r, vec3 AA, vec3 BB) {
 BVHNode getBVHNode(int i) {
     BVHNode node;
 
-    
+
     int offset = i * SIZE_BVHNODE;
     ivec3 childs = ivec3(texelFetch(nodes, offset + 0).xyz);
     ivec3 leafInfo = ivec3(texelFetch(nodes, offset + 1).xyz);
@@ -189,7 +191,7 @@ BVHNode getBVHNode(int i) {
     node.n = int(leafInfo.x);
     node.index = int(leafInfo.y);
 
-    
+
     node.AA = texelFetch(nodes, offset + 2).xyz;
     node.BB = texelFetch(nodes, offset + 3).xyz;
 
@@ -200,11 +202,11 @@ Triangle getTriangle(int i) {
     int offset = i * SIZE_TRIANGLE;
     Triangle t;
 
-    
+
     t.p1 = texelFetch(triangles, offset + 0).xyz;
     t.p2 = texelFetch(triangles, offset + 1).xyz;
     t.p3 = texelFetch(triangles, offset + 2).xyz;
-    
+
     t.n1 = texelFetch(triangles, offset + 3).xyz;
     t.n2 = texelFetch(triangles, offset + 4).xyz;
     t.n3 = texelFetch(triangles, offset + 5).xyz;
@@ -247,10 +249,10 @@ HitResult hitArray(Ray ray, int l, int r) {
     HitResult res;
     res.isHit = false;
     res.distance = INF;
-    for(int i=l; i<=r; i++) {
+    for (int i = l; i <= r; i++) {
         Triangle triangle = getTriangle(i);
         HitResult r = hitTriangle(triangle, ray);
-        if(r.isHit && r.distance<res.distance) {
+        if (r.isHit && r.distance < res.distance) {
             res = r;
             //res.material = material;
             res.material = getMaterial(i);
@@ -271,69 +273,69 @@ HitResult hitBVH(Ray ray) {
     int sp = 0;
 
     stack[sp++] = 0;
-    while(sp>0) {
+    while (sp > 0) {
         int top = stack[--sp];
         BVHNode node = getBVHNode(top);
 
-        
-        if(node.n>0) {
+
+        if (node.n > 0) {
             int L = node.index;
             int R = node.index + node.n - 1;
             HitResult r = hitArray(ray, L, R);
-            if(r.isHit && r.distance<res.distance) res = r;
+            if (r.isHit && r.distance < res.distance) res = r;
             continue;
         }
 
-        
-        float d1 = INF; 
-        float d2 = INF; 
-        if(node.left>0) {
+
+        float d1 = INF;
+        float d2 = INF;
+        if (node.left > 0) {
             BVHNode leftNode = getBVHNode(node.left);
             d1 = hitAABB(ray, leftNode.AA, leftNode.BB);
         }
-        if(node.right>0) {
+        if (node.right > 0) {
             BVHNode rightNode = getBVHNode(node.right);
             d2 = hitAABB(ray, rightNode.AA, rightNode.BB);
         }
 
-        
-        if(d1>0 && d2>0) {
-            if(d1<d2) { // d1<d2, ?????
-                        stack[sp++] = node.right;
-                        stack[sp++] = node.left;
+
+        if (d1 > 0 && d2 > 0) {
+            if (d1 < d2) { // d1<d2, ?????
+                           stack[sp++] = node.right;
+                           stack[sp++] = node.left;
             } else {    // d2<d1, ?????
                         stack[sp++] = node.left;
                         stack[sp++] = node.right;
             }
-        } else if(d1>0) {   // ?????????
-                            stack[sp++] = node.left;
-        } else if(d2>0) {   // ?????????
-                            stack[sp++] = node.right;
+        } else if (d1 > 0) {   // ?????????
+                               stack[sp++] = node.left;
+        } else if (d2 > 0) {   // ?????????
+                               stack[sp++] = node.right;
         }
     }
 
     return res;
 }
 
-HitResult castRay(Ray ray,int depth)
+HitResult castRay(Ray ray, int depth)
 {
     HitResult res;
     res.isHit = false;
 
 
-    if(depth > MAX_DEPTH )
+    if (depth > MAX_DEPTH)
     {
         return res;
     }
     vec3 colorRes = vec3(0);
     res = hitBVH(ray);
-    
-    if(res.isHit)
+
+    if (res.isHit)
     {
-        res.material.emissive *= pow(0.2,float(depth));
+        res.material.emissive *= pow(0.2, float(depth));
         return res;
-    }else{
-        res.material.emissive = vec3(0,0,0);
+    } else {
+        res.material.emissive = vec3(0, 0, 0);
         return res;
     }
 }
@@ -345,13 +347,13 @@ HitResult castRay(Ray ray,int depth)
 vec4 getWorldPos(vec3 target)
 {
     // ndc
-    vec4 ndcPosition = vec4(target ,1.0);
+    vec4 ndcPosition = vec4(target, 1.0);
     // clip
     vec4 clipPosition;
     clipPosition.xyz = ndcPosition.xyz / gl_FragCoord.w;
-    clipPosition.w = 1.0/gl_FragCoord.w;
+    clipPosition.w = 1.0 / gl_FragCoord.w;
     // world
-    vec4 worldPos = view_inverse*projection_inverse*clipPosition;
+    vec4 worldPos = view_inverse * projection_inverse * clipPosition;
     worldPos.xyz /= worldPos.w;
     return worldPos;
 }
@@ -359,17 +361,21 @@ vec4 getWorldPos(vec3 target)
 
 void main()
 {
+//    FragColor = vec4(WorldPos, 1);
+//    return;
+    
     Ray ray;
+    ray.startPoint = vec3(0, 0, 4);
+    ray.direction = normalize(vec3(WorldPos.x, WorldPos.y, 2) - ray.startPoint);
 
-    vec4 worldPos = getWorldPos(pix);
-    ray.direction = normalize(worldPos.xyz - eye_pos);
-    ray.startPoint = eye_pos;
-    
+    HitResult res = hitArray(ray, 0, nTriangles - 1);
 
-    vec3 result = vec3(0);
-    
-    HitResult res = hitArray(ray,0,ntriangles-1);
-    
-    if(res.isHit)FragColor = vec4(1,0,0,1);
-    else FragColor = vec4(0,0,1,1);
+    if (res.isHit)
+    {
+        FragColor = vec4(res.normal, 1.0);
+    }
+    else
+    {
+        FragColor = vec4(0.02, 0.02, 0.02, 1);
+    }
 }
