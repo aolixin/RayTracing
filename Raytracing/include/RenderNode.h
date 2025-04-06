@@ -30,7 +30,7 @@ struct RenderNode
         material->shader->setMat4("projection", projection);
         material->shader->setMat4("view", view);
         material->shader->setMat4("model", modelMatrix);
-        material->shader->setVec3("eye_pos", context.viewPos);
+        material->shader->setVec3("viewPos", context.viewPos);
 
         material->shader->setVec3("objectColor", material->baseColor);
 
