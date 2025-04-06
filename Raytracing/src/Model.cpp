@@ -17,7 +17,7 @@ bool gammaCorrection;
 //Shader *myShader;
 
 // constructor, expects a filepath to a 3D model.
-Model::Model(string const& path, bool gamma ) : gammaCorrection(gamma)
+Model::Model(string const& path, bool gamma) : gammaCorrection(gamma)
 {
     loadModel(path);
 }
@@ -134,9 +134,13 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, const glm::vec3& cen
         glm::vec3 vector;
         // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
         // positions
-        vector.x = (mesh->mVertices[i].x - center.x) * scaleFactor;
-        vector.y = (mesh->mVertices[i].y - center.y) * scaleFactor;
-        vector.z = (mesh->mVertices[i].z - center.z) * scaleFactor;
+        // vector.x = (mesh->mVertices[i].x - center.x) * scaleFactor;
+        // vector.y = (mesh->mVertices[i].y - center.y) * scaleFactor;
+        // vector.z = (mesh->mVertices[i].z - center.z) * scaleFactor;
+
+        vector.x = (mesh->mVertices[i].x);
+        vector.y = (mesh->mVertices[i].y);
+        vector.z = (mesh->mVertices[i].z);
         vertex.Position = vector;
         // normals
         if (mesh->HasNormals())

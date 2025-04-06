@@ -25,9 +25,22 @@ void Scene::SetupGIScene()
         {
             triangles_expand[i].materialID = materials_count;
             materials_expand.push_back(*render_node.material);
-            materials_count++;
+
+            glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(render_node.modelMatrix)));
+
+            for (auto& vertex : triangles_expand[i].vertex) {
+
+                vertex.Position = glm::vec3(render_node.modelMatrix * glm::vec4(vertex.Position, 1.0f));
+
+                // vertex.Normal = glm::normalize(normalMatrix * vertex.Normal);
+                
+                // vertex.Tangent = glm::normalize(normalMatrix * vertex.Tangent);
+                //
+                // vertex.Bitangent = glm::normalize(normalMatrix * vertex.Bitangent);
+            }
         }
-        
+
+        materials_count++;
     }
 
     this->myBVH.triangles = this->triangles_expand;

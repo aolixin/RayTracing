@@ -89,28 +89,20 @@ HitResult HitTriangle(Triangle triangle, Ray ray) {
     vec3 p2 = triangle.p2;
     vec3 p3 = triangle.p3;
 
-    //p1 = vec3(-1,1,0);
-    //p2 = vec3(-1,-1,0);
-    //p3 = vec3(1,-1,0);
-
     vec3 S = ray.startPoint;
     vec3 d = ray.direction;
     vec3 N = normalize(cross(p2 - p1, p3 - p1));
-
 
     if (dot(N, d) > 0.0f) {
         N = -N;
         res.isInside = true;
     }
 
-
     if (abs(dot(N, d)) < 0.00001f) return res;
-
-
+    
     float t = (dot(N, p1) - dot(S, N)) / dot(d, N);
-    if (t < 0.0005f) return res;    // ?????????????????
-
-
+    if (t < 0.0005f) return res;    
+    
     vec3 P = S + d * t;
 
 
@@ -372,7 +364,7 @@ vec3 PathTracing(HitResult hit, int maxBounce) {
 
         if (!newHit.isHit) {
             //            vec3 skyColor = sampleHdr(randomRay.direction);
-            vec3 skyColor = vec3(0);
+            vec3 skyColor = vec3(0.2,0.2,0.2);
             Lo += history * skyColor * f_r * cosine_i / pdf;
             break;
         }
@@ -398,9 +390,13 @@ void main()
     // primary hit
     HitResult res = HitBVH(ray);
     vec3 color;
+    if (res.isHit) {
+        FragColor = vec4(res.normal, 1.0);
+    }
+    return;
 
     if (!res.isHit) {
-        color = vec3(0);
+        color = vec3(0.2,0.2,0.2);
         //        color = sampleHdr(ray.direction);
     } else {
         //        color = res.normal;

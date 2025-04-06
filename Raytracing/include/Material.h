@@ -20,8 +20,8 @@ public:
 
     shared_ptr<Shader>shader;
     
-    vec3 emissive = vec3(0.3, 0, 0);  
-    vec3 baseColor = vec3(0.2, 0.2, 0.2);
+    vec3 emissive = vec3(0, 0, 0);  // emissive color for light source
+    vec3 baseColor = vec3(0, 0, 0); // base color for diffuse reflection
     float subsurface = 0.0;
     float metallic = 0.0;
     float specular = 0.0;
@@ -49,7 +49,6 @@ public:
         Material_encoded m;
         m.emissive = this->emissive;
         m.baseColor = this->baseColor;
-        //m.baseColor = vec3(0.2, 0.2, 0.5);
 
         m.param1 = vec3(this->subsurface, this->metallic, this->specular);
         m.param2 = vec3(this->specularTint, this->roughness, this->anisotropic);

@@ -86,7 +86,8 @@ void Renderer::Draw()
     if (renderPath == RenderPath::Forward)
     {
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-    
+        // glEnable(GL_CULL_FACE);
+
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         for (auto& render_node : scene->render_nodes)
