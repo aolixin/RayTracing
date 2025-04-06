@@ -30,7 +30,7 @@ int main()
 
     renderer->SetupScene(myScene);
     
-    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 4.0f));
+    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 10.0f));
 
     renderer->camera = camera;
 

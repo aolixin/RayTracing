@@ -17,8 +17,6 @@ enum RenderPath
 };
 
 
-
-
 class Renderer
 {
 private:
@@ -28,10 +26,9 @@ private:
     Shader RTShader;
 
     GLuint frameBuffer0;
-    vector<GLuint>frameTextures;
-    
-public:
+    vector<GLuint> frameTextures;
 
+public:
     Renderer()
     {
     }
@@ -51,7 +48,7 @@ public:
     static bool already_init;
 
 public:
-    static std::shared_ptr<Renderer> GetRenderer( RenderPath path = RenderPath::Forward);
+    static std::shared_ptr<Renderer> GetRenderer(RenderPath path = RenderPath::Forward);
 
     void InitRenderer();
 
@@ -73,6 +70,8 @@ public:
     glm::mat4 Perspective();
 
     glm::mat4 View();
+
+    glm::mat4 CameraRotate();
 
     void SwapBuffers();
 

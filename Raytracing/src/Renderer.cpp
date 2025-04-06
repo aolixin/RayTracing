@@ -104,9 +104,15 @@ void Renderer::Draw()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         RTShader.use();
+        RTShader.setVec3("CameraPos", camera->Position);
 
         RTShader.setTextureBuffer("triangles", scene->trianglesTextureBuffer, 2);
         RTShader.setInt("nTriangles", scene->nTriangles);
+
+        RTShader.setTextureBuffer("nodes", scene->nodesTextureBuffer, 3);
+        RTShader.setInt("nNodes", scene->nNodes);
+
+        RTShader.setMat4("CameraRotate", inverse(CameraRotate()));  
         
         DrawQuad(RTShader);
 
@@ -131,6 +137,11 @@ glm::mat4 Renderer::Perspective()
 glm::mat4 Renderer::View()
 {
     return camera->GetViewMatrix();
+}
+
+glm::mat4 Renderer::CameraRotate()
+{
+    return camera->GetRotateMatrix();
 }
 
 int Renderer::RendererClose()

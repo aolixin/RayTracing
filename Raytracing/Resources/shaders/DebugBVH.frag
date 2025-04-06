@@ -9,36 +9,12 @@
 #define MAX_DEPTH       10
 #define MAX_SSP         1
 
-float WIDTH = 1920;
-float HEIGHT = 1080;
-
-
-//uniform vec3 lightPos;
-in vec3 fragNormal;
 out vec4 FragColor;
+
+in vec3 pix;
 in vec2 TexCoords;
-in vec3 FragPos;
-
-in vec3 WorldPos;
-
-//uniform float width;
-//uniform float height;
-uniform mat4 view_inverse;
-uniform mat4 projection_inverse;
-float ao = 1.0f;
-
-uniform samplerCube irradianceMap;
-
-
-uniform uint frameCounter;
-uint frameCounter1 = uint(0);
-
-
-
-// ndc
-vec3 pix = vec3((gl_FragCoord.xy / vec2(WIDTH, HEIGHT)) * 2 - vec2(1), gl_FragCoord.z * 2 - 1);
-
-
+uniform vec3 CameraPos;
+uniform mat4 CameraRotate;
 
 struct Material {
     vec3 emissive;
@@ -59,40 +35,34 @@ struct Material {
 uniform Material material;
 
 uniform samplerBuffer triangles;
+uniform int nTriangles;
+
 uniform samplerBuffer nodes;
 uniform samplerBuffer materials;
 
-uniform int nTriangles;
-
-uniform vec3 eye_pos;
-
-
-
-uniform mat4 inverse_projection;
-uniform mat4 inverse_view;
 
 
 struct Triangle {
-    vec3 p1, p2, p3;    // ????????
-    vec3 n1, n2, n3;    // ??????
+    vec3 p1, p2, p3;
+    vec3 n1, n2, n3;
 };
 
 struct BVHNode {
-    int left;           // ??????
-    int right;          // ??????
-    int n;              // ?????????????
-    int index;          // ??????????
-    vec3 AA, BB;        // ?????
+    int left;
+    int right;
+    int n;
+    int index;
+    vec3 AA, BB;
 };
 
 struct HitResult {
-    bool isHit;             // ???????
-    bool isInside;          // ???????????
-    float distance;         // ????????
-    vec3 hitPoint;          // ???????��?
-    vec3 normal;            // ???��???
-    vec3 viewDir;           // ???��??????????
-    Material material;      // ???��????????
+    bool isHit;
+    bool isInside;
+    float distance;
+    vec3 hitPoint;
+    vec3 normal;
+    vec3 viewDir;
+    Material material;
 };
 
 struct Ray {
@@ -101,8 +71,7 @@ struct Ray {
 };
 
 
-
-HitResult hitTriangle(Triangle triangle, Ray ray) {
+HitResult HitTriangle(Triangle triangle, Ray ray) {
     HitResult res;
     res.distance = INF;
     res.isHit = false;
@@ -163,7 +132,7 @@ HitResult hitTriangle(Triangle triangle, Ray ray) {
 
 }
 
-float hitAABB(Ray r, vec3 AA, vec3 BB) {
+float HitAABB(Ray r, vec3 AA, vec3 BB) {
     vec3 invdir = 1.0 / r.direction;
 
     vec3 f = (BB - r.startPoint) * invdir;
@@ -179,7 +148,7 @@ float hitAABB(Ray r, vec3 AA, vec3 BB) {
 }
 
 
-BVHNode getBVHNode(int i) {
+BVHNode GetBVHNode(int i) {
     BVHNode node;
 
 
@@ -198,7 +167,7 @@ BVHNode getBVHNode(int i) {
     return node;
 }
 
-Triangle getTriangle(int i) {
+Triangle GetTriangle(int i) {
     int offset = i * SIZE_TRIANGLE;
     Triangle t;
 
@@ -215,7 +184,7 @@ Triangle getTriangle(int i) {
 }
 
 
-Material getMaterial(int i) {
+Material GetMaterial(int i) {
 
     Material m;
 
@@ -245,29 +214,28 @@ Material getMaterial(int i) {
 }
 
 
-HitResult hitArray(Ray ray, int l, int r) {
+HitResult HitArray(Ray ray, int l, int r) {
     HitResult res;
     res.isHit = false;
     res.distance = INF;
     for (int i = l; i <= r; i++) {
-        Triangle triangle = getTriangle(i);
-        HitResult r = hitTriangle(triangle, ray);
+        Triangle triangle = GetTriangle(i);
+        HitResult r = HitTriangle(triangle, ray);
         if (r.isHit && r.distance < res.distance) {
             res = r;
             //res.material = material;
-            res.material = getMaterial(i);
+            res.material = GetMaterial(i);
         }
     }
     return res;
 }
 
 
-HitResult hitBVH(Ray ray) {
+HitResult HitBVH(Ray ray) {
     HitResult res;
     res.isHit = false;
     res.distance = INF;
 
-    // ?
     //int stack[256];
     int stack[512];
     int sp = 0;
@@ -275,13 +243,13 @@ HitResult hitBVH(Ray ray) {
     stack[sp++] = 0;
     while (sp > 0) {
         int top = stack[--sp];
-        BVHNode node = getBVHNode(top);
+        BVHNode node = GetBVHNode(top);
 
 
         if (node.n > 0) {
             int L = node.index;
             int R = node.index + node.n - 1;
-            HitResult r = hitArray(ray, L, R);
+            HitResult r = HitArray(ray, L, R);
             if (r.isHit && r.distance < res.distance) res = r;
             continue;
         }
@@ -290,34 +258,34 @@ HitResult hitBVH(Ray ray) {
         float d1 = INF;
         float d2 = INF;
         if (node.left > 0) {
-            BVHNode leftNode = getBVHNode(node.left);
-            d1 = hitAABB(ray, leftNode.AA, leftNode.BB);
+            BVHNode leftNode = GetBVHNode(node.left);
+            d1 = HitAABB(ray, leftNode.AA, leftNode.BB);
         }
         if (node.right > 0) {
-            BVHNode rightNode = getBVHNode(node.right);
-            d2 = hitAABB(ray, rightNode.AA, rightNode.BB);
+            BVHNode rightNode = GetBVHNode(node.right);
+            d2 = HitAABB(ray, rightNode.AA, rightNode.BB);
         }
 
 
         if (d1 > 0 && d2 > 0) {
-            if (d1 < d2) { // d1<d2, ?????
-                           stack[sp++] = node.right;
-                           stack[sp++] = node.left;
-            } else {    // d2<d1, ?????
-                        stack[sp++] = node.left;
-                        stack[sp++] = node.right;
+            if (d1 < d2) {
+                stack[sp++] = node.right;
+                stack[sp++] = node.left;
+            } else {
+                stack[sp++] = node.left;
+                stack[sp++] = node.right;
             }
-        } else if (d1 > 0) {   // ?????????
-                               stack[sp++] = node.left;
-        } else if (d2 > 0) {   // ?????????
-                               stack[sp++] = node.right;
+        } else if (d1 > 0) {
+            stack[sp++] = node.left;
+        } else if (d2 > 0) {
+            stack[sp++] = node.right;
         }
     }
 
     return res;
 }
 
-HitResult castRay(Ray ray, int depth)
+HitResult CastRay(Ray ray, int depth)
 {
     HitResult res;
     res.isHit = false;
@@ -328,7 +296,7 @@ HitResult castRay(Ray ray, int depth)
         return res;
     }
     vec3 colorRes = vec3(0);
-    res = hitBVH(ray);
+    res = HitBVH(ray);
 
     if (res.isHit)
     {
@@ -342,33 +310,14 @@ HitResult castRay(Ray ray, int depth)
 
 
 
-
-
-vec4 getWorldPos(vec3 target)
-{
-    // ndc
-    vec4 ndcPosition = vec4(target, 1.0);
-    // clip
-    vec4 clipPosition;
-    clipPosition.xyz = ndcPosition.xyz / gl_FragCoord.w;
-    clipPosition.w = 1.0 / gl_FragCoord.w;
-    // world
-    vec4 worldPos = view_inverse * projection_inverse * clipPosition;
-    worldPos.xyz /= worldPos.w;
-    return worldPos;
-}
-
-
 void main()
 {
-//    FragColor = vec4(WorldPos, 1);
-//    return;
-    
     Ray ray;
-    ray.startPoint = vec3(0, 0, 4);
-    ray.direction = normalize(vec3(WorldPos.x, WorldPos.y, 2) - ray.startPoint);
+    ray.startPoint = CameraPos;
+    vec4 dir = CameraRotate * vec4(pix.x, pix.y, -1.5, 1.0);
+    ray.direction =  normalize(dir.xyz);
 
-    HitResult res = hitArray(ray, 0, nTriangles - 1);
+    HitResult res = HitBVH(ray);
 
     if (res.isHit)
     {
