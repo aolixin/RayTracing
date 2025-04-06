@@ -43,6 +43,7 @@ public:
     float lastY = SCR_HEIGHT / 2.0f;
 
     bool firstMouse = true;
+    int frameCount = 0;
 
     static GLFWwindow* window;
     static bool already_init;

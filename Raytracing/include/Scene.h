@@ -18,6 +18,8 @@ public:
     int nNodes = -1;
     int nMaterials = -1;
 
+    int materials_count = 0;
+
 public:
     vector<RenderNode>render_nodes;
     // vector<Model> models;

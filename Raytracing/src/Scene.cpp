@@ -16,14 +16,17 @@ void Scene::SetupGIScene()
 {
     for (const auto& render_node : render_nodes)
     {
+        int start = triangles_expand.size();
         triangles_expand.insert(triangles_expand.end(), render_node.mesh->triangles.begin(),
                                 render_node.mesh->triangles.end());
-        
-        int len = render_node.mesh->triangles.size();
-        for (int k = 0; k < len; k++)
+
+        for(int i = start; i < triangles_expand.size(); i++)
         {
-            materials_expand.insert(materials_expand.end(), *render_node.material);
+            triangles_expand[i].materialID = materials_count;
+            materials_expand.push_back(*render_node.material);
+            materials_count++;
         }
+        
     }
 
     this->myBVH.triangles = this->triangles_expand;
@@ -54,6 +57,8 @@ void Scene::GenBuffers()
         triangles_encoded[i].n1 = t.vertex[0].Normal;
         triangles_encoded[i].n2 = t.vertex[1].Normal;
         triangles_encoded[i].n3 = t.vertex[2].Normal;
+
+        triangles_encoded[i].materialID = vec3(t.materialID, 0, 0);
     }
 
     vector<BVHNode_encoded> nodes_encoded(this->myBVH.nodes.size());

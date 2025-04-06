@@ -40,10 +40,12 @@ public:
     //vec3 p1, p2, p3;   
     //vec3 n1, n2, n3;    
     std::vector<Vertex> vertex;
+    int materialID;
 };
 
 struct Triangle_encoded {
     vec3 p1, p2, p3;    
-    vec3 n1, n2, n3;    
+    vec3 n1, n2, n3;
+    vec3 materialID;
 };
 

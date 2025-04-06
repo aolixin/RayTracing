@@ -104,7 +104,11 @@ void Renderer::Draw()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         RTShader.use();
+        RTShader.setInt("FrameCounter", frameCount++);
+        RTShader.setInt("Width", SCR_WIDTH);
+        RTShader.setInt("Height", SCR_HEIGHT);
         RTShader.setVec3("CameraPos", camera->Position);
+        RTShader.setMat4("CameraRotate", inverse(CameraRotate()));  
 
         RTShader.setTextureBuffer("triangles", scene->trianglesTextureBuffer, 2);
         RTShader.setInt("nTriangles", scene->nTriangles);
@@ -112,7 +116,10 @@ void Renderer::Draw()
         RTShader.setTextureBuffer("nodes", scene->nodesTextureBuffer, 3);
         RTShader.setInt("nNodes", scene->nNodes);
 
-        RTShader.setMat4("CameraRotate", inverse(CameraRotate()));  
+        RTShader.setTextureBuffer("materials", scene->materialsTextureBuffer, 4);
+        RTShader.setInt("nMaterials", scene->nMaterials);
+
+        
         
         DrawQuad(RTShader);
 

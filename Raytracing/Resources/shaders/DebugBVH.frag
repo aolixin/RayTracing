@@ -2,17 +2,24 @@
 
 #define PI              3.1415926
 #define INF             114514.0
-#define SIZE_TRIANGLE   6
+#define SIZE_TRIANGLE   7
 #define SIZE_BVHNODE    4
 #define SIZE_MATERIAL   6
 #define INF             114514.0
 #define MAX_DEPTH       10
 #define MAX_SSP         1
 
+
+
+
 out vec4 FragColor;
 
 in vec3 pix;
 in vec2 TexCoords;
+
+uniform uint FrameCounter;
+uniform int Width;
+uniform int Height;
 uniform vec3 CameraPos;
 uniform mat4 CameraRotate;
 
@@ -45,6 +52,7 @@ uniform samplerBuffer materials;
 struct Triangle {
     vec3 p1, p2, p3;
     vec3 n1, n2, n3;
+    int materialId;
 };
 
 struct BVHNode {
@@ -179,6 +187,9 @@ Triangle GetTriangle(int i) {
     t.n1 = texelFetch(triangles, offset + 3).xyz;
     t.n2 = texelFetch(triangles, offset + 4).xyz;
     t.n3 = texelFetch(triangles, offset + 5).xyz;
+    
+    
+    t.materialId = int(texelFetch(triangles, offset + 6).x);
 
     return t;
 }
@@ -308,6 +319,73 @@ HitResult CastRay(Ray ray, int depth)
     }
 }
 
+uint seed = uint(
+    uint((pix.x * 0.5 + 0.5) * Width)  * uint(1973) +
+    uint((pix.y * 0.5 + 0.5) * Height) * uint(9277) +
+    uint(FrameCounter) * uint(26699)) | uint(1);
+
+uint wang_hash(inout uint seed) {
+    seed = uint(seed ^ uint(61)) ^ uint(seed >> uint(16));
+    seed *= uint(9);
+    seed = seed ^ (seed >> 4);
+    seed *= uint(0x27d4eb2d);
+    seed = seed ^ (seed >> 15);
+    return seed;
+}
+
+float rand() {
+    return float(wang_hash(seed)) / 4294967296.0;
+}
+
+vec3 SampleHemisphere() {
+    float z = rand();
+    float r = max(0.0, sqrt(1.0 - z*z));
+    float phi = 2.0 * PI * rand();
+    return vec3(r * cos(phi), r * sin(phi), z);
+}
+
+vec3 toNormalHemisphere(vec3 v, vec3 N) {
+    vec3 helper = vec3(1, 0, 0);
+    if(abs(N.x)>0.999) helper = vec3(0, 0, 1);
+    vec3 tangent = normalize(cross(N, helper));
+    vec3 bitangent = normalize(cross(N, tangent));
+    return v.x * tangent + v.y * bitangent + v.z * N;
+}
+
+vec3 PathTracing(HitResult hit, int maxBounce) {
+
+    vec3 Lo = vec3(0);      
+    vec3 history = vec3(1); 
+
+    for(int bounce=0; bounce<maxBounce; bounce++) {
+        vec3 wi = toNormalHemisphere(SampleHemisphere(), hit.normal);
+
+        Ray randomRay;
+        randomRay.startPoint = hit.hitPoint;
+        randomRay.direction = wi;
+        HitResult newHit = HitBVH(randomRay);
+
+        float pdf = 1.0 / (2.0 * PI);                                   
+        float cosine_o = max(0.0, dot(-hit.viewDir, hit.normal));        
+        float cosine_i = max(0.0, dot(randomRay.direction, hit.normal));  
+        vec3 f_r = hit.material.baseColor / PI;                         
+
+        if(!newHit.isHit) {
+//            vec3 skyColor = sampleHdr(randomRay.direction);
+            vec3 skyColor = vec3(0.2, 0.2, 0.2);
+            Lo += history * skyColor * f_r * cosine_i / pdf;
+            break;
+        }
+
+        vec3 Le = newHit.material.emissive;
+        Lo += history * Le * f_r * cosine_i / pdf;
+
+        hit = newHit;
+        history *= f_r * cosine_i / pdf;  
+    }
+
+    return Lo;
+}
 
 
 void main()
@@ -317,14 +395,20 @@ void main()
     vec4 dir = CameraRotate * vec4(pix.x, pix.y, -1.5, 1.0);
     ray.direction =  normalize(dir.xyz);
 
+    // primary hit
     HitResult res = HitBVH(ray);
+    vec3 color;
 
-    if (res.isHit)
-    {
-        FragColor = vec4(res.normal, 1.0);
+    if(!res.isHit) {
+        color = vec3(0);
+        color = vec3(0.2);
+//        color = sampleHdr(ray.direction);
+    } else {
+//        color = res.normal;
+        vec3 Le = res.material.emissive;
+        vec3 Li = PathTracing(res, 2);
+        color = Le + Li;
     }
-    else
-    {
-        FragColor = vec4(0.02, 0.02, 0.02, 1);
-    }
+    
+    FragColor = vec4(color, 1.0);
 }
