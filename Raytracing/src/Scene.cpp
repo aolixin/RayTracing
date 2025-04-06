@@ -1,13 +1,14 @@
 #include "Scene.h"
 
-void Scene::Add(Model model, Material material)
+void Scene::Add(Model model, Material material,glm::mat4 modelMatrix)
 {
     // models.push_back(model);
     for (auto& mesh : model.meshes)
     {
         render_nodes.emplace_back(
             make_shared<Mesh>(mesh),
-            make_shared<Material>(material)
+            make_shared<Material>(material),
+            modelMatrix
         );
     }
 }

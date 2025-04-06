@@ -8,10 +8,14 @@ struct RenderNode
 {
     std::shared_ptr<Mesh> mesh;
     std::shared_ptr<Material> material;
+    glm::mat4 modelMatrix;
 
-    RenderNode(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material)
-        : mesh(mesh), material(material)
+    RenderNode(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material,
+               glm::mat4 modelMatrix = glm::mat4(1.0f))
     {
+        this->mesh = mesh;
+        this->material = material;
+        this->modelMatrix = modelMatrix;
     }
 
     inline void Draw(const RenderContext& context)
@@ -21,14 +25,14 @@ struct RenderNode
         // bind appropriate textures
 
         material->shader->use();
-        glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 projection = context.projection;
         glm::mat4 view = context.view;
         material->shader->setMat4("projection", projection);
         material->shader->setMat4("view", view);
-        material->shader->setMat4("model", model);
+        material->shader->setMat4("model", modelMatrix);
         material->shader->setVec3("eye_pos", context.viewPos);
 
+        material->shader->setVec3("objectColor", material->baseColor);
 
         unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;

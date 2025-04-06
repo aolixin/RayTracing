@@ -20,8 +20,8 @@ public:
 
     shared_ptr<Shader>shader;
     
-    vec3 emissive = vec3(0, 0, 0);  
-    vec3 baseColor = vec3(0.2, 0.2, 0.5);
+    vec3 emissive = vec3(0.3, 0, 0);  
+    vec3 baseColor = vec3(0.2, 0.2, 0.2);
     float subsurface = 0.0;
     float metallic = 0.0;
     float specular = 0.0;
@@ -58,4 +58,6 @@ public:
         return m;
     }
 };
+
+
 

@@ -125,6 +125,7 @@
     <ClInclude Include="include\RenderNode.h" />
     <ClInclude Include="include\resource.h" />
     <ClInclude Include="include\Scene.h" />
+    <ClInclude Include="include\SceneConfig.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\Triangle.h" />
