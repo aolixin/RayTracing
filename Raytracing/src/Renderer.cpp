@@ -59,8 +59,11 @@ void Renderer::InitRenderer()
     // init shader
     RTShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/DebugBVH.frag");
     screenShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/framebuffers_screen.frag");
+    postShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/post.frag");
 
-    frameBuffer0 = GetFrameBuffer(SCR_WIDTH, SCR_HEIGHT, frameTextures, 1, 1);
+    frameBuffer0 = GetFrameBuffer(SCR_WIDTH, SCR_HEIGHT, frameTextures0, 1, 0);
+
+    frameBuffer1 = GetFrameBuffer(SCR_WIDTH, SCR_HEIGHT, frameTextures1, 1, 0);
 }
 
 void Renderer::DestroyRenderer()
@@ -97,11 +100,13 @@ void Renderer::Draw()
     }
     else if (renderPath == RenderPath::GI)
     {
+        // pass1
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer0);
         // glEnable(GL_DEPTH_TEST);
         glDisable(GL_DEPTH_TEST);
-        glClearColor(0.3f, 0.05f, 0.05f, 1.0f);
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         RTShader.use();
@@ -120,19 +125,31 @@ void Renderer::Draw()
         RTShader.setTextureBuffer("materials", scene->materialsTextureBuffer, 4);
         RTShader.setInt("nMaterials", scene->nMaterials);
 
-        
+        RTShader.setTexture("envCubeMap", scene->envCubeMap, 5);
+        RTShader.setTexture("lastFrame", frameTextures1[0], 6);
         
         DrawQuad(RTShader);
 
+
+        // pass2
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer1);
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT); 
+        screenShader.use();
+        screenShader.setTexture("screenTexture", frameTextures0[0], 6);
+        DrawQuad(screenShader);
+
+        
+        // pass3
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);
-        glClearColor(0.05f, 0.3f, 0.05f, 1.0f);
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT); 
 
-        screenShader.use();
-        screenShader.setTexture("screenTexture", frameTextures[0], 6);
-
-        DrawQuad(screenShader);
+        postShader.use();
+        postShader.setTexture("screenTexture", frameTextures1[0], 6);
+        DrawQuad(postShader);
     }
 }
 
@@ -227,7 +244,7 @@ void Renderer::processInput(float deltaTime)
         camera->ProcessKeyboard(RIGHT, deltaTime);
 }
 
-void Renderer::DrawSkybox(Shader passToScreenShader, GLint envCubemap)
+void Renderer::DrawSkybox(Shader passToScreenShader)
 {
     glDepthFunc(GL_LEQUAL);
     passToScreenShader.use();
@@ -239,7 +256,7 @@ void Renderer::DrawSkybox(Shader passToScreenShader, GLint envCubemap)
     passToScreenShader.setMat4("view", passToView);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, scene->envCubeMap);
     passToScreenShader.setInt("environmentMap", 0);
 
 

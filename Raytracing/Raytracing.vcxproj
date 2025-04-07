@@ -156,6 +156,7 @@
   <ItemGroup>
     <Content Include="Resources\shaders\DebugBVH.frag" />
     <Content Include="Resources\shaders\framebuffers_screen.frag" />
+    <Content Include="Resources\shaders\post.frag" />
     <Content Include="Resources\shaders\screen.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

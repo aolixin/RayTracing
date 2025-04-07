@@ -5,7 +5,7 @@ in vec3 Normal;
 
 out vec4 FragColor;
 
-uniform vec3 lightPos = vec3(0, 2, 0);
+uniform vec3 lightPos = vec3(0, 0.8, 0.5);
 uniform vec3 viewPos;
 uniform vec3 lightColor = vec3(1.0, 1.0, 1.0);
 uniform vec3 objectColor = vec3(0.5, 0.5, 0.5);
@@ -18,8 +18,8 @@ void main()
 {
     vec3 ambient = ambientStrength * lightColor;
     vec3 norm = normalize(Normal );
-    FragColor = vec4(norm, 1.0);
-    return;
+//    FragColor = vec4(norm, 1.0);
+//    return;
 
     vec3 lightDir = normalize(lightPos - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);

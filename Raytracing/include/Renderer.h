@@ -22,11 +22,16 @@ class Renderer
 private:
     RenderPath renderPath = RenderPath::Forward;
 
-    Shader screenShader;
     Shader RTShader;
+    Shader screenShader;
+    Shader postShader;
+    
 
     GLuint frameBuffer0;
-    vector<GLuint> frameTextures;
+    vector<GLuint> frameTextures0;
+
+    GLuint frameBuffer1;
+    vector<GLuint> frameTextures1;
 
 public:
     Renderer()
@@ -37,8 +42,8 @@ public:
     std::shared_ptr<Camera> camera;
     std::shared_ptr<Scene> scene;
 
-    static constexpr unsigned int SCR_WIDTH = 800;
-    static constexpr unsigned int SCR_HEIGHT = 600;
+    static constexpr unsigned int SCR_WIDTH = 1080;
+    static constexpr unsigned int SCR_HEIGHT = 720;
     float lastX = SCR_WIDTH / 2.0f;
     float lastY = SCR_HEIGHT / 2.0f;
 
@@ -65,7 +70,7 @@ public:
 
     void processInput(float deltaTime);
 
-    void DrawSkybox(Shader passToScreenShader, GLint envCubemap);
+    void DrawSkybox(Shader passToScreenShader);
 
 
     glm::mat4 Perspective();

@@ -13,15 +13,13 @@ float lastFrame = 0.0f;
 
 int main()
 {
-    const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RenderPath::Forward);
-    Shader pass2SrcShader("Resources/shaders/passToScreen.vert", "Resources/shaders/passToScreen.frag");
-
-    GLint envCubeMap =  buildEnvCubMap();
+    const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RenderPath::GI);
+    
     shared_ptr<Scene> myScene = BuildScene();
 
     renderer->SetupScene(myScene);
     
-    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 5.0f));
+    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 
     renderer->camera = camera;
 
@@ -37,7 +35,7 @@ int main()
 
         renderer->Draw();
         
-        // renderer->DrawSkybox(pass2SrcShader,envCubeMap);
+        // renderer->DrawSkybox(pass2SrcShader);
 
         renderer->SwapBuffers();
         renderer->PollEvents();

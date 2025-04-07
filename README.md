@@ -24,5 +24,26 @@
 
 ![image-20250406163241017](img\image-20250406163241017.png)
 
+
+
+路径追踪
+
+![image-20250407145224952](img\image-20250407145224952.png)
+
+
+
+伽马矫正
+
+![image-20250407151337051](img\image-20250407151337051.png)
+
+![image-20250407150900394](img\image-20250407150900394.png)
+
+
+
+
+
+
+
 ## 参考
+
 https://github.com/AKGWSB/EzRT?tab=readme-ov-file

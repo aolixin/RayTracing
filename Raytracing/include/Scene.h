@@ -14,6 +14,8 @@ public:
     GLuint nodesTextureBuffer;
     GLuint materialsTextureBuffer;
 
+    GLuint envCubeMap;
+
     int nTriangles = -1;
     int nNodes = -1;
     int nMaterials = -1;

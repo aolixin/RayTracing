@@ -6,7 +6,7 @@ using namespace glm;
 
 struct Material_encoded {
     vec3 emissive = vec3(0, 0, 0);  // ��Ϊ��Դʱ�ķ�����ɫ
-    vec3 baseColor = vec3(0.2, 0.2, 0.2);
+    vec3 baseColor = vec3(0, 0, 0);
 
     vec3 param1;
     vec3 param2;

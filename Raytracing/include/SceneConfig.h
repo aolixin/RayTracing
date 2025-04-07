@@ -7,35 +7,45 @@ shared_ptr<Scene> BuildScene()
     // bunny
     Shader shader0("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     Material mat0(shader0);
-    mat0.baseColor = glm::vec3(0.2f, 0.2f, 0.8f);
-    Model model0("Resources/models/bunny2.obj");
+    mat0.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
+    Model model0("Resources/models/bunny.obj");
 
     // left
     Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     Material mat1(shader1);
     mat1.baseColor = glm::vec3(0.8f, 0.2f, 0.2f);
-    mat1.baseColor = glm::vec3(1);
     Model model1("Resources/models/cornellbox/left.obj");
 
     // right
     Shader shader2("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     Material mat2(shader2);
     mat2.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
-    mat2.baseColor = glm::vec3(1);
     Model model2("Resources/models/cornellbox/right.obj");
 
     // floor
     Shader shader3("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     Material mat3(shader3);
-    mat3.baseColor = glm::vec3(1.f, 1.f, 1.f);
+    mat3.baseColor = glm::vec3(0.5f, 0.5f, 0.5f);
     Model model3("Resources/models/cornellbox/floor.obj");
-    
+
     // light
     Shader shader4("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-    Material mat4(shader3);
-    mat3.emissive = glm::vec3(0.8f, 0.8f, 0.8f);
+    Material mat4(shader4);
+    mat4.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    mat4.emissive = glm::vec3(1.0f, 1.0f, 1.0f);
     Model model4("Resources/models/cornellbox/light.obj");
-    
+
+    // short
+    Shader shader5("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+    Material mat5(shader5);
+    mat5.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
+    Model model5("Resources/models/cornellbox/shortbox.obj");
+
+    // tall
+    Shader shader6("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+    Material mat6(shader6);
+    mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
+    Model model6("Resources/models/cornellbox/tallbox.obj");
 
     shared_ptr<Scene> myScene = make_shared<Scene>();
 
@@ -44,6 +54,10 @@ shared_ptr<Scene> BuildScene()
     myScene->Add(model2, mat2);
     myScene->Add(model3, mat3);
     myScene->Add(model4, mat4);
+    // myScene->Add(model5, mat5);
+    // myScene->Add(model6, mat6);
+
+    myScene->envCubeMap = buildEnvCubMap();
 
     return myScene;
 }

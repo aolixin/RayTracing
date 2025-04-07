@@ -17,11 +17,12 @@ out vec4 FragColor;
 in vec3 pix;
 in vec2 TexCoords;
 
-uniform uint FrameCounter;
+uniform int FrameCounter;
 uniform int Width;
 uniform int Height;
 uniform vec3 CameraPos;
 uniform mat4 CameraRotate;
+
 
 struct Material {
     vec3 emissive;
@@ -47,7 +48,8 @@ uniform int nTriangles;
 uniform samplerBuffer nodes;
 uniform samplerBuffer materials;
 
-
+uniform samplerCube environmentMap;
+uniform sampler2D lastFrame;
 
 struct Triangle {
     vec3 p1, p2, p3;
@@ -99,10 +101,10 @@ HitResult HitTriangle(Triangle triangle, Ray ray) {
     }
 
     if (abs(dot(N, d)) < 0.00001f) return res;
-    
+
     float t = (dot(N, p1) - dot(S, N)) / dot(d, N);
-    if (t < 0.0005f) return res;    
-    
+    if (t < 0.0005f) return res;
+
     vec3 P = S + d * t;
 
 
@@ -336,6 +338,26 @@ vec3 SampleHemisphere() {
     return vec3(r * cos(phi), r * sin(phi), z);
 }
 
+vec2 SampleSphericalMap(vec3 v) {
+    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
+    uv /= vec2(2.0 * PI, PI);
+    uv += 0.5;
+    uv.y = 1.0 - uv.y;
+    return uv;
+}
+
+//vec3 SampleHdr(vec3 v) {
+//    vec2 uv = SampleSphericalMap(normalize(v));
+//    vec3 color = texture2D(hdrMap, uv).rgb;
+//    color = min(color, vec3(10));
+//    return color;
+//}
+
+vec3 SampleEnvCubeMap(vec3 v) {
+    vec3 envColor = texture(environmentMap, v).rgb;
+    return envColor;
+}
+
 vec3 toNormalHemisphere(vec3 v, vec3 N) {
     vec3 helper = vec3(1, 0, 0);
     if (abs(N.x) > 0.999) helper = vec3(0, 0, 1);
@@ -364,14 +386,14 @@ vec3 PathTracing(HitResult hit, int maxBounce) {
 
         if (!newHit.isHit) {
             //            vec3 skyColor = sampleHdr(randomRay.direction);
-            vec3 skyColor = vec3(0.2,0.2,0.2);
+            vec3 skyColor = SampleEnvCubeMap(randomRay.direction);
             Lo += history * skyColor * f_r * cosine_i / pdf;
             break;
         }
 
         vec3 Le = newHit.material.emissive;
         Lo += history * Le * f_r * cosine_i / pdf;
-
+        break;
         hit = newHit;
         history *= f_r * cosine_i / pdf;
     }
@@ -384,26 +406,32 @@ void main()
 {
     Ray ray;
     ray.startPoint = CameraPos;
-    vec4 dir = CameraRotate * vec4(pix.x, pix.y, -1.5, 1.0);
+
+    vec4 dir = CameraRotate * vec4(pix.xy, -1.5, 1.0);
+    dir.x = dir.x * float(Width) / float(Height);
+    vec2 AA = vec2((rand() - 0.5) / float(Width), (rand() - 0.5) / float(Height));
+    dir.xy += AA;
     ray.direction = normalize(dir.xyz);
 
     // primary hit
     HitResult res = HitBVH(ray);
     vec3 color;
-    if (res.isHit) {
-        FragColor = vec4(res.normal, 1.0);
-    }
-    return;
+    //        if (res.isHit) {
+    //            FragColor = vec4(res.normal, 1.0);
+    //        }
+    //        return;
 
     if (!res.isHit) {
-        color = vec3(0.2,0.2,0.2);
-        //        color = sampleHdr(ray.direction);
+        color = SampleEnvCubeMap(ray.direction);
     } else {
         //        color = res.normal;
         vec3 Le = res.material.emissive;
         vec3 Li = PathTracing(res, 2);
         color = Le + Li;
     }
+
+    vec3 lastColor = texture2D(lastFrame, pix.xy * 0.5 + 0.5).rgb;
+    color = mix(lastColor, color, 1.0 / float(FrameCounter + 1));
 
     FragColor = vec4(color, 1.0);
 }
