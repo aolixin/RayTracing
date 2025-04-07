@@ -25,6 +25,7 @@ private:
     Shader RTShader;
     Shader screenShader;
     Shader postShader;
+    Shader skyboxShader;
     
 
     GLuint frameBuffer0;
@@ -70,7 +71,7 @@ public:
 
     void processInput(float deltaTime);
 
-    void DrawSkybox(Shader passToScreenShader);
+    void DrawSkybox();
 
 
     glm::mat4 Perspective();

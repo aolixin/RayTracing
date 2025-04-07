@@ -211,7 +211,7 @@ GLuint buildEnvCubMap()
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    unsigned int hdrSkyboxTexture = load_hdr_img("resources/textrues/hdr/test2.hdr");
+    unsigned int hdrSkyboxTexture = load_hdr_img("resources/textrues/hdr/test4.hdr");
     glDepthFunc(GL_LEQUAL);
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

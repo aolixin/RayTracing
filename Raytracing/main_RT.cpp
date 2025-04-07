@@ -34,8 +34,6 @@ int main()
         renderer->processInput(deltaTime);
 
         renderer->Draw();
-        
-        // renderer->DrawSkybox(pass2SrcShader);
 
         renderer->SwapBuffers();
         renderer->PollEvents();

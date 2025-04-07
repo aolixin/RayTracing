@@ -40,7 +40,9 @@
 
 
 
+Disney BRDF
 
+![image-20250407164522046](img\image-20250407164522046.png)
 
 
 

@@ -60,6 +60,7 @@ void Renderer::InitRenderer()
     RTShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/DebugBVH.frag");
     screenShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/framebuffers_screen.frag");
     postShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/post.frag");
+    skyboxShader = Shader("Resources/shaders/skybox.vert", "Resources/shaders/skybox.frag");
 
     frameBuffer0 = GetFrameBuffer(SCR_WIDTH, SCR_HEIGHT, frameTextures0, 1, 0);
 
@@ -97,6 +98,7 @@ void Renderer::Draw()
         {
             render_node.Draw(context);
         }
+        DrawSkybox();
     }
     else if (renderPath == RenderPath::GI)
     {
@@ -233,7 +235,7 @@ void Renderer::processInput(float deltaTime)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
+    
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -244,25 +246,25 @@ void Renderer::processInput(float deltaTime)
         camera->ProcessKeyboard(RIGHT, deltaTime);
 }
 
-void Renderer::DrawSkybox(Shader passToScreenShader)
+void Renderer::DrawSkybox()
 {
     glDepthFunc(GL_LEQUAL);
-    passToScreenShader.use();
+    skyboxShader.use();
     glm::mat4 passToProjection = glm::perspective(glm::radians(camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT,
                                                   0.1f, 100.0f);
     glm::mat4 passToView = camera->GetViewMatrix();
 
-    passToScreenShader.setMat4("projection", passToProjection);
-    passToScreenShader.setMat4("view", passToView);
+    skyboxShader.setMat4("projection", passToProjection);
+    skyboxShader.setMat4("view", passToView);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, scene->envCubeMap);
-    passToScreenShader.setInt("environmentMap", 0);
+    skyboxShader.setInt("environmentMap", 0);
 
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-    DrawCube(passToScreenShader);
+    DrawCube(skyboxShader);
 
     glDepthFunc(GL_LESS);
 }

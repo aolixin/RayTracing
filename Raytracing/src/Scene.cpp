@@ -24,6 +24,10 @@ void Scene::SetupGIScene()
         for(int i = start; i < triangles_expand.size(); i++)
         {
             triangles_expand[i].materialID = materials_count;
+            // trans
+            triangles_expand[i].vertex[0].Position = render_node.modelMatrix * vec4(triangles_expand[i].vertex[0].Position, 1.0f);
+            triangles_expand[i].vertex[1].Position = render_node.modelMatrix * vec4(triangles_expand[i].vertex[1].Position, 1.0f);
+            triangles_expand[i].vertex[2].Position = render_node.modelMatrix * vec4(triangles_expand[i].vertex[2].Position, 1.0f);
         }
         materials_expand.push_back(*render_node.material);
         materials_count++;
@@ -35,13 +39,6 @@ void Scene::SetupGIScene()
     GenBuffers();
 }
 
-// void Scene::Draw()
-// {
-//     for (int i = 0; i < models.size(); i++)
-//     {
-//         models[i].Draw();
-//     }
-// }
 
 void Scene::GenBuffers()
 {

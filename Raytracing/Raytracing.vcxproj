@@ -144,8 +144,8 @@
     <None Include="Resources\shaders\hdrToSkyobox.frag" />
     <None Include="Resources\shaders\hdrToSkyobox.vert" />
     <None Include="Resources\shaders\irradiance_convolution.frag" />
-    <None Include="Resources\shaders\passToScreen.frag" />
-    <None Include="Resources\shaders\passToScreen.vert" />
+    <None Include="Resources\shaders\skybox.frag" />
+    <None Include="Resources\shaders\skybox.vert" />
     <None Include="Resources\shaders\pbr.frag" />
     <None Include="Resources\shaders\pbr.vert" />
     <None Include="Resources\shaders\RT.frag" />
