@@ -50,14 +50,14 @@ shared_ptr<Scene> BuildScene()
     Model model6("Resources/models/cornellbox/tallbox.obj");
 
     // myScene->Add(model0, mat0);
-    // myScene->Add(model1, mat1);
-    // myScene->Add(model2, mat2);
-    // myScene->Add(model3, mat3);
-    // myScene->Add(model4, mat4);
-    // myScene->Add(model5, mat5, trans5);
-    // myScene->Add(model6, mat6);
+    myScene->Add(model1, mat1);
+    myScene->Add(model2, mat2);
+    myScene->Add(model3, mat3);
+    myScene->Add(model4, mat4);
+    myScene->Add(model5, mat5);
+    myScene->Add(model6, mat6);
 
-    
+    /*
     // spheres
     Shader shader7("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     Model sphere("Resources/models/sphere.obj");
@@ -104,10 +104,7 @@ shared_ptr<Scene> BuildScene()
     // m.roughness = 0.1;
     // glm::mat4 trans12 = glm::translate(identity, glm::vec3(2.f, 0.6f, 0.0f));
     // myScene->Add(sphere, m, trans12);
-
-
-
-
+*/
 
     myScene->envCubeMap = buildEnvCubMap();
 
