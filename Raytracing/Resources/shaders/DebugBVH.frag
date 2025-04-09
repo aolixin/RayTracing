@@ -338,6 +338,8 @@ vec3 SampleHemisphere(float xi_1, float xi_2) {
     return vec3(r * cos(phi), r * sin(phi), z);
 }
 
+
+
 vec2 SampleSphericalMap(vec3 v) {
     vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
     uv /= vec2(2.0 * PI, PI);
@@ -364,6 +366,17 @@ vec3 toNormalHemisphere(vec3 v, vec3 N) {
     vec3 tangent = normalize(cross(N, helper));
     vec3 bitangent = normalize(cross(N, tangent));
     return v.x * tangent + v.y * bitangent + v.z * N;
+}
+
+vec3 SampleCosineHemisphere(float xi_1, float xi_2, vec3 N) {
+    float r = sqrt(xi_1);
+    float theta = xi_2 * 2.0 * PI;
+    float x = r * cos(theta);
+    float y = r * sin(theta);
+    float z = sqrt(1.0 - x*x - y*y);
+
+    vec3 L = toNormalHemisphere(vec3(x, y, z), N);
+    return L;
 }
 
 void GetTangent(vec3 N, inout vec3 tangent, inout vec3 bitangent) {
@@ -534,6 +547,7 @@ vec3 PathTracing(HitResult hit, int maxBounce) {
 //        vec3 f_r = hit.material.baseColor / PI;
         vec3 f_r = BRDF_Evaluate(V, N, L, tangent, bitangent, hit.material); 
 
+        
 
         Ray randomRay;
         randomRay.startPoint = hit.hitPoint;
@@ -576,7 +590,7 @@ void main()
         color = SampleEnvCubeMap(ray.direction);
     } else {
         vec3 Le = res.material.emissive;
-        vec3 Li = PathTracing(res, 6);
+        vec3 Li = PathTracing(res, 2);
         color = Le + Li;
     }
 

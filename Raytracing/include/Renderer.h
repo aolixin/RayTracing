@@ -20,7 +20,7 @@ enum RenderPath
 class Renderer
 {
 private:
-    RenderPath renderPath = RenderPath::Forward;
+    
 
     Shader RTShader;
     Shader screenShader;
@@ -38,7 +38,7 @@ public:
     Renderer()
     {
     }
-
+    RenderPath renderPath = RenderPath::Forward;
     static std::shared_ptr<Renderer> renderer;
     std::shared_ptr<Camera> camera;
     std::shared_ptr<Scene> scene;

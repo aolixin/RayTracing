@@ -49,13 +49,13 @@ shared_ptr<Scene> BuildScene()
     mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
     Model model6("Resources/models/cornellbox/tallbox.obj");
 
-    // myScene->Add(model0, mat0);
+    myScene->Add(model0, mat0);
     myScene->Add(model1, mat1);
     myScene->Add(model2, mat2);
     myScene->Add(model3, mat3);
     myScene->Add(model4, mat4);
-    myScene->Add(model5, mat5);
-    myScene->Add(model6, mat6);
+    // myScene->Add(model5, mat5);
+    // myScene->Add(model6, mat6);
 
     /*
     // spheres

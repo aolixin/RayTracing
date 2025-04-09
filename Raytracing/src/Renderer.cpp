@@ -42,7 +42,11 @@ void Renderer::InitRenderer()
     }
     glfwMakeContextCurrent(window);
 
-    RegisterCallback();
+    if(renderPath == RenderPath::Forward)
+    {
+        RegisterCallback();
+    }
+    
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -235,6 +239,11 @@ void Renderer::processInput(float deltaTime)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    if(renderPath == RenderPath::GI)
+    {
+        return;
+    }
     
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->ProcessKeyboard(FORWARD, deltaTime);
