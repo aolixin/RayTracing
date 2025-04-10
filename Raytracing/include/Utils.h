@@ -20,10 +20,10 @@ void DrawCube(const Shader& shader);
 void DrawQuad(const Shader& shader);
 
 GLuint GetFrameBuffer(int SCR_WIDTH, int SCR_HEIGHT, std::vector<GLuint>& frameTextures,
-                     int nColorAttachments = 1, int nDepthAttachments = 0);
+                      int nColorAttachments = 1, int nDepthAttachments = 0);
 
-unsigned int load_hdr_img(std::string path);
+float* load_hdr_img(std::string path, int& width, int& height);
 
-GLuint buildEnvCubMap();
+GLuint buildEnvCubMap(float* data, int width, int height);
 
-GLuint buildIrradianceMap(GLint envCubeMap = -9999);
+float* calculateHdrCache(float* HDR, int width, int height);

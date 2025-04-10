@@ -52,12 +52,12 @@ shared_ptr<Scene> BuildScene()
     Model model6("Resources/models/cornellbox/tall.obj");
 
     // myScene->Add(model0, mat0);
-    // myScene->Add(model1, mat1);
-    // myScene->Add(model2, mat2);
+    myScene->Add(model1, mat1);
+    myScene->Add(model2, mat2);
     myScene->Add(model3, mat3);
-    // myScene->Add(model4, mat4);
-    // myScene->Add(model5, mat5);
-    // myScene->Add(model6, mat6);
+    myScene->Add(model4, mat4);
+    myScene->Add(model5, mat5);
+    myScene->Add(model6, mat6);
 
     /*
     // spheres
@@ -108,7 +108,13 @@ shared_ptr<Scene> BuildScene()
     // myScene->Add(sphere, m, trans12);
 */
 
-    myScene->envCubeMap = buildEnvCubMap();
+    int width, height;
+    float* data = load_hdr_img("Resources/textures/hdr/test5.hdr", width, height);
+
+    myScene->envCubeMap = buildEnvCubMap(data, width, height);
+
+    if (data)
+        free(data);
 
     return myScene;
 }

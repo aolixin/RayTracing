@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\RenderNode.cpp" />
-    <ClCompile Include="main_forward.cpp" />
     <ClCompile Include="main_RT.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Mesh.cpp" />

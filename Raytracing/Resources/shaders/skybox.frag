@@ -9,9 +9,8 @@ void main()
 {
     vec3 envColor = texture(environmentMap, localPos).rgb;
 
-    envColor = envColor / (envColor + vec3(1.0));
+    envColor = vec3(1.0) - exp(-envColor * 0.5);
     envColor = pow(envColor, vec3(1.0/2.2)); 
 
     FragColor = vec4(envColor, 1.0);
-    //FragColor = vec4(0.0,1.0,0.0,1.0);
 }

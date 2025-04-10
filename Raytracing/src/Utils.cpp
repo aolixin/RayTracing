@@ -61,7 +61,6 @@ void DrawCube(const Shader& shader)
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
-    
 
 
     glBindVertexArray(VAO);
@@ -69,7 +68,6 @@ void DrawCube(const Shader& shader)
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
-
 }
 
 void DrawQuad(const Shader& shader)
@@ -105,7 +103,7 @@ void DrawQuad(const Shader& shader)
 }
 
 GLuint GetFrameBuffer(int SCR_WIDTH, int SCR_HEIGHT, std::vector<GLuint>& frameTextures,
-                     int nColorAttachments, int nDepthAttachments)
+                      int nColorAttachments, int nDepthAttachments)
 
 {
     // framebuffer configuration
@@ -145,11 +143,17 @@ GLuint GetFrameBuffer(int SCR_WIDTH, int SCR_HEIGHT, std::vector<GLuint>& frameT
     return framebuffer;
 }
 
-unsigned int load_hdr_img(std::string path)
+float* load_hdr_img(const std::string path, int& width, int& height)
 {
     stbi_set_flip_vertically_on_load(true);
-    int width, height, nrComponents;
+    int nrComponents;
     float* data = stbi_loadf(path.c_str(), &width, &height, &nrComponents, 0);
+    return data;
+}
+
+GLuint buildEnvCubMap(float* data, int width, int height)
+{
+    // submit hdr to gpu
     unsigned int hdrTexture;
     if (data)
     {
@@ -161,18 +165,9 @@ unsigned int load_hdr_img(std::string path)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
     }
-    else
-    {
-        std::cout << "Failed to load HDR image." << std::endl;
-    }
-    return hdrTexture;
-}
 
-GLuint buildEnvCubMap()
-{
+    // build cubemap
     Shader buildSkyboxShader("Resources/shaders/hdrToSkyobox.vert", "Resources/shaders/hdrToSkyobox.frag");
     //fbo
     unsigned int framebuffer;
@@ -185,8 +180,8 @@ GLuint buildEnvCubMap()
     for (unsigned int i = 0; i < 6; ++i)
     {
         // note that we store each face with 16 bit floating point values
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-                     512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F,
+                     1024, 1024, 0, GL_RGB, GL_FLOAT, nullptr);
     }
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -201,7 +196,7 @@ GLuint buildEnvCubMap()
     glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);
     // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 512, 512);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1024, 1024);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
@@ -211,12 +206,12 @@ GLuint buildEnvCubMap()
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    unsigned int hdrSkyboxTexture = load_hdr_img("resources/textrues/hdr/test3.hdr");
+
     glDepthFunc(GL_LEQUAL);
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // ??????????????建??
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
     buildSkyboxShader.use();
@@ -224,7 +219,7 @@ GLuint buildEnvCubMap()
     //hdrSkyboxShader.setMat4("view", view);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, hdrSkyboxTexture);
+    glBindTexture(GL_TEXTURE_2D, hdrTexture);
     buildSkyboxShader.setInt("equirectangularMap", 0);
     //------------------------------------------------------
     glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
@@ -240,7 +235,7 @@ GLuint buildEnvCubMap()
 
     buildSkyboxShader.setMat4("projection", captureProjection);
 
-    glViewport(0, 0, 512, 512); // don't forget to configure the viewport to the capture dimensions.
+    glViewport(0, 0, 1024, 1024); // don't forget to configure the viewport to the capture dimensions.
     for (unsigned int i = 0; i < 6; ++i)
     {
         buildSkyboxShader.setMat4("view", captureViews[i]);
@@ -255,95 +250,109 @@ GLuint buildEnvCubMap()
     return envCubemap;
 }
 
-GLuint buildIrradianceMap(GLint envCubeMap)
+
+float* calculateHdrCache(float* HDR, int width, int height)
 {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    //glClearColor(0.8f, 0.0f, 0.0f, 1.0f);
+    float lumSum = 0.0;
 
-    Shader buildIrradianceMapShader("shaders/hdrToSkyobox.vert", "shaders/irradiance_convolution.frag");
-    //fbo
-    unsigned int framebuffer;
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-    unsigned int IrradianceMap;
-    glGenTextures(1, &IrradianceMap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, IrradianceMap);
-    for (unsigned int i = 0; i < 6; ++i)
+    // 初始化 h 行 w 列的概率密度 pdf 并 统计总亮度
+    std::vector<std::vector<float>> pdf(height);
+    for (auto& line : pdf) line.resize(width);
+    for (int i = 0; i < height; i++)
     {
-        // note that we store each face with 16 bit floating point values
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-                     32, 32, 0, GL_RGB, GL_FLOAT, nullptr);
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-
-    // ???????????????????????
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, IrradianceMap, 0);
-
-    unsigned int rbo;
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
-    //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 32, 32);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    if (envCubeMap == -9999)
-    {
-        envCubeMap = buildEnvCubMap();
+        for (int j = 0; j < width; j++)
+        {
+            float R = HDR[3 * (i * width + j)];
+            float G = HDR[3 * (i * width + j) + 1];
+            float B = HDR[3 * (i * width + j) + 2];
+            float lum = 0.2 * R + 0.7 * G + 0.1 * B;
+            pdf[i][j] = lum;
+            lumSum += lum;
+        }
     }
 
-    //unsigned int hdrSkyboxTexture = load_hdr_img("resources/textrues/hdr/test2.hdr");
-    glDepthFunc(GL_LEQUAL);
-    // ?????????(Pass)
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // ??????????????建??
-    glEnable(GL_DEPTH_TEST);
+    // 概率密度归一化
+    for (int i = 0; i < height; i++)
+        for (int j = 0; j < width; j++)
+            pdf[i][j] /= lumSum;
 
-    buildIrradianceMapShader.use();
-    //hdrSkyboxShader.setMat4("projection", projection);
-    //hdrSkyboxShader.setMat4("view", view);
+    // 累加每一列得到 x 的边缘概率密度
+    std::vector<float> pdf_x_margin;
+    pdf_x_margin.resize(width);
+    for (int j = 0; j < width; j++)
+        for (int i = 0; i < height; i++)
+            pdf_x_margin[j] += pdf[i][j];
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
-    buildIrradianceMapShader.setInt("environmentMap", 0);
-    glActiveTexture(GL_TEXTURE0);
-    glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 10.0f);
-    buildIrradianceMapShader.setMat4("projection", captureProjection);
+    // 计算 x 的边缘分布函数
+    std::vector<float> cdf_x_margin = pdf_x_margin;
+    for (int i = 1; i < width; i++)
+        cdf_x_margin[i] += cdf_x_margin[i - 1];
 
-    glm::mat4 captureViews[] =
+    // 计算 y 在 X=x 下的条件概率密度函数
+    std::vector<std::vector<float>> pdf_y_condiciton = pdf;
+    for (int j = 0; j < width; j++)
+        for (int i = 0; i < height; i++)
+            pdf_y_condiciton[i][j] /= pdf_x_margin[j];
+
+    // 计算 y 在 X=x 下的条件概率分布函数
+    std::vector<std::vector<float>> cdf_y_condiciton = pdf_y_condiciton;
+    for (int j = 0; j < width; j++)
+        for (int i = 1; i < height; i++)
+            cdf_y_condiciton[i][j] += cdf_y_condiciton[i - 1][j];
+
+    // cdf_y_condiciton 转置为按列存储
+    // cdf_y_condiciton[i] 表示 y 在 X=i 下的条件概率分布函数
+    std::vector<std::vector<float>> temp = cdf_y_condiciton;
+    cdf_y_condiciton = std::vector<std::vector<float>>(width);
+    for (auto& line : cdf_y_condiciton) line.resize(height);
+    for (int j = 0; j < width; j++)
+        for (int i = 0; i < height; i++)
+            cdf_y_condiciton[j][i] = temp[i][j];
+
+    // 穷举 xi_1, xi_2 预计算样本 xy
+    // sample_x[i][j] 表示 xi_1=i/height, xi_2=j/width 时 (x,y) 中的 x
+    // sample_y[i][j] 表示 xi_1=i/height, xi_2=j/width 时 (x,y) 中的 y
+    // sample_p[i][j] 表示取 (i, j) 点时的概率密度
+    std::vector<std::vector<float>> sample_x(height);
+    for (auto& line : sample_x) line.resize(width);
+    std::vector<std::vector<float>> sample_y(height);
+    for (auto& line : sample_y) line.resize(width);
+    std::vector<std::vector<float>> sample_p(height);
+    for (auto& line : sample_p) line.resize(width);
+    for (int j = 0; j < width; j++)
     {
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
-    };
-    glViewport(0, 0, 32, 32); // don't forget to configure the viewport to the capture dimensions.
-    //glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    for (unsigned int i = 0; i < 6; ++i)
-    {
-        buildIrradianceMapShader.setMat4("view", captureViews[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                               GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, IrradianceMap, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        for (int i = 0; i < height; i++)
+        {
+            float xi_1 = float(i) / height;
+            float xi_2 = float(j) / width;
 
-        DrawCube(buildIrradianceMapShader); // renders a 1x1 cube
+            // 用 xi_1 在 cdf_x_margin 中 lower bound 得到样本 x
+            int x = std::lower_bound(cdf_x_margin.begin(), cdf_x_margin.end(), xi_1) - cdf_x_margin.begin();
+            // 用 xi_2 在 X=x 的情况下得到样本 y
+            int y = std::lower_bound(cdf_y_condiciton[x].begin(), cdf_y_condiciton[x].end(), xi_2) - cdf_y_condiciton[x]
+                .begin();
+
+            // 存储纹理坐标 xy 和 xy 位置对应的概率密度
+            sample_x[i][j] = float(x) / width;
+            sample_y[i][j] = float(y) / height;
+            sample_p[i][j] = pdf[i][j];
+        }
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    return IrradianceMap;
+    // 整合结果到纹理
+    // R,G 通道存储样本 (x,y) 而 B 通道存储 pdf(i, j)
+    float* cache = new float[width * height * 3];
+    //for (int i = 0; i < width * height * 3; i++) cache[i] = 0.0;
+
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            cache[3 * (i * width + j)] = sample_x[i][j]; // R
+            cache[3 * (i * width + j) + 1] = sample_y[i][j]; // G
+            cache[3 * (i * width + j) + 2] = sample_p[i][j]; // B
+        }
+    }
+
+    return cache;
 }
