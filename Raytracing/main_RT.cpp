@@ -13,7 +13,7 @@ float lastFrame = 0.0f;
 
 int main()
 {
-    const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RenderPath::Forward);
+    const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RenderPath::Debug);
 
     shared_ptr<Scene> myScene = BuildScene();
 
@@ -35,7 +35,7 @@ int main()
         renderer->processInput(deltaTime);
 
         renderer->Draw();
-
+        
         renderer->SwapBuffers();
         renderer->PollEvents();
     }

@@ -12,8 +12,10 @@
 
 enum RenderPath
 {
-    Forward,
-    GI
+    Forward = 0,
+    GI = 1,
+    Debug = 2,
+    Count = 3
 };
 
 
@@ -26,6 +28,7 @@ private:
     Shader screenShader;
     Shader postShader;
     Shader skyboxShader;
+    Shader debugShader;
     
 
     GLuint frameBuffer0;

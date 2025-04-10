@@ -151,6 +151,24 @@ float* load_hdr_img(const std::string path, int& width, int& height)
     return data;
 }
 
+GLuint GenGpuTex(float* data, int width, int height)
+{
+    // submit hdr to gpu
+    unsigned int hdrTexture;
+    if (data)
+    {
+        glGenTextures(1, &hdrTexture);
+        glBindTexture(GL_TEXTURE_2D, hdrTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+    return hdrTexture;
+}
+
 GLuint buildEnvCubMap(float* data, int width, int height)
 {
     // submit hdr to gpu
@@ -270,6 +288,8 @@ float* calculateHdrCache(float* HDR, int width, int height)
             lumSum += lum;
         }
     }
+
+    free(HDR);
 
     // 概率密度归一化
     for (int i = 0; i < height; i++)

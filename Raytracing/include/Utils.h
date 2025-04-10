@@ -24,6 +24,8 @@ GLuint GetFrameBuffer(int SCR_WIDTH, int SCR_HEIGHT, std::vector<GLuint>& frameT
 
 float* load_hdr_img(std::string path, int& width, int& height);
 
+GLuint GenGpuTex(float* data, int width, int height);
+
 GLuint buildEnvCubMap(float* data, int width, int height);
 
 float* calculateHdrCache(float* HDR, int width, int height);

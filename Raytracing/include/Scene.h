@@ -15,6 +15,7 @@ public:
     GLuint materialsTextureBuffer;
 
     GLuint envCubeMap;
+    GLuint hdrMap;
 
     int nTriangles = -1;
     int nNodes = -1;

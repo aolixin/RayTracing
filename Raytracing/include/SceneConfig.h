@@ -1,4 +1,5 @@
 #pragma once
+#include "Utils.h"
 
 shared_ptr<Scene> BuildScene()
 {
@@ -110,8 +111,11 @@ shared_ptr<Scene> BuildScene()
 
     int width, height;
     float* data = load_hdr_img("Resources/textures/hdr/test5.hdr", width, height);
+    myScene->hdrMap = GenGpuTex(data, width, height);
 
     myScene->envCubeMap = buildEnvCubMap(data, width, height);
+
+    data = calculateHdrCache(data, width, height);
 
     if (data)
         free(data);

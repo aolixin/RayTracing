@@ -141,12 +141,11 @@
     <None Include="Resources\shaders\skybox.vert" />
     <None Include="Resources\shaders\pbr.frag" />
     <None Include="Resources\shaders\pbr.vert" />
-    <None Include="Resources\shaders\RT.frag" />
-    <None Include="Resources\shaders\RT.vert" />
     <None Include="Resources\shaders\shader.frag" />
     <None Include="Resources\shaders\shader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\shaders\debug.frag" />
     <Content Include="Resources\shaders\DebugBVH.frag" />
     <Content Include="Resources\shaders\framebuffers_screen.frag" />
     <Content Include="Resources\shaders\post.frag" />
