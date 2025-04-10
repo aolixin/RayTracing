@@ -13,7 +13,7 @@ float lastFrame = 0.0f;
 
 int main()
 {
-    const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RenderPath::GI);
+    const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RenderPath::Forward);
 
     shared_ptr<Scene> myScene = BuildScene();
 

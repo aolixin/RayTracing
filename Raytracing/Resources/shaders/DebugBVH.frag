@@ -642,7 +642,7 @@ float BRDF_Pdf(vec3 V, vec3 N, vec3 L, in Material material) {
 
 float misMixWeight(float a, float b) {
     float t = a * a;
-    return t / (b*b + t);
+    return t / (b * b + t);
 }
 
 vec3 PathTracing(HitResult hit, int maxBounce) {
@@ -792,7 +792,7 @@ void main()
         color = SampleEnvCubeMap(ray.direction);
     } else {
         vec3 Le = res.material.emissive;
-        vec3 Li = PathTracing(res, 2);
+        vec3 Li = PathTracing(res, 4);
         color = Le + Li;
     }
 

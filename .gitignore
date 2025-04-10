@@ -75,6 +75,8 @@ StyleCopReport.xml
 *.ilk
 *.meta
 *.obj
+!Raytracing/Resources/models/*.obj
+
 *.iobj
 *.pch
 *.pdb
