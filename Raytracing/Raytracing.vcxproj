@@ -106,12 +106,6 @@
     <ClCompile Include="src\RenderNode.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
-    <ClCompile Include="src\test.cpp" />
-    <ClCompile Include="src\test1.cpp" />
-    <ClCompile Include="src\test2.cpp" />
-    <ClCompile Include="src\test3.cpp" />
-    <ClCompile Include="src\test4.cpp" />
-    <ClCompile Include="src\test5.cpp" />
     <ClCompile Include="src\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
