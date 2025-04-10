@@ -27,6 +27,8 @@ shared_ptr<Scene> BuildScene()
     Shader shader3("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     Material mat3(shader3);
     mat3.baseColor = glm::vec3(0.5f, 0.5f, 0.5f);
+    mat3.roughness = 0.5f;
+    mat3.metallic = 0.0f;
     Model model3("Resources/models/cornellbox/floor.obj");
 
     // light
@@ -40,20 +42,20 @@ shared_ptr<Scene> BuildScene()
     Shader shader5("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     Material mat5(shader5);
     mat5.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
-    Model model5("Resources/models/cornellbox/shortbox.obj");
+    Model model5("Resources/models/cornellbox/short.obj");
 
 
     // tall
     Shader shader6("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     Material mat6(shader6);
     mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
-    Model model6("Resources/models/cornellbox/tallbox.obj");
+    Model model6("Resources/models/cornellbox/tall.obj");
 
-    myScene->Add(model0, mat0);
-    myScene->Add(model1, mat1);
-    myScene->Add(model2, mat2);
+    // myScene->Add(model0, mat0);
+    // myScene->Add(model1, mat1);
+    // myScene->Add(model2, mat2);
     myScene->Add(model3, mat3);
-    myScene->Add(model4, mat4);
+    // myScene->Add(model4, mat4);
     // myScene->Add(model5, mat5);
     // myScene->Add(model6, mat6);
 

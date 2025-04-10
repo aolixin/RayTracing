@@ -76,6 +76,8 @@ StyleCopReport.xml
 *.meta
 *.obj
 !Raytracing/Resources/models/*.obj
+!Raytracing/Resources/models/cornellbox/*.obj
+!Raytracing/Resources/models/backpack/*.obj
 
 *.iobj
 *.pch
