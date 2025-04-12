@@ -38,6 +38,7 @@ int main()
         
         renderer->SwapBuffers();
         renderer->PollEvents();
+        // return 0;
     }
 
     renderer->Terminate();

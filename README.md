@@ -1,22 +1,24 @@
 # 光追
 
+1. forward 管线 √
+2. test scene √
+3. bvh √
+4. raytracing 管线 √
+5. disney pbr √
+6. sobol sequence √
+7. importance sample
+8. 可视化
+9. 正确性验证
+10. 其他加速结构 & 算法优化
+11. imgui
+12. 更多测试场景
+13. compute shader
 
 
-重要性采样  https://zhuanlan.zhihu.com/p/360420413
-
-根据对结果的贡献进行采样，重要性采样的目的就是获取贡献更大的点
-
-怎么获取呢，逆函数发获取
-
-漫反射 IA 可以直接均匀采样拟合
 
 
 
-## 结构
-
-
-
-
+## output
 
 
 
@@ -58,6 +60,18 @@ Disney BRDF
 
 
 
+4000 sp
+
+![image-20250407230550773](img/image-20250407230550773.png)
+
+
+
+
+
+![image-20250411105809246](img/image-20250411105809246.png)
+
 ## 参考
 
 https://github.com/AKGWSB/EzRT?tab=readme-ov-file
+
+重要性采样  https://zhuanlan.zhihu.com/p/360420413

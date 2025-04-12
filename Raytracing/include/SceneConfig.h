@@ -109,13 +109,15 @@ shared_ptr<Scene> BuildScene()
     // myScene->Add(sphere, m, trans12);
 */
 
-    int width, height;
-    float* data = load_hdr_img("Resources/textures/hdr/test5.hdr", width, height);
-    myScene->hdrMap = GenGpuTex(data, width, height);
 
-    myScene->envCubeMap = buildEnvCubMap(data, width, height);
+    float* data = load_hdr_img("Resources/textures/hdr/test5.hdr", myScene->hdrWidth, myScene->hdrHeight);
+    myScene->envCubeMap = buildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
 
-    data = calculateHdrCache(data, width, height);
+    myScene->hdrMap = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
+
+    data = calculateHdrCache(data, myScene->hdrWidth, myScene->hdrHeight);
+
+    myScene->hdrCache = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
 
     if (data)
         free(data);

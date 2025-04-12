@@ -42,11 +42,11 @@ void Renderer::InitRenderer()
     }
     glfwMakeContextCurrent(window);
 
-    if(renderPath == RenderPath::Forward)
+    if (renderPath == RenderPath::Forward)
     {
         RegisterCallback();
     }
-    
+
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -65,7 +65,7 @@ void Renderer::InitRenderer()
     screenShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/framebuffers_screen.frag");
     postShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/post.frag");
     skyboxShader = Shader("Resources/shaders/skybox.vert", "Resources/shaders/skybox.frag");
-    
+
     debugShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/debug.frag");
 
     frameBuffer0 = GetFrameBuffer(SCR_WIDTH, SCR_HEIGHT, frameTextures0, 1, 0);
@@ -110,7 +110,7 @@ void Renderer::Draw()
     {
         // pass1
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-        
+
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer0);
         // glEnable(GL_DEPTH_TEST);
         glDisable(GL_DEPTH_TEST);
@@ -118,11 +118,11 @@ void Renderer::Draw()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         RTShader.use();
-        RTShader.setInt("FrameCounter", frameCount++);
-        RTShader.setInt("Width", SCR_WIDTH);
-        RTShader.setInt("Height", SCR_HEIGHT);
-        RTShader.setVec3("CameraPos", camera->Position);
-        RTShader.setMat4("CameraRotate", inverse(CameraRotate()));  
+        RTShader.setInt("frameCounter", frameCount++);
+        RTShader.setInt("width", SCR_WIDTH);
+        RTShader.setInt("height", SCR_HEIGHT);
+        RTShader.setVec3("cameraPos", camera->Position);
+        RTShader.setMat4("cameraRotate", inverse(CameraRotate()));
 
         RTShader.setTextureBuffer("triangles", scene->trianglesTextureBuffer, 2);
         RTShader.setInt("nTriangles", scene->nTriangles);
@@ -135,7 +135,11 @@ void Renderer::Draw()
 
         RTShader.setTexture("envCubeMap", scene->envCubeMap, 5);
         RTShader.setTexture("lastFrame", frameTextures1[0], 6);
-        
+
+        RTShader.setTexture("hdrMap", scene->hdrMap, 7);
+        RTShader.setTexture("hdrCache", scene->hdrCache, 8);
+        RTShader.setInt("hdrResolution",scene->hdrWidth);
+
         DrawQuad(RTShader);
 
 
@@ -143,31 +147,53 @@ void Renderer::Draw()
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer1);
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT); 
+        glClear(GL_COLOR_BUFFER_BIT);
         screenShader.use();
         screenShader.setTexture("screenTexture", frameTextures0[0], 6);
         DrawQuad(screenShader);
 
-        
+
         // pass3
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT); 
+        glClear(GL_COLOR_BUFFER_BIT);
 
         postShader.use();
         postShader.setTexture("screenTexture", frameTextures1[0], 6);
         DrawQuad(postShader);
     }
-    else if(renderPath == RenderPath::Debug)
+    else if (renderPath == RenderPath::Debug)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT); 
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        postShader.use();
-        postShader.setTexture("screenTexture", scene->hdrMap, 6);
+        debugShader.use();
+        
+        debugShader.setInt("frameCounter", frameCount++);
+        debugShader.setInt("width", SCR_WIDTH);
+        debugShader.setInt("height", SCR_HEIGHT);
+        debugShader.setVec3("cameraPos", camera->Position);
+        debugShader.setMat4("cameraRotate", inverse(CameraRotate()));
+
+        debugShader.setTextureBuffer("triangles", scene->trianglesTextureBuffer, 2);
+        debugShader.setInt("nTriangles", scene->nTriangles);
+
+        debugShader.setTextureBuffer("nodes", scene->nodesTextureBuffer, 3);
+        debugShader.setInt("nNodes", scene->nNodes);
+
+        debugShader.setTextureBuffer("materials", scene->materialsTextureBuffer, 4);
+        debugShader.setInt("nMaterials", scene->nMaterials);
+
+        debugShader.setTexture("envCubeMap", scene->envCubeMap, 5);
+        debugShader.setTexture("lastFrame", frameTextures1[0], 6);
+
+        debugShader.setTexture("hdrMap", scene->hdrMap, 7);
+        debugShader.setTexture("hdrCache", scene->hdrCache, 8);
+        debugShader.setInt("hdrResolution",scene->hdrWidth);
+        
         DrawQuad(postShader);
     }
 }
@@ -253,11 +279,11 @@ void Renderer::processInput(float deltaTime)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if(renderPath == RenderPath::GI)
+    if (renderPath == RenderPath::GI)
     {
         return;
     }
-    
+
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)

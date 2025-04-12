@@ -1,8 +1,4 @@
 #version 460 core
-out vec4 FragColor;
-
-in vec2 TexCoords;
-#version 460 core
 
 #define PI              3.1415926
 #define INF             114514.0
@@ -14,18 +10,28 @@ in vec2 TexCoords;
 #define MAX_SSP         1
 
 
-
-
 out vec4 FragColor;
 
 in vec3 pix;
 in vec2 TexCoords;
 
-uniform int FrameCounter;
-uniform int Width;
-uniform int Height;
-uniform vec3 CameraPos;
-uniform mat4 CameraRotate;
+uniform int frameCounter;
+uniform int width;
+uniform int height;
+uniform vec3 cameraPos;
+uniform mat4 cameraRotate;
+
+uniform samplerBuffer triangles;
+uniform int nTriangles;
+
+uniform samplerBuffer nodes;
+uniform samplerBuffer materials;
+
+uniform samplerCube environmentMap;
+uniform sampler2D lastFrame;
+uniform sampler2D hdrMap;
+uniform sampler2D hdrCache;
+uniform int hdrResolution;
 
 
 struct Material {
@@ -46,14 +52,7 @@ struct Material {
 };
 uniform Material material;
 
-uniform samplerBuffer triangles;
-uniform int nTriangles;
 
-uniform samplerBuffer nodes;
-uniform samplerBuffer materials;
-
-uniform samplerCube environmentMap;
-uniform sampler2D lastFrame;
 
 struct Triangle {
     vec3 p1, p2, p3;
@@ -318,9 +317,9 @@ HitResult CastRay(Ray ray, int depth)
 }
 
 uint seed = uint(
-    uint((pix.x * 0.5 + 0.5) * Width) * uint(1973) +
-    uint((pix.y * 0.5 + 0.5) * Height) * uint(9277) +
-    uint(FrameCounter) * uint(26699)) | uint(1);
+    uint((pix.x * 0.5 + 0.5) * width) * uint(1973) +
+    uint((pix.y * 0.5 + 0.5) * height) * uint(9277) +
+    uint(frameCounter) * uint(26699)) | uint(1);
 
 uint wang_hash(inout uint seed) {
     seed = uint(seed ^ uint(61)) ^ uint(seed >> uint(16));
@@ -429,8 +428,8 @@ vec2 sobolVec2(uint i, uint b) {
 
 vec2 CranleyPattersonRotation(vec2 p) {
     uint pseed = uint(
-        uint((pix.x * 0.5 + 0.5) * Width) * uint(1973) +
-        uint((pix.y * 0.5 + 0.5) * Height) * uint(9277) +
+        uint((pix.x * 0.5 + 0.5) * width) * uint(1973) +
+        uint((pix.y * 0.5 + 0.5) * height) * uint(9277) +
         uint(114514 / 1919) * uint(26699)) | uint(1);
 
     float u = float(wang_hash(pseed)) / 4294967296.0;
@@ -604,6 +603,26 @@ vec3 SampleBRDF(float xi_1, float xi_2, float xi_3, vec3 V, vec3 N, in Material 
     }
     return vec3(0, 1, 0);
 }
+vec2 toSphericalCoord(vec3 v) {
+    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
+    uv /= vec2(2.0 * PI, PI);
+    uv += 0.5;
+    uv.y = 1.0 - uv.y;
+    return uv;
+}
+
+float hdrPdf(vec3 L, int hdrResolution) {
+    vec2 uv = toSphericalCoord(normalize(L));   // 方向向量转 uv 纹理坐标
+
+    float pdf = texture2D(hdrCache, uv).b;      // 采样概率密度
+    float theta = PI * (0.5 - uv.y);            // theta 范围 [-pi/2 ~ pi/2]
+    float sin_theta = max(sin(theta), 1e-10);
+
+    // 球坐标和图片积分域的转换系数
+    float p_convert = float(hdrResolution * hdrResolution / 2) / (2.0 * PI * PI * sin_theta);
+
+    return pdf * p_convert;
+}
 
 float BRDF_Pdf(vec3 V, vec3 N, vec3 L, in Material material) {
     float NdotL = dot(N, L);
@@ -649,50 +668,50 @@ float misMixWeight(float a, float b) {
     return t / (b * b + t);
 }
 
-vec3 PathTracing(HitResult hit, int maxBounce) {
-
-    vec3 Lo = vec3(0);
-    vec3 history = vec3(1);
-
-    for (int bounce = 0; bounce < maxBounce; bounce++) {
-        vec3 V = -hit.viewDir;
-        vec3 N = hit.normal;
-        vec2 uv = sobolVec2(FrameCounter + 1, bounce);
-        uv = CranleyPattersonRotation(uv);
-
-        vec3 L = SampleHemisphere(uv.x, uv.y);
-        L = toNormalHemisphere(L, hit.normal);
-
-        float pdf = 1.0 / (2.0 * PI);
-        float cosine_o = max(0.0, dot(V, N));
-        float cosine_i = max(0.0, dot(L, N));
-        vec3 tangent, bitangent;
-        GetTangent(N, tangent, bitangent);
-        //        vec3 f_r = hit.material.baseColor / PI;
-        vec3 f_r = BRDF_Evaluate(V, N, L, tangent, bitangent, hit.material);
-
-
-
-        Ray randomRay;
-        randomRay.startPoint = hit.hitPoint;
-        randomRay.direction = L;
-        HitResult newHit = HitBVH(randomRay);
-
-        if (!newHit.isHit) {
-            vec3 skyColor = SampleEnvCubeMap(randomRay.direction);
-            Lo += history * skyColor * f_r * cosine_i / pdf;
-            break;
-        }
-
-        vec3 Le = newHit.material.emissive;
-        Lo += history * Le * f_r * cosine_i / pdf;
-        break;
-        hit = newHit;
-        history *= f_r * cosine_i / pdf;
-    }
-
-    return Lo;
-}
+//vec3 PathTracing(HitResult hit, int maxBounce) {
+//
+//    vec3 Lo = vec3(0);
+//    vec3 history = vec3(1);
+//
+//    for (int bounce = 0; bounce < maxBounce; bounce++) {
+//        vec3 V = -hit.viewDir;
+//        vec3 N = hit.normal;
+//        vec2 uv = sobolVec2(frameCounter + 1, bounce);
+//        uv = CranleyPattersonRotation(uv);
+//
+//        vec3 L = SampleHemisphere(uv.x, uv.y);
+//        L = toNormalHemisphere(L, hit.normal);
+//
+//        float pdf = 1.0 / (2.0 * PI);
+//        float cosine_o = max(0.0, dot(V, N));
+//        float cosine_i = max(0.0, dot(L, N));
+//        vec3 tangent, bitangent;
+//        GetTangent(N, tangent, bitangent);
+//        //        vec3 f_r = hit.material.baseColor / PI;
+//        vec3 f_r = BRDF_Evaluate(V, N, L, tangent, bitangent, hit.material);
+//
+//
+//
+//        Ray randomRay;
+//        randomRay.startPoint = hit.hitPoint;
+//        randomRay.direction = L;
+//        HitResult newHit = HitBVH(randomRay);
+//
+//        if (!newHit.isHit) {
+//            vec3 skyColor = SampleEnvCubeMap(randomRay.direction);
+//            Lo += history * skyColor * f_r * cosine_i / pdf;
+//            break;
+//        }
+//
+//        vec3 Le = newHit.material.emissive;
+//        Lo += history * Le * f_r * cosine_i / pdf;
+//        break;
+//        hit = newHit;
+//        history *= f_r * cosine_i / pdf;
+//    }
+//
+//    return Lo;
+//}
 
 vec3 pathTracingImportanceSampling(HitResult hit, int maxBounce) {
 
@@ -779,10 +798,33 @@ uniform sampler2D screenTexture;
 
 void main()
 {
+    if (pix.y > 0) {
+        FragColor = texture2D(hdrMap, vec2(pix.x * 0.5 + 0.5, 1 - pix.y));
+    } else {
+        FragColor = texture2D(hdrCache, vec2(pix.x * 0.5 + 0.5, -pix.y));
+    }
+//
+//
+//    // 输出亮度
+//
+    float pdf = texture2D(hdrCache, vec2(pix.x * 0.5 + 0.5, -pix.y * 0.5 + 0.5)).b;
+    FragColor = vec4(pdf) * 100000;
+
+    FragColor = texture2D(hdrMap, vec2(pix.x * 0.5 + 0.5, -pix.y * 0.5 + 0.5));
+
+    // 采样点
+    for (int i = 0; i < 1000; i++) {
+        vec2 uv = sobolVec2(i + 1, 0); // 取 1,2 维度的 sobol 数做随机数
+        vec2 texcoord = texture2D(hdrCache, uv).rg;
+        texcoord.y = 1.0 - texcoord.y;
+        if (distance(pix.xy * 0.5 + 0.5, texcoord) < 0.005) FragColor.rgb = vec3(1, 0, 0);
+    }
+
+    return;
     vec3 col = texture(screenTexture, TexCoords).rgb;
-    
+
     vec3 dir = SampleHdr(rand(), rand());
-    
-    
+
+
     FragColor = vec4(col, 1.0);
 } 

@@ -16,6 +16,10 @@ public:
 
     GLuint envCubeMap;
     GLuint hdrMap;
+    GLuint hdrCache;
+
+    int hdrWidth = 0;
+    int hdrHeight = 0;
 
     int nTriangles = -1;
     int nNodes = -1;
