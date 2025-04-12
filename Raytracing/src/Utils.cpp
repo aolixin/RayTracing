@@ -145,7 +145,7 @@ GLuint GetFrameBuffer(int SCR_WIDTH, int SCR_HEIGHT, std::vector<GLuint>& frameT
 
 float* load_hdr_img(const std::string path, int& width, int& height)
 {
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(false);
     int nrComponents;
     float* data = stbi_loadf(path.c_str(), &width, &height, &nrComponents, 0);
     return data;

@@ -70,6 +70,16 @@ Disney BRDF
 
 ![image-20250411105809246](img/image-20250411105809246.png)
 
+
+
+
+
+![image-20250412145335237](img/image-20250412145335237.png)
+
+
+
+
+
 ## 参考
 
 https://github.com/AKGWSB/EzRT?tab=readme-ov-file

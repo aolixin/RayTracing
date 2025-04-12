@@ -145,11 +145,34 @@
     <None Include="Resources\shaders\shader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\models\backpack\ao.jpg" />
+    <Content Include="Resources\models\backpack\backpack.mtl" />
+    <Content Include="Resources\models\backpack\diffuse.jpg" />
+    <Content Include="Resources\models\backpack\normal.png" />
+    <Content Include="Resources\models\backpack\roughness.jpg" />
+    <Content Include="Resources\models\backpack\source_attribution.txt" />
+    <Content Include="Resources\models\backpack\specular.jpg" />
+    <Content Include="Resources\models\bunny.obj" />
+    <Content Include="Resources\models\cornellbox\floor.obj" />
+    <Content Include="Resources\models\cornellbox\left.obj" />
+    <Content Include="Resources\models\cornellbox\light.obj" />
+    <Content Include="Resources\models\cornellbox\right.obj" />
+    <Content Include="Resources\models\cornellbox\short.mtl" />
+    <Content Include="Resources\models\cornellbox\short.obj" />
+    <Content Include="Resources\models\cornellbox\tall.mtl" />
+    <Content Include="Resources\models\cornellbox\tall.obj" />
+    <Content Include="Resources\models\sphere.obj" />
     <Content Include="Resources\shaders\debug.frag" />
-    <Content Include="Resources\shaders\DebugBVH.frag" />
+    <Content Include="Resources\shaders\RT.frag" />
     <Content Include="Resources\shaders\framebuffers_screen.frag" />
     <Content Include="Resources\shaders\post.frag" />
     <Content Include="Resources\shaders\screen.vert" />
+    <Content Include="Resources\textures\container.jpg" />
+    <Content Include="Resources\textures\hdr\test.hdr" />
+    <Content Include="Resources\textures\hdr\test2.hdr" />
+    <Content Include="Resources\textures\hdr\test3.hdr" />
+    <Content Include="Resources\textures\hdr\test4.hdr" />
+    <Content Include="Resources\textures\hdr\test5.hdr" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

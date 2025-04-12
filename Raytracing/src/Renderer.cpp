@@ -61,7 +61,7 @@ void Renderer::InitRenderer()
     glEnable(GL_DEPTH_TEST);
 
     // init shader
-    RTShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/DebugBVH.frag");
+    RTShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/RT.frag");
     screenShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/framebuffers_screen.frag");
     postShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/post.frag");
     skyboxShader = Shader("Resources/shaders/skybox.vert", "Resources/shaders/skybox.frag");
