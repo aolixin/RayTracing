@@ -787,7 +787,7 @@ vec3 PathTracingImportanceSampling(HitResult hit, int maxBounce) {
         hdrTestRay.direction = SampleHdr(rand(), rand());
 
         // 进行一次求交测试 判断是否有遮挡
-        if (dot(N, hdrTestRay.direction) > 0.0) {
+        if (dot(N, hdrTestRay.direction) >=0.0) {
             HitResult hdrHit = HitBVH(hdrTestRay);
 
             // 天空光仅在没有遮挡的情况下积累亮度

@@ -27,6 +27,8 @@ private:
     Shader screenShader;
     Shader postShader;
     Shader skyboxShader;
+    Shader unlitShader;
+    
     Shader debug_ia_shader;
 
 

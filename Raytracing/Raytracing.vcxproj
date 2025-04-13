@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\RenderNode.cpp" />
     <ClCompile Include="main_RT.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Mesh.cpp" />
@@ -110,6 +109,7 @@
   <ItemGroup>
     <ClInclude Include="include\BVH.h" />
     <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\GlobalFeat.h" />
     <ClInclude Include="include\Material.h" />
     <ClInclude Include="include\Mesh.h" />
     <ClInclude Include="include\Model.h" />
@@ -125,24 +125,13 @@
     <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\shaders\background.frag" />
-    <None Include="Resources\shaders\background.vert" />
-    <None Include="Resources\shaders\cubemap.frag" />
-    <None Include="Resources\shaders\cubemap.vert" />
-    <None Include="Resources\shaders\equirectangular_to_cubemap.frag" />
     <None Include="Resources\shaders\phong.frag" />
     <None Include="Resources\shaders\phong.vert" />
-    <None Include="Resources\shaders\forward.frag" />
-    <None Include="Resources\shaders\forward.vert" />
     <None Include="Resources\shaders\hdrToSkyobox.frag" />
     <None Include="Resources\shaders\hdrToSkyobox.vert" />
-    <None Include="Resources\shaders\irradiance_convolution.frag" />
     <None Include="Resources\shaders\skybox.frag" />
     <None Include="Resources\shaders\skybox.vert" />
-    <None Include="Resources\shaders\pbr.frag" />
-    <None Include="Resources\shaders\pbr.vert" />
-    <None Include="Resources\shaders\shader.frag" />
-    <None Include="Resources\shaders\shader.vert" />
+    <None Include="Resources\shaders\unlit.frag" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\models\backpack\ao.jpg" />
@@ -162,9 +151,10 @@
     <Content Include="Resources\models\cornellbox\tall.mtl" />
     <Content Include="Resources\models\cornellbox\tall.obj" />
     <Content Include="Resources\models\sphere.obj" />
+    <Content Include="Resources\shaders\debug_BVH.frag" />
     <Content Include="Resources\shaders\debug_ia.frag" />
     <Content Include="Resources\shaders\RT.frag" />
-    <Content Include="Resources\shaders\framebuffers_screen.frag" />
+    <Content Include="Resources\shaders\framebuffersToscreen.frag" />
     <Content Include="Resources\shaders\post.frag" />
     <Content Include="Resources\shaders\screen.vert" />
     <Content Include="Resources\textures\container.jpg" />

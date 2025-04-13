@@ -26,6 +26,6 @@ float* load_hdr_img(std::string path, int& width, int& height);
 
 GLuint GenGpuTex(float* data, int width, int height);
 
-GLuint buildEnvCubMap(float* data, int width, int height);
+GLuint BuildEnvCubMap(float* data, int width, int height);
 
 float* calculateHdrCache(float* HDR, int width, int height);

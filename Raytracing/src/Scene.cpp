@@ -34,7 +34,14 @@ void Scene::SetupGIScene()
     }
 
     this->myBVH.triangles = this->triangles_expand;
-    this->myBVH.buildBVH(0, this->triangles_expand.size() - 1);
+    this->myBVH.BuildBVH(0, this->triangles_expand.size() - 1);
+
+#include "GlobalFeat.h"
+#ifdef DEBUG_BVH
+    this->myBVH.BuildDebugBVHTree(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
+#endif
+    
+    
     std::cout << "SAH BVHNode:    " << this->myBVH.nodes.size() << endl;
     GenBuffers();
 }

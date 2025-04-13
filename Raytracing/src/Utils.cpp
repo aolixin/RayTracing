@@ -169,7 +169,7 @@ GLuint GenGpuTex(float* data, int width, int height)
     return hdrTexture;
 }
 
-GLuint buildEnvCubMap(float* data, int width, int height)
+GLuint BuildEnvCubMap(float* data, int width, int height)
 {
     // submit hdr to gpu
     unsigned int hdrTexture;

@@ -42,7 +42,7 @@ void Renderer::InitRenderer()
     }
     glfwMakeContextCurrent(window);
 
-    if (renderPath == RenderPath::Forward)
+    if (renderPath != RenderPath::GI)
     {
         RegisterCallback();
     }
@@ -56,15 +56,15 @@ void Renderer::InitRenderer()
         return;
     }
 
-    stbi_set_flip_vertically_on_load(true);
 
     glEnable(GL_DEPTH_TEST);
 
     // init shader
     RTShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/RT.frag");
-    screenShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/framebuffers_screen.frag");
+    screenShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/framebuffersToscreen.frag");
     postShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/post.frag");
     skyboxShader = Shader("Resources/shaders/skybox.vert", "Resources/shaders/skybox.frag");
+    unlitShader = Shader("Resources/shaders/phong.vert", "Resources/shaders/unlit.frag");
 
     debug_ia_shader = Shader("Resources/shaders/screen.vert", "Resources/shaders/debug_ia.frag");
 
@@ -80,7 +80,7 @@ void Renderer::DestroyRenderer()
 void Renderer::SetupScene(std::shared_ptr<Scene> scene)
 {
     this->scene = scene;
-    if (renderPath == RenderPath::GI)
+    if (renderPath == RenderPath::GI || renderPath == RenderPath::DebugBVH)
     {
         this->scene->SetupGIScene();
     }
@@ -138,7 +138,7 @@ void Renderer::Draw()
 
         RTShader.setTexture("hdrMap", scene->hdrMap, 7);
         RTShader.setTexture("hdrCache", scene->hdrCache, 8);
-        RTShader.setInt("hdrResolution",scene->hdrWidth);
+        RTShader.setInt("hdrResolution", scene->hdrWidth);
 
         DrawQuad(RTShader);
 
@@ -171,16 +171,46 @@ void Renderer::Draw()
         glClear(GL_COLOR_BUFFER_BIT);
 
         debug_ia_shader.use();
-        
+
         debug_ia_shader.setInt("frameCounter", frameCount++);
         debug_ia_shader.setInt("width", SCR_WIDTH);
         debug_ia_shader.setInt("height", SCR_HEIGHT);
-        
+
         debug_ia_shader.setTexture("hdrMap", scene->hdrMap, 2);
         debug_ia_shader.setTexture("hdrCache", scene->hdrCache, 3);
-        debug_ia_shader.setInt("hdrResolution",scene->hdrWidth);
-        
+        debug_ia_shader.setInt("hdrResolution", scene->hdrWidth);
+
         DrawQuad(postShader);
+    }
+    else if (renderPath == RenderPath::DebugBVH)
+    {
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        // glEnable(GL_CULL_FACE);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        // draw meshs
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        for (auto& render_node : scene->render_nodes)
+        {
+            render_node.Draw(context);
+        }
+
+        // draw bvh
+        unlitShader.use();
+        unlitShader.setMat4("projection", context.projection);
+        unlitShader.setMat4("view", context.view);
+        unlitShader.setMat4("model", glm::mat4(1.0f));
+        unlitShader.setVec3("objectColor", vec3(1.0f, 0.0f, 0.0f));
+
+        glBindVertexArray(scene->myBVH.DebugVAO);
+        glDrawElements(GL_TRIANGLES, scene->myBVH.indices.size(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        // DrawSkybox();
     }
 }
 

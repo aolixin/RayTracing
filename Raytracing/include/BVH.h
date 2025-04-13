@@ -6,10 +6,15 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include "GlobalFeat.h"
+#include <functional>
+
+
 using namespace std;
 using namespace glm;
 
 #define INF 114514.0
+
 
 struct BVHNode
 {
@@ -76,7 +81,7 @@ public:
     }
 
 
-    int buildBVH(int l, int r)
+    int BuildBVH(int l, int r)
     {
         if (l > r)return 0;
 
@@ -125,11 +130,11 @@ public:
         {
             std::sort(triangles.begin() + l, triangles.begin() + r + 1, [](const Triangle& t1, const Triangle& t2)
             {
-                vec3 c1, c2;
+                vec3 c1 = vec3(0.0f, 0.0f, 0.0f), c2 = vec3(0.0f, 0.0f, 0.0f);
                 for (int i = 0; i < 3; i++)
                 {
                     c1 += t1.vertex[i].Position;
-                    c2 += t1.vertex[i].Position;
+                    c2 += t2.vertex[i].Position;
                 }
                 return c1.x < c2.x;
             });
@@ -138,11 +143,11 @@ public:
         {
             std::sort(triangles.begin() + l, triangles.begin() + r + 1, [](const Triangle& t1, const Triangle& t2)
             {
-                vec3 c1, c2;
+                vec3 c1 = vec3(0.0f, 0.0f, 0.0f), c2 = vec3(0.0f, 0.0f, 0.0f);
                 for (int i = 0; i < 3; i++)
                 {
                     c1 += t1.vertex[i].Position;
-                    c2 += t1.vertex[i].Position;
+                    c2 += t2.vertex[i].Position;
                 }
                 return c1.y < c2.y;
             });
@@ -151,11 +156,11 @@ public:
         {
             std::sort(triangles.begin() + l, triangles.begin() + r + 1, [](const Triangle& t1, const Triangle& t2)
             {
-                vec3 c1, c2;
+                vec3 c1 = vec3(0.0f, 0.0f, 0.0f), c2 = vec3(0.0f, 0.0f, 0.0f);
                 for (int i = 0; i < 3; i++)
                 {
                     c1 += t1.vertex[i].Position;
-                    c2 += t1.vertex[i].Position;
+                    c2 += t2.vertex[i].Position;
                 }
                 return c1.z < c2.z;
             });
@@ -163,15 +168,15 @@ public:
 
 
         int mid = (r + l) / 2;
-        int left = buildBVH(l, mid);
-        int right = buildBVH(mid + 1, r);
+        int left = BuildBVH(l, mid);
+        int right = BuildBVH(mid + 1, r);
         nodes[id].left = left;
         nodes[id].right = right;
         return id;
     }
 
 
-    int buildBVHwithSAH(int l, int r)
+    int buildBVHWithSAH(int l, int r)
     {
         if (l > r) return 0;
 
@@ -385,11 +390,91 @@ public:
             });
 
 
-        int left = buildBVHwithSAH(l, Split);
-        int right = buildBVHwithSAH(Split + 1, r);
+        int left = buildBVHWithSAH(l, Split);
+        int right = buildBVHWithSAH(Split + 1, r);
 
         nodes[id].left = left;
         nodes[id].right = right;
         return id;
     }
+
+
+#ifdef DEBUG_BVH
+    GLuint DebugVAO, DebugVBO, DebugEBO;
+    std::vector<GLuint> indices;
+
+    // Debug
+    void BuildDebugBVHTree(int startDepth, int endDepth)
+    {
+        std::vector<GLfloat> vertices;
+
+        // 递归函数来遍历 BVH 树
+        std::function<void(int, int)> traverse = [&](int nodeId, int currentDepth)
+        {
+            if (nodeId >= nodes.size() || currentDepth > endDepth) return;
+            if (currentDepth < startDepth)
+            {
+                traverse(nodes[nodeId].left, currentDepth + 1);
+                traverse(nodes[nodeId].right, currentDepth + 1);
+                return;
+            }
+            const BVHNode& node = nodes[nodeId];
+            vec3 AA = node.AA;
+            vec3 BB = node.BB;
+
+            // 8个顶点
+            vertices.insert(vertices.end(), {
+                                AA.x, AA.y, AA.z,
+                                BB.x, AA.y, AA.z,
+                                BB.x, BB.y, AA.z,
+                                AA.x, BB.y, AA.z,
+                                AA.x, AA.y, BB.z,
+                                BB.x, AA.y, BB.z,
+                                BB.x, BB.y, BB.z,
+                                AA.x, BB.y, BB.z
+                            });
+
+            // 立方体的三角形索引
+            GLuint baseIndex = (GLuint)(vertices.size() / 3 - 8);
+            indices.insert(indices.end(), {
+                               baseIndex + 0, baseIndex + 1, baseIndex + 2,
+                               baseIndex + 2, baseIndex + 3, baseIndex + 0,
+                               baseIndex + 4, baseIndex + 6, baseIndex + 5,
+                               baseIndex + 4, baseIndex + 7, baseIndex + 6,
+                               baseIndex + 0, baseIndex + 7, baseIndex + 4,
+                               baseIndex + 7, baseIndex + 3, baseIndex + 0,
+                               baseIndex + 1, baseIndex + 5, baseIndex + 6,
+                               baseIndex + 6, baseIndex + 2, baseIndex + 1,
+                               baseIndex + 3, baseIndex + 6, baseIndex + 7,
+                               baseIndex + 2, baseIndex + 6, baseIndex + 3,
+                               baseIndex + 0, baseIndex + 4, baseIndex + 5,
+                               baseIndex + 5, baseIndex + 1, baseIndex + 0
+                           });
+
+            traverse(node.left, currentDepth + 1);
+            traverse(node.right, currentDepth + 1);
+        };
+
+        // 从根节点开始遍历
+        traverse(0, 1);
+
+        glGenVertexArrays(1, &DebugVAO);
+        glGenBuffers(1, &DebugVBO);
+        glGenBuffers(1, &DebugEBO);
+
+        glBindVertexArray(DebugVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, DebugVBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, DebugEBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+#endif
 };

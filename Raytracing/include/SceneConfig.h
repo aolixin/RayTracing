@@ -5,10 +5,15 @@
 shared_ptr<Scene> BuildCornellbox();
 shared_ptr<Scene> BuildSphere();
 
+// Debug
+shared_ptr<Scene> BuildDebugBVHScene();
+
 shared_ptr<Scene> BuildScene()
 {
     // return BuildCornellbox();
-    return BuildSphere();
+    // return BuildSphere();
+    
+    return BuildDebugBVHScene();
 }
 
 
@@ -68,18 +73,18 @@ shared_ptr<Scene> BuildCornellbox()
     mat6.specular = 0.0f;
     Model model6("Resources/models/cornellbox/tall.obj");
 
-    // myScene->Add(model0, mat0);
+    myScene->Add(model0, mat0);
     myScene->Add(model1, mat1);
     myScene->Add(model2, mat2);
     myScene->Add(model3, mat3);
-    // myScene->Add(model4, mat4);
-    myScene->Add(model5, mat5);
-    myScene->Add(model6, mat6);
+    myScene->Add(model4, mat4);
+    // myScene->Add(model5, mat5);
+    // myScene->Add(model6, mat6);
 
 
 
     float* data = load_hdr_img("Resources/textures/hdr/test3.hdr", myScene->hdrWidth, myScene->hdrHeight);
-    myScene->envCubeMap = buildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
+    myScene->envCubeMap = BuildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
 
     myScene->hdrMap = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
     
@@ -112,7 +117,7 @@ shared_ptr<Scene> BuildSphere()
     // myScene->Add(sphere, m, trans7);
 
     // Second sphere
-    m.baseColor = vec3(0.5, 0.5, 1);
+    m.baseColor = vec3(1, 1, 1);
     m.metallic = 0.9;
     m.roughness = 0.2;
     glm::mat4 trans8 = glm::translate(identity, glm::vec3(0.0f, -0.6f, 0.0f));
@@ -157,13 +162,37 @@ shared_ptr<Scene> BuildSphere()
     myScene->Add(model1, mat1);
     
     float* data = load_hdr_img("Resources/textures/hdr/test4.hdr", myScene->hdrWidth, myScene->hdrHeight);
-    myScene->envCubeMap = buildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
+    myScene->envCubeMap = BuildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
 
     myScene->hdrMap = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
     
-    data = calculateHdrCache(data, myScene->hdrWidth, myScene->hdrHeight);
+    // data = calculateHdrCache(data, myScene->hdrWidth, myScene->hdrHeight);
     
-    myScene->hdrCache = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
+    // myScene->hdrCache = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
+
+    if (data)
+        free(data);
+
+    return myScene;
+}
+
+shared_ptr<Scene> BuildDebugBVHScene()
+{
+    shared_ptr<Scene> myScene = make_shared<Scene>();
+    glm::mat4 identity = glm::mat4(1.0f);
+
+    // bunny
+    Shader shader0("Resources/shaders/phong.vert", "Resources/shaders/unlit.frag");
+    Material mat0(shader0);
+    mat0.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
+    mat0.specular = 0.0f;
+    Model model0("Resources/models/bunny.obj");
+
+
+    myScene->Add(model0, mat0);
+
+    float* data = load_hdr_img("Resources/textures/hdr/test4.hdr", myScene->hdrWidth, myScene->hdrHeight);
+    myScene->envCubeMap = BuildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
 
     if (data)
         free(data);

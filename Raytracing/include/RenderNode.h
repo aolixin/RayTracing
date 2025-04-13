@@ -20,8 +20,6 @@ struct RenderNode
 
     inline void Draw(const RenderContext& context)
     {
-        // mesh->Draw();
-
         // bind appropriate textures
 
         material->shader->use();
@@ -58,9 +56,9 @@ struct RenderNode
 
         // draw mesh
         glBindVertexArray(mesh->VAO);
-        glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(mesh->indices.size()), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(mesh->indices.size()), GL_UNSIGNED_INT, 0);\
         glBindVertexArray(0);
-
+       
         // always good practice to set everything back to defaults once configured.
         glActiveTexture(GL_TEXTURE0);
     }
