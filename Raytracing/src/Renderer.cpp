@@ -66,7 +66,7 @@ void Renderer::InitRenderer()
     postShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/post.frag");
     skyboxShader = Shader("Resources/shaders/skybox.vert", "Resources/shaders/skybox.frag");
 
-    debugShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/debug.frag");
+    debug_ia_shader = Shader("Resources/shaders/screen.vert", "Resources/shaders/debug_ia.frag");
 
     frameBuffer0 = GetFrameBuffer(SCR_WIDTH, SCR_HEIGHT, frameTextures0, 1, 0);
 
@@ -163,36 +163,22 @@ void Renderer::Draw()
         postShader.setTexture("screenTexture", frameTextures1[0], 6);
         DrawQuad(postShader);
     }
-    else if (renderPath == RenderPath::Debug)
+    else if (renderPath == RenderPath::DebugIA)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        debugShader.use();
+        debug_ia_shader.use();
         
-        debugShader.setInt("frameCounter", frameCount++);
-        debugShader.setInt("width", SCR_WIDTH);
-        debugShader.setInt("height", SCR_HEIGHT);
-        debugShader.setVec3("cameraPos", camera->Position);
-        debugShader.setMat4("cameraRotate", inverse(CameraRotate()));
-
-        debugShader.setTextureBuffer("triangles", scene->trianglesTextureBuffer, 2);
-        debugShader.setInt("nTriangles", scene->nTriangles);
-
-        debugShader.setTextureBuffer("nodes", scene->nodesTextureBuffer, 3);
-        debugShader.setInt("nNodes", scene->nNodes);
-
-        debugShader.setTextureBuffer("materials", scene->materialsTextureBuffer, 4);
-        debugShader.setInt("nMaterials", scene->nMaterials);
-
-        debugShader.setTexture("envCubeMap", scene->envCubeMap, 5);
-        debugShader.setTexture("lastFrame", frameTextures1[0], 6);
-
-        debugShader.setTexture("hdrMap", scene->hdrMap, 7);
-        debugShader.setTexture("hdrCache", scene->hdrCache, 8);
-        debugShader.setInt("hdrResolution",scene->hdrWidth);
+        debug_ia_shader.setInt("frameCounter", frameCount++);
+        debug_ia_shader.setInt("width", SCR_WIDTH);
+        debug_ia_shader.setInt("height", SCR_HEIGHT);
+        
+        debug_ia_shader.setTexture("hdrMap", scene->hdrMap, 2);
+        debug_ia_shader.setTexture("hdrCache", scene->hdrCache, 3);
+        debug_ia_shader.setInt("hdrResolution",scene->hdrWidth);
         
         DrawQuad(postShader);
     }

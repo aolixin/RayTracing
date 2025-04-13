@@ -13,22 +13,11 @@
 out vec4 FragColor;
 
 in vec3 pix;
-in vec2 TexCoords;
 
 uniform int frameCounter;
 uniform int width;
 uniform int height;
-uniform vec3 cameraPos;
-uniform mat4 cameraRotate;
 
-uniform samplerBuffer triangles;
-uniform int nTriangles;
-
-uniform samplerBuffer nodes;
-uniform samplerBuffer materials;
-
-uniform samplerCube environmentMap;
-uniform sampler2D lastFrame;
 uniform sampler2D hdrMap;
 uniform sampler2D hdrCache;
 uniform int hdrResolution;
@@ -46,74 +35,6 @@ uint wang_hash(inout uint seed) {
     seed *= uint(0x27d4eb2d);
     seed = seed ^ (seed >> 15);
     return seed;
-}
-
-float rand() {
-    return float(wang_hash(seed)) / 4294967296.0;
-}
-
-vec3 SampleHemisphere(float xi_1, float xi_2) {
-    float z = xi_1;
-    float r = max(0.0, sqrt(1.0 - z * z));
-    float phi = 2.0 * PI * xi_2;
-    return vec3(r * cos(phi), r * sin(phi), z);
-}
-
-
-
-vec2 SampleSphericalMap(vec3 v) {
-    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
-    uv /= vec2(2.0 * PI, PI);
-    uv += 0.5;
-    uv.y = 1.0 - uv.y;
-    return uv;
-}
-
-vec3 SampleHdr(float xi_1, float xi_2) {
-    vec2 xy = texture2D(hdrCache, vec2(xi_1, xi_2)).rg; // x, y
-    xy.y = 1.0 - xy.y; // flip y
-
-    // 获取角度
-    float phi = 2.0 * PI * (xy.x - 0.5);    // [-pi ~ pi]
-    float theta = PI * (xy.y - 0.5);        // [-pi/2 ~ pi/2]   
-
-    // 球坐标计算方向
-    vec3 L = vec3(cos(theta) * cos(phi), sin(theta), cos(theta) * sin(phi));
-
-    return L;
-}
-
-
-
-vec3 SampleEnvCubeMap(vec3 v) {
-    vec3 envColor = texture(environmentMap, v).rgb;
-    return envColor;
-}
-
-vec3 toNormalHemisphere(vec3 v, vec3 N) {
-    vec3 helper = vec3(1, 0, 0);
-    if (abs(N.x) > 0.999) helper = vec3(0, 0, 1);
-    vec3 tangent = normalize(cross(N, helper));
-    vec3 bitangent = normalize(cross(N, tangent));
-    return v.x * tangent + v.y * bitangent + v.z * N;
-}
-
-vec3 SampleCosineHemisphere(float xi_1, float xi_2, vec3 N) {
-    float r = sqrt(xi_1);
-    float theta = xi_2 * 2.0 * PI;
-    float x = r * cos(theta);
-    float y = r * sin(theta);
-    float z = sqrt(1.0 - x * x - y * y);
-
-    vec3 L = toNormalHemisphere(vec3(x, y, z), N);
-    return L;
-}
-
-void GetTangent(vec3 N, inout vec3 tangent, inout vec3 bitangent) {
-    vec3 helper = vec3(1, 0, 0);
-    if (abs(N.x) > 0.999) helper = vec3(0, 0, 1);
-    bitangent = normalize(cross(N, helper));
-    tangent = normalize(cross(N, bitangent));
 }
 
 
@@ -143,40 +64,6 @@ vec2 sobolVec2(uint i, uint b) {
     float v = sobol(b * 2 + 1, grayCode(i));
     return vec2(u, v);
 }
-
-vec2 CranleyPattersonRotation(vec2 p) {
-    uint pseed = uint(
-        uint((pix.x * 0.5 + 0.5) * width) * uint(1973) +
-        uint((pix.y * 0.5 + 0.5) * height) * uint(9277) +
-        uint(114514 / 1919) * uint(26699)) | uint(1);
-
-    float u = float(wang_hash(pseed)) / 4294967296.0;
-    float v = float(wang_hash(pseed)) / 4294967296.0;
-
-    p.x += u;
-    if (p.x > 1) p.x -= 1;
-    if (p.x < 0) p.x += 1;
-
-    p.y += v;
-    if (p.y > 1) p.y -= 1;
-    if (p.y < 0) p.y += 1;
-
-    return p;
-}
-
-float sqr(float x) {
-    return x * x;
-}
-
-float SchlickFresnel(float u) {
-    float m = clamp(1 - u, 0, 1);
-    float m2 = m * m;
-    return m2 * m2 * m; // pow(m,5)
-}
-
-
-
-uniform sampler2D screenTexture;
 
 void main()
 {

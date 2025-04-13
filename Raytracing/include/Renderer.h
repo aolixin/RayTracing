@@ -14,22 +14,21 @@ enum RenderPath
 {
     Forward = 0,
     GI = 1,
-    Debug = 2,
-    Count = 3
+    DebugIA = 2,
+    DebugBVH = 3,
+    Count
 };
 
 
 class Renderer
 {
 private:
-    
-
     Shader RTShader;
     Shader screenShader;
     Shader postShader;
     Shader skyboxShader;
-    Shader debugShader;
-    
+    Shader debug_ia_shader;
+
 
     GLuint frameBuffer0;
     vector<GLuint> frameTextures0;
@@ -41,6 +40,7 @@ public:
     Renderer()
     {
     }
+
     RenderPath renderPath = RenderPath::Forward;
     static std::shared_ptr<Renderer> renderer;
     std::shared_ptr<Camera> camera;

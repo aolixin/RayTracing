@@ -6,7 +6,7 @@
 4. raytracing 管线 √
 5. disney pbr √
 6. sobol sequence √
-7. importance sample
+7. importance sample √
 8. 可视化
 9. 正确性验证
 10. 其他加速结构 & 算法优化

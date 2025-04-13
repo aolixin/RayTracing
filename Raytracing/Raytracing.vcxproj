@@ -162,7 +162,7 @@
     <Content Include="Resources\models\cornellbox\tall.mtl" />
     <Content Include="Resources\models\cornellbox\tall.obj" />
     <Content Include="Resources\models\sphere.obj" />
-    <Content Include="Resources\shaders\debug.frag" />
+    <Content Include="Resources\shaders\debug_ia.frag" />
     <Content Include="Resources\shaders\RT.frag" />
     <Content Include="Resources\shaders\framebuffers_screen.frag" />
     <Content Include="Resources\shaders\post.frag" />
