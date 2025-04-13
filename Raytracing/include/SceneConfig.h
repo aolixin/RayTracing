@@ -1,7 +1,18 @@
 #pragma once
 #include "Utils.h"
 
+
+shared_ptr<Scene> BuildCornellbox();
+shared_ptr<Scene> BuildSphere();
+
 shared_ptr<Scene> BuildScene()
+{
+    // return BuildCornellbox();
+    return BuildSphere();
+}
+
+
+shared_ptr<Scene> BuildCornellbox()
 {
     shared_ptr<Scene> myScene = make_shared<Scene>();
     glm::mat4 identity = glm::mat4(1.0f);
@@ -65,38 +76,60 @@ shared_ptr<Scene> BuildScene()
     myScene->Add(model5, mat5);
     myScene->Add(model6, mat6);
 
-    /*
+
+
+    float* data = load_hdr_img("Resources/textures/hdr/test3.hdr", myScene->hdrWidth, myScene->hdrHeight);
+    myScene->envCubeMap = buildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
+
+    myScene->hdrMap = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
+    
+    data = calculateHdrCache(data, myScene->hdrWidth, myScene->hdrHeight);
+    
+    myScene->hdrCache = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
+
+    if (data)
+        free(data);
+
+    return myScene;
+}
+
+
+shared_ptr<Scene> BuildSphere()
+{
+    shared_ptr<Scene> myScene = make_shared<Scene>();
+    glm::mat4 identity = glm::mat4(1.0f);
+    
     // spheres
-    Shader shader7("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+    Shader shader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     Model sphere("Resources/models/sphere.obj");
 
     // First sphere
-    Material m(shader7);
-    m.baseColor = vec3(1, 0.5, 0.5);
-    m.metallic = 1;
-    m.roughness = 0.1;
-    glm::mat4 trans7 = glm::translate(identity, glm::vec3(-2.f, 0.0f, 0.0f));
-    myScene->Add(sphere, m, trans7);
+    Material m(shader);
+    // m.baseColor = vec3(1, 0.5, 0.5);
+    // m.metallic = 0.9;
+    // m.roughness = 0.1;
+    // glm::mat4 trans7 = glm::translate(identity, glm::vec3(-1.3f, -0.6f, 0.0f));
+    // myScene->Add(sphere, m, trans7);
 
     // Second sphere
     m.baseColor = vec3(0.5, 0.5, 1);
-    m.metallic = 1;
+    m.metallic = 0.9;
     m.roughness = 0.2;
-    glm::mat4 trans8 = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+    glm::mat4 trans8 = glm::translate(identity, glm::vec3(0.0f, -0.6f, 0.0f));
     myScene->Add(sphere, m, trans8);
 
-    // Third sphere
-    m.baseColor = vec3(0.5, 1, 0.5);
-    m.metallic = 1;
-    m.roughness = 0.3;
-    glm::mat4 trans9 = glm::translate(identity, glm::vec3(2.f, 0.0f, 0.0f));
-    myScene->Add(sphere, m, trans9);
+    // // Third sphere
+    // m.baseColor = vec3(0.5, 1, 0.5);
+    // m.metallic = 0.9;
+    // m.roughness = 0.3;
+    // glm::mat4 trans9 = glm::translate(identity, glm::vec3(1.3f, -0.6f, 0.0f));
+    // myScene->Add(sphere, m, trans9);
     //
     // // Fourth sphere
     // m.baseColor = vec3(1, 1, 0.5);
     // m.metallic = 0.0;
     // m.roughness = 0.1;
-    // glm::mat4 trans10 = glm::translate(identity, glm::vec3(-2.f, 0.6f, 0.0f));
+    // glm::mat4 trans10 = glm::translate(identity, glm::vec3(-1.3f, 0.6f, 0.0f));
     // myScene->Add(sphere, m, trans10);
     //
     // // Fifth sphere
@@ -110,12 +143,20 @@ shared_ptr<Scene> BuildScene()
     // m.baseColor = vec3(1, 0.5, 1);
     // m.metallic = 0.0;
     // m.roughness = 0.1;
-    // glm::mat4 trans12 = glm::translate(identity, glm::vec3(2.f, 0.6f, 0.0f));
+    // glm::mat4 trans12 = glm::translate(identity, glm::vec3(1.3f, 0.6f, 0.0f));
     // myScene->Add(sphere, m, trans12);
-*/
 
 
-    float* data = load_hdr_img("Resources/textures/hdr/test3.hdr", myScene->hdrWidth, myScene->hdrHeight);
+    // plane
+    Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+    Material mat1(shader1);
+    mat1.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    mat1.specular = 0.9f;
+    mat1.roughness = 0.4f;
+    Model model1("Resources/models/plane.obj");
+    myScene->Add(model1, mat1);
+    
+    float* data = load_hdr_img("Resources/textures/hdr/test4.hdr", myScene->hdrWidth, myScene->hdrHeight);
     myScene->envCubeMap = buildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
 
     myScene->hdrMap = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);

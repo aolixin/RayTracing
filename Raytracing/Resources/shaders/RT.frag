@@ -619,7 +619,7 @@ vec3 SampleBRDF(float xi_1, float xi_2, float xi_3, vec3 V, vec3 N, in Material 
 }
 
 
-float hdrPdf(vec3 L, int hdrResolution) {
+float HdrPdf(vec3 L, int hdrResolution) {
     vec2 uv = toSphericalCoord(normalize(L));   // 方向向量转 uv 纹理坐标
 
     float pdf = texture2D(hdrCache, uv).b;      // 采样概率密度
@@ -671,7 +671,7 @@ float BRDF_Pdf(vec3 V, vec3 N, vec3 L, in Material material) {
     return pdf;
 }
 
-float misMixWeight(float a, float b) {
+float MisMixWeight(float a, float b) {
     float t = a * a;
     return t / (b * b + t);
 }
@@ -795,12 +795,12 @@ vec3 PathTracingImportanceSampling(HitResult hit, int maxBounce) {
                 // 获取采样方向 L 上的: 1.光照贡献, 2.环境贴图在该位置的 pdf, 3.BRDF 函数值, 4.BRDF 在该方向的 pdf
                 vec3 L = hdrTestRay.direction;
                 vec3 color = HdrColor(L);
-                float pdf_light = hdrPdf(L, hdrResolution);
+                float pdf_light = HdrPdf(L, hdrResolution);
                 vec3 f_r = BRDF_Evaluate(V, N, L, hit.material);
                 float pdf_brdf = BRDF_Pdf(V, N, L, hit.material);
 
                 // 多重重要性采样
-                float mis_weight = misMixWeight(pdf_light, pdf_brdf);
+                float mis_weight = MisMixWeight(pdf_light, pdf_brdf);
                 Lo += mis_weight * history * color * f_r * dot(N, L) / pdf_light;
                 //Lo += history * color * f_r * dot(N, L) / pdf_light;   // 尝龟
             }
@@ -832,10 +832,10 @@ vec3 PathTracingImportanceSampling(HitResult hit, int maxBounce) {
         // 未命中        
         if (!newHit.isHit) {
             vec3 color = HdrColor(L);
-            float pdf_light = hdrPdf(L, hdrResolution);
+            float pdf_light = HdrPdf(L, hdrResolution);
 
             // 多重重要性采样
-            float mis_weight = misMixWeight(pdf_brdf, pdf_light);   // f(a,b) = a^2 / (a^2 + b^2)
+            float mis_weight = MisMixWeight(pdf_brdf, pdf_light);   // f(a,b) = a^2 / (a^2 + b^2)
             Lo += mis_weight * history * color * f_r * NdotL / pdf_brdf;
             //Lo += history * color * f_r * NdotL / pdf_brdf;   // 尝龟
 
