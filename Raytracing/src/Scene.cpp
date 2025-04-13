@@ -38,21 +38,21 @@ void Scene::SetupGIScene()
 
 #include "GlobalFeat.h"
 #ifdef DEBUG_BVH
-    this->myBVH.BuildDebugBVHTree(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
+    // this->myBVH.BuildDebugBVHTree(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
 #endif
     
     
-    std::cout << "SAH BVHNode:    " << this->myBVH.nodes.size() << endl;
+    // std::cout << "SAH BVHNode:    " << this->myBVH.nodes.size() << endl;
     GenBuffers();
 }
 
 
 void Scene::GenBuffers()
 {
-    vector<Triangle_encoded> triangles_encoded(triangles_expand.size());
-    for (int i = 0; i < triangles_expand.size(); i++)
+    vector<Triangle_encoded> triangles_encoded(this->myBVH.triangles.size());
+    for (int i = 0; i < this->myBVH.triangles.size(); i++)
     {
-        Triangle& t = triangles_expand[i];
+        Triangle& t = this->myBVH.triangles[i];
 
         triangles_encoded[i].p1 = t.vertex[0].Position;
         triangles_encoded[i].p2 = t.vertex[1].Position;

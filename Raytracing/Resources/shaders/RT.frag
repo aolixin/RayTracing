@@ -10,8 +10,6 @@
 #define MAX_SSP         1
 
 
-
-
 out vec4 FragColor;
 
 in vec3 pix;
@@ -27,9 +25,11 @@ uniform samplerBuffer triangles;
 uniform int nTriangles;
 
 uniform samplerBuffer nodes;
-uniform samplerBuffer materials;
+uniform int nNodes;
 
-uniform samplerCube environmentMap;
+uniform samplerBuffer materials;
+uniform int nMaterials;
+
 uniform sampler2D lastFrame;
 
 uniform sampler2D hdrMap;
@@ -205,7 +205,7 @@ Material GetMaterial(int i) {
 
     m.emissive = texelFetch(materials, offset + 0).xyz;
     m.baseColor = texelFetch(materials, offset + 1).xyz;
-    //m.baseColor = vec3(0.8,0,0);
+    
     m.subsurface = param1.x;
     m.metallic = param1.y;
     m.specular = param1.z;
@@ -245,8 +245,7 @@ HitResult HitBVH(Ray ray) {
     res.isHit = false;
     res.distance = INF;
 
-    //int stack[256];
-    int stack[512];
+    int stack[256];
     int sp = 0;
 
     stack[sp++] = 0;
@@ -294,28 +293,6 @@ HitResult HitBVH(Ray ray) {
     return res;
 }
 
-HitResult CastRay(Ray ray, int depth)
-{
-    HitResult res;
-    res.isHit = false;
-
-
-    if (depth > MAX_DEPTH)
-    {
-        return res;
-    }
-    vec3 colorRes = vec3(0);
-    res = HitBVH(ray);
-
-    if (res.isHit)
-    {
-        res.material.emissive *= pow(0.2, float(depth));
-        return res;
-    } else {
-        res.material.emissive = vec3(0, 0, 0);
-        return res;
-    }
-}
 
 uint seed = uint(
     uint((pix.x * 0.5 + 0.5) * width) * uint(1973) +
@@ -333,83 +310,6 @@ uint wang_hash(inout uint seed) {
 
 float rand() {
     return float(wang_hash(seed)) / 4294967296.0;
-}
-
-vec3 SampleHemisphere(float xi_1, float xi_2) {
-    float z = xi_1;
-    float r = max(0.0, sqrt(1.0 - z * z));
-    float phi = 2.0 * PI * xi_2;
-    return vec3(r * cos(phi), r * sin(phi), z);
-}
-
-
-
-vec2 SampleSphericalMap(vec3 v) {
-    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
-    uv /= vec2(2.0 * PI, PI);
-    uv += 0.5;
-    uv.y = 1.0 - uv.y;
-    return uv;
-}
-
-vec3 SampleHdr(float xi_1, float xi_2) {
-    vec2 xy = texture2D(hdrCache, vec2(xi_1, xi_2)).rg; // x, y
-    xy.y = 1.0 - xy.y; // flip y
-
-    // 获取角度
-    float phi = 2.0 * PI * (xy.x - 0.5);    // [-pi ~ pi]
-    float theta = PI * (xy.y - 0.5);        // [-pi/2 ~ pi/2]   
-
-    // 球坐标计算方向
-    vec3 L = vec3(cos(theta) * cos(phi), sin(theta), cos(theta) * sin(phi));
-
-    return L;
-}
-
-vec2 toSphericalCoord(vec3 v) {
-    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
-    uv /= vec2(2.0 * PI, PI);
-    uv += 0.5;
-    uv.y = 1.0 - uv.y;
-    return uv;
-}
-
-
-//vec3 SampleEnvCubeMap(vec3 v) {
-//    vec3 envColor = texture(environmentMap, v).rgb;
-//    return envColor;
-//}
-
-vec3 HdrColor(vec3 L) {
-    vec2 uv = toSphericalCoord(normalize(L));
-    vec3 color = texture2D(hdrMap, uv).rgb;
-    return color;
-}
-
-vec3 toNormalHemisphere(vec3 v, vec3 N) {
-    vec3 helper = vec3(1, 0, 0);
-    if (abs(N.x) > 0.999) helper = vec3(0, 0, 1);
-    vec3 tangent = normalize(cross(N, helper));
-    vec3 bitangent = normalize(cross(N, tangent));
-    return v.x * tangent + v.y * bitangent + v.z * N;
-}
-
-vec3 SampleCosineHemisphere(float xi_1, float xi_2, vec3 N) {
-    float r = sqrt(xi_1);
-    float theta = xi_2 * 2.0 * PI;
-    float x = r * cos(theta);
-    float y = r * sin(theta);
-    float z = sqrt(1.0 - x * x - y * y);
-
-    vec3 L = toNormalHemisphere(vec3(x, y, z), N);
-    return L;
-}
-
-void GetTangent(vec3 N, inout vec3 tangent, inout vec3 bitangent) {
-    vec3 helper = vec3(1, 0, 0);
-    if (abs(N.x) > 0.999) helper = vec3(0, 0, 1);
-    bitangent = normalize(cross(N, helper));
-    tangent = normalize(cross(N, bitangent));
 }
 
 
@@ -460,6 +360,7 @@ vec2 CranleyPattersonRotation(vec2 p) {
     return p;
 }
 
+
 float sqr(float x) {
     return x * x;
 }
@@ -495,6 +396,57 @@ float smithG_GGX(float NdotV, float alphaG) {
 
 float smithG_GGX_aniso(float NdotV, float VdotX, float VdotY, float ax, float ay) {
     return 1 / (NdotV + sqrt(sqr(VdotX * ax) + sqr(VdotY * ay) + sqr(NdotV)));
+}
+
+vec3 BRDF_Evaluate_aniso(vec3 V, vec3 N, vec3 L, vec3 X, vec3 Y, in Material material) {
+    float NdotL = dot(N, L);
+    float NdotV = dot(N, V);
+    if(NdotL < 0 || NdotV < 0) return vec3(0);
+
+    vec3 H = normalize(L + V);
+    float NdotH = dot(N, H);
+    float LdotH = dot(L, H);
+
+    // 各种颜色
+    vec3 Cdlin = material.baseColor;
+    float Cdlum = 0.3 * Cdlin.r + 0.6 * Cdlin.g  + 0.1 * Cdlin.b;
+    vec3 Ctint = (Cdlum > 0) ? (Cdlin/Cdlum) : (vec3(1));
+    vec3 Cspec = material.specular * mix(vec3(1), Ctint, material.specularTint);
+    vec3 Cspec0 = mix(0.08*Cspec, Cdlin, material.metallic); // 0° 镜面反射颜色
+    vec3 Csheen = mix(vec3(1), Ctint, material.sheenTint);   // 织物颜色
+
+    // 漫反射
+    float Fd90 = 0.5 + 2.0 * LdotH * LdotH * material.roughness;
+    float FL = SchlickFresnel(NdotL);
+    float FV = SchlickFresnel(NdotV);
+    float Fd = mix(1.0, Fd90, FL) * mix(1.0, Fd90, FV);
+
+    // 次表面散射
+    float Fss90 = LdotH * LdotH * material.roughness;
+    float Fss = mix(1.0, Fss90, FL) * mix(1.0, Fss90, FV);
+    float ss = 1.25 * (Fss * (1.0 / (NdotL + NdotV) - 0.5) + 0.5);
+
+    // 镜面反射 -- 各向同性
+    float alpha = max(0.001, sqr(material.roughness));
+    float Ds = GTR2(NdotH, alpha);
+    float FH = SchlickFresnel(LdotH);
+    vec3 Fs = mix(Cspec0, vec3(1), FH);
+    float Gs = smithG_GGX(NdotL, material.roughness);
+    Gs *= smithG_GGX(NdotV, material.roughness);
+
+    // 清漆
+    float Dr = GTR1(NdotH, mix(0.1, 0.001, material.clearcoatGloss));
+    float Fr = mix(0.04, 1.0, FH);
+    float Gr = smithG_GGX(NdotL, 0.25) * smithG_GGX(NdotV, 0.25);
+
+    // sheen
+    vec3 Fsheen = FH * material.sheen * Csheen;
+
+    vec3 diffuse = (1.0/PI) * mix(Fd, ss, material.subsurface) * Cdlin + Fsheen;
+    vec3 specular = Gs * Fs * Ds;
+    vec3 clearcoat = vec3(0.25 * Gr * Fr * Dr * material.clearcoat);
+
+    return diffuse * (1.0 - material.metallic) + specular + clearcoat;
 }
 
 vec3 BRDF_Evaluate(vec3 V, vec3 N, vec3 L, in Material material) {
@@ -547,6 +499,66 @@ vec3 BRDF_Evaluate(vec3 V, vec3 N, vec3 L, in Material material) {
 
     return diffuse * (1.0 - material.metallic) + specular + clearcoat;
 }
+
+void GetTangent(vec3 N, inout vec3 tangent, inout vec3 bitangent) {
+    vec3 helper = vec3(1, 0, 0);
+    if (abs(N.x) > 0.999) helper = vec3(0, 0, 1);
+    bitangent = normalize(cross(N, helper));
+    tangent = normalize(cross(N, bitangent));
+}
+
+vec3 SampleHemisphere(float xi_1, float xi_2) {
+    float z = xi_1;
+    float r = max(0.0, sqrt(1.0 - z * z));
+    float phi = 2.0 * PI * xi_2;
+    return vec3(r * cos(phi), r * sin(phi), z);
+}
+
+
+
+
+
+
+vec2 toSphericalCoord(vec3 v) {
+    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
+    uv /= vec2(2.0 * PI, PI);
+    uv += 0.5;
+    uv.y = 1.0 - uv.y;
+    return uv;
+}
+
+
+//vec3 SampleEnvCubeMap(vec3 v) {
+//    vec3 envColor = texture(environmentMap, v).rgb;
+//    return envColor;
+//}
+
+vec3 HdrColor(vec3 L) {
+    vec2 uv = toSphericalCoord(normalize(L));
+    vec3 color = texture2D(hdrMap, uv).rgb;
+    return color;
+}
+
+vec3 toNormalHemisphere(vec3 v, vec3 N) {
+    vec3 helper = vec3(1, 0, 0);
+    if (abs(N.x) > 0.999) helper = vec3(0, 0, 1);
+    vec3 tangent = normalize(cross(N, helper));
+    vec3 bitangent = normalize(cross(N, tangent));
+    return v.x * tangent + v.y * bitangent + v.z * N;
+}
+
+vec3 SampleCosineHemisphere(float xi_1, float xi_2, vec3 N) {
+    float r = sqrt(xi_1);
+    float theta = xi_2 * 2.0 * PI;
+    float x = r * cos(theta);
+    float y = r * sin(theta);
+    float z = sqrt(1.0 - x * x - y * y);
+
+    vec3 L = toNormalHemisphere(vec3(x, y, z), N);
+    return L;
+}
+
+
 
 vec3 SampleGTR1(float xi_1, float xi_2, vec3 V, vec3 N, float alpha) {
 
@@ -618,6 +630,20 @@ vec3 SampleBRDF(float xi_1, float xi_2, float xi_3, vec3 V, vec3 N, in Material 
     return vec3(0, 1, 0);
 }
 
+vec3 SampleHdr(float xi_1, float xi_2) {
+    vec2 xy = texture2D(hdrCache, vec2(xi_1, xi_2)).rg; // x, y
+    xy.y = 1.0 - xy.y; // flip y
+
+    // 获取角度
+    float phi = 2.0 * PI * (xy.x - 0.5);    // [-pi ~ pi]
+    float theta = PI * (xy.y - 0.5);        // [-pi/2 ~ pi/2]   
+
+    // 球坐标计算方向
+    vec3 L = vec3(cos(theta) * cos(phi), sin(theta), cos(theta) * sin(phi));
+
+    return L;
+}
+
 
 float HdrPdf(vec3 L, int hdrResolution) {
     vec2 uv = toSphericalCoord(normalize(L));   // 方向向量转 uv 纹理坐标
@@ -676,56 +702,7 @@ float MisMixWeight(float a, float b) {
     return t / (b * b + t);
 }
 
-vec3 BRDF_Evaluate_aniso(vec3 V, vec3 N, vec3 L, vec3 X, vec3 Y, in Material material) {
-    float NdotL = dot(N, L);
-    float NdotV = dot(N, V);
-    if(NdotL < 0 || NdotV < 0) return vec3(0);
 
-    vec3 H = normalize(L + V);
-    float NdotH = dot(N, H);
-    float LdotH = dot(L, H);
-
-    // 各种颜色
-    vec3 Cdlin = material.baseColor;
-    float Cdlum = 0.3 * Cdlin.r + 0.6 * Cdlin.g  + 0.1 * Cdlin.b;
-    vec3 Ctint = (Cdlum > 0) ? (Cdlin/Cdlum) : (vec3(1));
-    vec3 Cspec = material.specular * mix(vec3(1), Ctint, material.specularTint);
-    vec3 Cspec0 = mix(0.08*Cspec, Cdlin, material.metallic); // 0° 镜面反射颜色
-    vec3 Csheen = mix(vec3(1), Ctint, material.sheenTint);   // 织物颜色
-
-    // 漫反射
-    float Fd90 = 0.5 + 2.0 * LdotH * LdotH * material.roughness;
-    float FL = SchlickFresnel(NdotL);
-    float FV = SchlickFresnel(NdotV);
-    float Fd = mix(1.0, Fd90, FL) * mix(1.0, Fd90, FV);
-
-    // 次表面散射
-    float Fss90 = LdotH * LdotH * material.roughness;
-    float Fss = mix(1.0, Fss90, FL) * mix(1.0, Fss90, FV);
-    float ss = 1.25 * (Fss * (1.0 / (NdotL + NdotV) - 0.5) + 0.5);
-
-    // 镜面反射 -- 各向同性
-    float alpha = max(0.001, sqr(material.roughness));
-    float Ds = GTR2(NdotH, alpha);
-    float FH = SchlickFresnel(LdotH);
-    vec3 Fs = mix(Cspec0, vec3(1), FH);
-    float Gs = smithG_GGX(NdotL, material.roughness);
-    Gs *= smithG_GGX(NdotV, material.roughness);
-
-    // 清漆
-    float Dr = GTR1(NdotH, mix(0.1, 0.001, material.clearcoatGloss));
-    float Fr = mix(0.04, 1.0, FH);
-    float Gr = smithG_GGX(NdotL, 0.25) * smithG_GGX(NdotV, 0.25);
-
-    // sheen
-    vec3 Fsheen = FH * material.sheen * Csheen;
-
-    vec3 diffuse = (1.0/PI) * mix(Fd, ss, material.subsurface) * Cdlin + Fsheen;
-    vec3 specular = Gs * Fs * Ds;
-    vec3 clearcoat = vec3(0.25 * Gr * Fr * Dr * material.clearcoat);
-
-    return diffuse * (1.0 - material.metallic) + specular + clearcoat;
-}
 
 vec3 PathTracing(HitResult hit, int maxBounce) {
 
@@ -860,8 +837,9 @@ void main()
     Ray ray;
     ray.startPoint = cameraPos;
 
-    vec4 dir = cameraRotate * vec4(pix.xy, -1.5, 1.0);
+    vec4 dir =  vec4(pix.xy, -1.5, 1.0);
     dir.x = dir.x * float(width) / float(height);
+    dir = cameraRotate * dir;
     
     vec2 AA = vec2((rand() - 0.5) / float(width), (rand() - 0.5) / float(height));
     dir.xy += AA;
@@ -876,9 +854,10 @@ void main()
 //        color = SampleEnvCubeMap(ray.direction);
             color = HdrColor(ray.direction);
     } else {
+//        color = res.normal;
         vec3 Le = res.material.emissive;
-        vec3 Li = PathTracing(res, 4);
-//        vec3 Li = PathTracingImportanceSampling(res, 4);
+//        vec3 Li = PathTracing(res, 4);
+        vec3 Li = PathTracingImportanceSampling(res, 4);
         color = Le + Li;
     }
 

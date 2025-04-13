@@ -133,11 +133,10 @@ void Renderer::Draw()
         RTShader.setTextureBuffer("materials", scene->materialsTextureBuffer, 4);
         RTShader.setInt("nMaterials", scene->nMaterials);
 
-        RTShader.setTexture("envCubeMap", scene->envCubeMap, 5);
-        RTShader.setTexture("lastFrame", frameTextures1[0], 6);
+        RTShader.setTexture("lastFrame", frameTextures1[0], 5);
 
-        RTShader.setTexture("hdrMap", scene->hdrMap, 7);
-        RTShader.setTexture("hdrCache", scene->hdrCache, 8);
+        RTShader.setTexture("hdrMap", scene->hdrMap, 6);
+        RTShader.setTexture("hdrCache", scene->hdrCache, 7);
         RTShader.setInt("hdrResolution", scene->hdrWidth);
 
         DrawQuad(RTShader);
