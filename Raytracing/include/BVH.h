@@ -53,7 +53,7 @@ public:
         for (int i = 0; i < 3; i++)
         {
             c1 += t1.vertex[i].Position;
-            c2 += t1.vertex[i].Position;
+            c2 += t2.vertex[i].Position;
         }
         return c1.x < c2.x;
     }
@@ -64,7 +64,7 @@ public:
         for (int i = 0; i < 3; i++)
         {
             c1 += t1.vertex[i].Position;
-            c2 += t1.vertex[i].Position;
+            c2 += t2.vertex[i].Position;
         }
         return c1.y < c2.y;
     }
@@ -75,7 +75,7 @@ public:
         for (int i = 0; i < 3; i++)
         {
             c1 += t1.vertex[i].Position;
-            c2 += t1.vertex[i].Position;
+            c2 += t2.vertex[i].Position;
         }
         return c1.z < c2.z;
     }
@@ -230,7 +230,7 @@ public:
                     for (int i = 0; i < 3; i++)
                     {
                         c1 += t1.vertex[i].Position;
-                        c2 += t1.vertex[i].Position;
+                        c2 += t2.vertex[i].Position;
                     }
                     return c1.x < c2.x;
                 });
@@ -241,7 +241,7 @@ public:
                     for (int i = 0; i < 3; i++)
                     {
                         c1 += t1.vertex[i].Position;
-                        c2 += t1.vertex[i].Position;
+                        c2 += t2.vertex[i].Position;
                     }
                     return c1.y < c2.y;
                 });
@@ -252,7 +252,7 @@ public:
                     for (int i = 0; i < 3; i++)
                     {
                         c1 += t1.vertex[i].Position;
-                        c2 += t1.vertex[i].Position;
+                        c2 += t2.vertex[i].Position;
                     }
                     return c1.z < c2.z;
                 });
@@ -401,13 +401,13 @@ public:
 
 #ifdef DEBUG_BVH
     GLuint DebugVAO, DebugVBO, DebugEBO;
-    std::vector<GLuint> indices;
+    std::vector<GLuint> DebugIndices;
 
     // Debug
     void BuildDebugBVHTree(int startDepth, int endDepth)
     {
         std::vector<GLfloat> vertices;
-
+        // std::vector<GLuint> indices;
         // 递归函数来遍历 BVH 树
         std::function<void(int, int)> traverse = [&](int nodeId, int currentDepth)
         {
@@ -436,7 +436,7 @@ public:
 
             // 立方体的三角形索引
             GLuint baseIndex = (GLuint)(vertices.size() / 3 - 8);
-            indices.insert(indices.end(), {
+            DebugIndices.insert(DebugIndices.end(), {
                                baseIndex + 0, baseIndex + 1, baseIndex + 2,
                                baseIndex + 2, baseIndex + 3, baseIndex + 0,
                                baseIndex + 4, baseIndex + 6, baseIndex + 5,
@@ -468,7 +468,7 @@ public:
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, DebugEBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, DebugIndices.size() * sizeof(GLuint), DebugIndices.data(), GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);

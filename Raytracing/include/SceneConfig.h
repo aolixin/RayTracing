@@ -1,6 +1,6 @@
 #pragma once
 #include "Utils.h"
-
+#include "GlobalFeat.h"
 
 shared_ptr<Scene> BuildCornellbox();
 shared_ptr<Scene> BuildSphere();
@@ -10,10 +10,18 @@ shared_ptr<Scene> BuildDebugBVHScene();
 
 shared_ptr<Scene> BuildScene()
 {
-    // return BuildCornellbox();
-    // return BuildSphere();
-    
-    return BuildDebugBVHScene();
+    if (RENDER_PATH == RenderPath::Forward || RENDER_PATH == RenderPath::GI)
+    {
+        return BuildCornellbox();
+        // return BuildSphere();
+    }
+    else if (RENDER_PATH == RenderPath::DebugBVH)
+    {
+        return BuildCornellbox();
+        // return BuildDebugBVHScene();
+    }
+    else
+        return nullptr;
 }
 
 
@@ -82,14 +90,13 @@ shared_ptr<Scene> BuildCornellbox()
     // myScene->Add(model6, mat6);
 
 
-
     float* data = load_hdr_img("Resources/textures/hdr/test3.hdr", myScene->hdrWidth, myScene->hdrHeight);
     myScene->envCubeMap = BuildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
 
     myScene->hdrMap = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
-    
+
     data = calculateHdrCache(data, myScene->hdrWidth, myScene->hdrHeight);
-    
+
     myScene->hdrCache = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
 
     if (data)
@@ -103,7 +110,7 @@ shared_ptr<Scene> BuildSphere()
 {
     shared_ptr<Scene> myScene = make_shared<Scene>();
     glm::mat4 identity = glm::mat4(1.0f);
-    
+
     // spheres
     Shader shader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
     Model sphere("Resources/models/sphere.obj");
@@ -160,14 +167,14 @@ shared_ptr<Scene> BuildSphere()
     mat1.roughness = 0.4f;
     Model model1("Resources/models/plane.obj");
     myScene->Add(model1, mat1);
-    
+
     float* data = load_hdr_img("Resources/textures/hdr/test4.hdr", myScene->hdrWidth, myScene->hdrHeight);
     myScene->envCubeMap = BuildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
 
     myScene->hdrMap = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
-    
+
     // data = calculateHdrCache(data, myScene->hdrWidth, myScene->hdrHeight);
-    
+
     // myScene->hdrCache = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
 
     if (data)

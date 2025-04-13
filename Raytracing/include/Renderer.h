@@ -9,15 +9,7 @@
 #include "Scene.h"
 #include "Utils.h"
 #include "RenderContext.h"
-
-enum RenderPath
-{
-    Forward = 0,
-    GI = 1,
-    DebugIA = 2,
-    DebugBVH = 3,
-    Count
-};
+#include "GlobalFeat.h"
 
 
 class Renderer

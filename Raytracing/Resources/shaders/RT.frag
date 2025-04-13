@@ -877,8 +877,8 @@ void main()
             color = HdrColor(ray.direction);
     } else {
         vec3 Le = res.material.emissive;
-//        vec3 Li = PathTracing(res, 4);
-        vec3 Li = PathTracingImportanceSampling(res, 4);
+        vec3 Li = PathTracing(res, 4);
+//        vec3 Li = PathTracingImportanceSampling(res, 4);
         color = Le + Li;
     }
 
