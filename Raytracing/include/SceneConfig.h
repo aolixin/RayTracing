@@ -195,7 +195,7 @@ shared_ptr<Scene> BuildDebugBVHScene()
     Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/unlit.frag");
     Material mat1(shader1);
     mat1.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
-    Model model1("Resources/models/plane.obj");
+    Model model1("Resources/models/plane2.obj");
     myScene->Add(model1, mat1);
 
     float* data = load_hdr_img("Resources/textures/hdr/test4.hdr", myScene->hdrWidth, myScene->hdrHeight);
