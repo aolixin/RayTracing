@@ -39,7 +39,8 @@ void Scene::SetupGIScene()
 
 #include "GlobalFeat.h"
 #ifdef DEBUG_BVH
-    this->myBVH.BuildDebugBVHTree(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
+    // this->myBVH.BuildDebugBVHTree(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
+    this->myBVH.BuildDebugBVHTree_l(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
 #endif
     
     

@@ -396,5 +396,79 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
+
+    void BuildDebugBVHTree_l(int startDepth, int endDepth)
+    {
+        std::vector<GLfloat> vertices;
+        // std::vector<GLuint> indices;
+        // 递归函数来遍历 BVH 树
+        std::function<void(int, int)> traverse = [&](int nodeId, int currentDepth)
+        {
+            if (nodeId >= nodes.size() || currentDepth > endDepth) return;
+            if (currentDepth < startDepth)
+            {
+                traverse(nodes[nodeId].left, currentDepth + 1);
+                traverse(nodes[nodeId].right, currentDepth + 1);
+                return;
+            }
+            const BVHNode& node = nodes[nodeId];
+            vec3 AA = node.AA;
+            vec3 BB = node.BB;
+
+            // 8个顶点
+            vertices.insert(vertices.end(), {
+                                AA.x, AA.y, AA.z,
+                                BB.x, AA.y, AA.z,
+                                BB.x, BB.y, AA.z,
+                                AA.x, BB.y, AA.z,
+                                AA.x, AA.y, BB.z,
+                                BB.x, AA.y, BB.z,
+                                BB.x, BB.y, BB.z,
+                                AA.x, BB.y, BB.z
+                            });
+
+            // 线段
+            GLuint baseIndex = (GLuint)(vertices.size() / 3 - 8);
+            DebugIndices.insert(DebugIndices.end(), {
+                                    baseIndex + 0, baseIndex + 1,
+                                    baseIndex + 1, baseIndex + 2,
+                                    baseIndex + 2, baseIndex + 3,
+                                    baseIndex + 3, baseIndex + 0,
+                                    baseIndex + 4, baseIndex + 5,
+                                    baseIndex + 5, baseIndex + 6,
+                                    baseIndex + 6, baseIndex + 7,
+                                    baseIndex + 7, baseIndex + 4,
+                                    baseIndex + 0, baseIndex + 4,
+                                    baseIndex + 1, baseIndex + 5,
+                                    baseIndex + 2, baseIndex + 6,
+                                    baseIndex + 3, baseIndex + 7
+                                });
+
+            traverse(node.left, currentDepth + 1);
+            traverse(node.right, currentDepth + 1);
+        };
+
+        // 从根节点开始遍历
+        traverse(0, 1);
+
+        glGenVertexArrays(1, &DebugVAO);
+        glGenBuffers(1, &DebugVBO);
+
+        glBindVertexArray(DebugVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, DebugVBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
+
+        glGenBuffers(1, &DebugEBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, DebugEBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, DebugIndices.size() * sizeof(GLuint), DebugIndices.data(),
+                     GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
 #endif
 };

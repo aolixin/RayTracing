@@ -203,8 +203,14 @@ void Renderer::Draw()
         unlitShader.setMat4("model", glm::mat4(1.0f));
         unlitShader.setVec3("objectColor", vec3(1.0f, 0.0f, 0.0f));
 
+        // glBindVertexArray(scene->myBVH.DebugVAO);
+        // glDrawElements(GL_TRIANGLES, scene->myBVH.DebugIndices.size(), GL_UNSIGNED_INT, 0);
+        // glBindVertexArray(0);
+
+        glLineWidth(2.0f);
+        glColor3f(1.0f, 0.0f, 0.0f);
         glBindVertexArray(scene->myBVH.DebugVAO);
-        glDrawElements(GL_TRIANGLES, scene->myBVH.DebugIndices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINES, scene->myBVH.DebugIndices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
 
