@@ -47,9 +47,9 @@ public:
     }
 
 
-    bool cmpx(const Triangle& t1, const Triangle& t2)
+    static bool cmpx(const Triangle& t1, const Triangle& t2)
     {
-        vec3 c1, c2;
+        vec3 c1 = vec3(0.0, 0.0, 0.0), c2 = vec3(0.0, 0.0, 0.0);
         for (int i = 0; i < 3; i++)
         {
             c1 += t1.vertex[i].Position;
@@ -58,9 +58,9 @@ public:
         return c1.x < c2.x;
     }
 
-    bool cmpy(const Triangle& t1, const Triangle& t2)
+    static bool cmpy(const Triangle& t1, const Triangle& t2)
     {
-        vec3 c1, c2;
+        vec3 c1 = vec3(0.0, 0.0, 0.0), c2 = vec3(0.0, 0.0, 0.0);
         for (int i = 0; i < 3; i++)
         {
             c1 += t1.vertex[i].Position;
@@ -69,9 +69,9 @@ public:
         return c1.y < c2.y;
     }
 
-    bool cmpz(const Triangle& t1, const Triangle& t2)
+    static bool cmpz(const Triangle& t1, const Triangle& t2)
     {
-        vec3 c1, c2;
+        vec3 c1 = vec3(0.0, 0.0, 0.0), c2 = vec3(0.0, 0.0, 0.0);
         for (int i = 0; i < 3; i++)
         {
             c1 += t1.vertex[i].Position;
@@ -128,42 +128,15 @@ public:
 
         if (lenx > leny && lenx > lenz)
         {
-            std::sort(triangles.begin() + l, triangles.begin() + r + 1, [](const Triangle& t1, const Triangle& t2)
-            {
-                vec3 c1 = vec3(0.0f, 0.0f, 0.0f), c2 = vec3(0.0f, 0.0f, 0.0f);
-                for (int i = 0; i < 3; i++)
-                {
-                    c1 += t1.vertex[i].Position;
-                    c2 += t2.vertex[i].Position;
-                }
-                return c1.x < c2.x;
-            });
+            std::sort(triangles.begin() + l, triangles.begin() + r + 1, cmpx);
         }
         if (leny > lenx && leny > lenz)
         {
-            std::sort(triangles.begin() + l, triangles.begin() + r + 1, [](const Triangle& t1, const Triangle& t2)
-            {
-                vec3 c1 = vec3(0.0f, 0.0f, 0.0f), c2 = vec3(0.0f, 0.0f, 0.0f);
-                for (int i = 0; i < 3; i++)
-                {
-                    c1 += t1.vertex[i].Position;
-                    c2 += t2.vertex[i].Position;
-                }
-                return c1.y < c2.y;
-            });
+            std::sort(triangles.begin() + l, triangles.begin() + r + 1, cmpy);
         }
         if (lenz > lenx && lenz > leny)
         {
-            std::sort(triangles.begin() + l, triangles.begin() + r + 1, [](const Triangle& t1, const Triangle& t2)
-            {
-                vec3 c1 = vec3(0.0f, 0.0f, 0.0f), c2 = vec3(0.0f, 0.0f, 0.0f);
-                for (int i = 0; i < 3; i++)
-                {
-                    c1 += t1.vertex[i].Position;
-                    c2 += t2.vertex[i].Position;
-                }
-                return c1.z < c2.z;
-            });
+            std::sort(triangles.begin() + l, triangles.begin() + r + 1, cmpz);
         }
 
 
@@ -224,38 +197,11 @@ public:
         for (int axis = 0; axis < 3; axis++)
         {
             if (axis == 0)
-                std::sort(&triangles[0] + l, &triangles[0] + r + 1, [](const Triangle& t1, const Triangle& t2)
-                {
-                    vec3 c1, c2;
-                    for (int i = 0; i < 3; i++)
-                    {
-                        c1 += t1.vertex[i].Position;
-                        c2 += t2.vertex[i].Position;
-                    }
-                    return c1.x < c2.x;
-                });
+                std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpx);
             if (axis == 1)
-                std::sort(&triangles[0] + l, &triangles[0] + r + 1, [](const Triangle& t1, const Triangle& t2)
-                {
-                    vec3 c1, c2;
-                    for (int i = 0; i < 3; i++)
-                    {
-                        c1 += t1.vertex[i].Position;
-                        c2 += t2.vertex[i].Position;
-                    }
-                    return c1.y < c2.y;
-                });
+                std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpy);
             if (axis == 2)
-                std::sort(&triangles[0] + l, &triangles[0] + r + 1, [](const Triangle& t1, const Triangle& t2)
-                {
-                    vec3 c1, c2;
-                    for (int i = 0; i < 3; i++)
-                    {
-                        c1 += t1.vertex[i].Position;
-                        c2 += t2.vertex[i].Position;
-                    }
-                    return c1.z < c2.z;
-                });
+                std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpz);
 
             std::vector<vec3> leftMax(r - l + 1, vec3(-INF, -INF, -INF));
             std::vector<vec3> leftMin(r - l + 1, vec3(INF, INF, INF));
@@ -356,38 +302,11 @@ public:
         }
 
         if (Axis == 0)
-            std::sort(&triangles[0] + l, &triangles[0] + r + 1, [](const Triangle& t1, const Triangle& t2)
-            {
-                vec3 c1, c2;
-                for (int i = 0; i < 3; i++)
-                {
-                    c1 += t1.vertex[i].Position;
-                    c2 += t1.vertex[i].Position;
-                }
-                return c1.x < c2.x;
-            });
+            std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpx);
         if (Axis == 1)
-            std::sort(&triangles[0] + l, &triangles[0] + r + 1, [](const Triangle& t1, const Triangle& t2)
-            {
-                vec3 c1, c2;
-                for (int i = 0; i < 3; i++)
-                {
-                    c1 += t1.vertex[i].Position;
-                    c2 += t1.vertex[i].Position;
-                }
-                return c1.y < c2.y;
-            });
+            std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpy);
         if (Axis == 2)
-            std::sort(&triangles[0] + l, &triangles[0] + r + 1, [](const Triangle& t1, const Triangle& t2)
-            {
-                vec3 c1, c2;
-                for (int i = 0; i < 3; i++)
-                {
-                    c1 += t1.vertex[i].Position;
-                    c2 += t1.vertex[i].Position;
-                }
-                return c1.z < c2.z;
-            });
+            std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpz);
 
 
         int left = buildBVHWithSAH(l, Split);
@@ -437,19 +356,19 @@ public:
             // 立方体的三角形索引
             GLuint baseIndex = (GLuint)(vertices.size() / 3 - 8);
             DebugIndices.insert(DebugIndices.end(), {
-                               baseIndex + 0, baseIndex + 1, baseIndex + 2,
-                               baseIndex + 2, baseIndex + 3, baseIndex + 0,
-                               baseIndex + 4, baseIndex + 6, baseIndex + 5,
-                               baseIndex + 4, baseIndex + 7, baseIndex + 6,
-                               baseIndex + 0, baseIndex + 7, baseIndex + 4,
-                               baseIndex + 7, baseIndex + 3, baseIndex + 0,
-                               baseIndex + 1, baseIndex + 5, baseIndex + 6,
-                               baseIndex + 6, baseIndex + 2, baseIndex + 1,
-                               baseIndex + 3, baseIndex + 6, baseIndex + 7,
-                               baseIndex + 2, baseIndex + 6, baseIndex + 3,
-                               baseIndex + 0, baseIndex + 4, baseIndex + 5,
-                               baseIndex + 5, baseIndex + 1, baseIndex + 0
-                           });
+                                    baseIndex + 0, baseIndex + 1, baseIndex + 2,
+                                    baseIndex + 2, baseIndex + 3, baseIndex + 0,
+                                    baseIndex + 4, baseIndex + 6, baseIndex + 5,
+                                    baseIndex + 4, baseIndex + 7, baseIndex + 6,
+                                    baseIndex + 0, baseIndex + 7, baseIndex + 4,
+                                    baseIndex + 7, baseIndex + 3, baseIndex + 0,
+                                    baseIndex + 1, baseIndex + 5, baseIndex + 6,
+                                    baseIndex + 6, baseIndex + 2, baseIndex + 1,
+                                    baseIndex + 3, baseIndex + 6, baseIndex + 7,
+                                    baseIndex + 2, baseIndex + 6, baseIndex + 3,
+                                    baseIndex + 0, baseIndex + 4, baseIndex + 5,
+                                    baseIndex + 5, baseIndex + 1, baseIndex + 0
+                                });
 
             traverse(node.left, currentDepth + 1);
             traverse(node.right, currentDepth + 1);
@@ -468,7 +387,8 @@ public:
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, DebugEBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, DebugIndices.size() * sizeof(GLuint), DebugIndices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, DebugIndices.size() * sizeof(GLuint), DebugIndices.data(),
+                     GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);

@@ -7,7 +7,7 @@
 5. disney pbr √
 6. sobol sequence √
 7. importance sample √
-8. 可视化
+8. 可视化 √
 9. 正确性验证
 10. 其他加速结构 & 算法优化
 11. imgui
@@ -79,12 +79,6 @@ Disney BRDF
 
 
 ![image-20250413114900535](img/image-20250413114900535.png)
-
-
-
-可视化
-
-![image-20250413165912998](img/image-20250413165912998.png)
 
 ## 参考
 

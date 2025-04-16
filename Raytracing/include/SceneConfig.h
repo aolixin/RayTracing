@@ -17,8 +17,8 @@ shared_ptr<Scene> BuildScene()
     }
     else if (RENDER_PATH == RenderPath::DebugBVH)
     {
-        return BuildCornellbox();
-        // return BuildDebugBVHScene();
+        // return BuildCornellbox();
+        return BuildDebugBVHScene();
     }
     else
         return nullptr;
@@ -31,63 +31,58 @@ shared_ptr<Scene> BuildCornellbox()
     glm::mat4 identity = glm::mat4(1.0f);
 
     // bunny
-    Shader shader0("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-    Material mat0(shader0);
+    Shader phongShader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+    
+    Material mat0(phongShader);
     mat0.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
     mat0.specular = 0.0f;
-    Model model0("Resources/models/bunny.obj");
+    Model bunny("Resources/models/bunny.obj");
 
     // left
-    Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-    Material mat1(shader1);
+    Material mat1(phongShader);
     mat1.baseColor = glm::vec3(0.8f, 0.2f, 0.2f);
     mat1.specular = 0.0f;
-    Model model1("Resources/models/cornellbox/left.obj");
+    Model left("Resources/models/cornellbox/left.obj");
 
     // right
-    Shader shader2("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-    Material mat2(shader2);
+    Material mat2(phongShader);
     mat2.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
     mat2.specular = 0.0f;
-    Model model2("Resources/models/cornellbox/right.obj");
+    Model right("Resources/models/cornellbox/right.obj");
 
     // floor
-    Shader shader3("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-    Material mat3(shader3);
+    Material mat3(phongShader);
     mat3.baseColor = glm::vec3(0.5f, 0.5f, 0.5f);
     mat3.roughness = 0.5f;
     mat3.metallic = 0.0f;
-    Model model3("Resources/models/cornellbox/floor.obj");
+    Model floor("Resources/models/cornellbox/floor.obj");
 
     // light
-    Shader shader4("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-    Material mat4(shader4);
+    Material mat4(phongShader);
     mat4.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
     mat4.emissive = glm::vec3(1.0f, 1.0f, 1.0f);
-    Model model4("Resources/models/cornellbox/light.obj");
+    Model light("Resources/models/cornellbox/light.obj");
 
     // short
-    Shader shader5("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-    Material mat5(shader5);
+    Material mat5(phongShader);
     mat5.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
     mat5.specular = 0.0f;
-    Model model5("Resources/models/cornellbox/short.obj");
+    Model shortBox("Resources/models/cornellbox/short.obj");
 
 
     // tall
-    Shader shader6("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-    Material mat6(shader6);
+    Material mat6(phongShader);
     mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
     mat6.specular = 0.0f;
-    Model model6("Resources/models/cornellbox/tall.obj");
+    Model tallBox("Resources/models/cornellbox/tall.obj");
 
-    myScene->Add(model0, mat0);
-    myScene->Add(model1, mat1);
-    myScene->Add(model2, mat2);
-    myScene->Add(model3, mat3);
-    myScene->Add(model4, mat4);
-    // myScene->Add(model5, mat5);
-    // myScene->Add(model6, mat6);
+    myScene->Add(bunny, mat0);
+    myScene->Add(left, mat1);
+    myScene->Add(right, mat2);
+    myScene->Add(floor, mat3);
+    // myScene->Add(light, mat4);
+    // myScene->Add(shortBox, mat5);
+    // myScene->Add(tallBox, mat6);
 
 
     float* data = load_hdr_img("Resources/textures/hdr/test3.hdr", myScene->hdrWidth, myScene->hdrHeight);

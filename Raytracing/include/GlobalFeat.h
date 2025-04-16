@@ -10,7 +10,7 @@ enum RenderPath
 };
 
 #define DEBUG_BVH
-#define DEBUG_BVH_START_DEPTH 2
+#define DEBUG_BVH_START_DEPTH 1
 #define DEBUG_BVH_END_DEPTH 2
 
 
