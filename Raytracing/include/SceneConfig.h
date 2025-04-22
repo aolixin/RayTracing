@@ -42,8 +42,8 @@ std::shared_ptr<Scene> BuildScene()
         RENDER_PATH == RenderPath::TestOctree ||
         RENDER_PATH == RenderPath::TestKdTree)
     {
-        return BuildSphere_simple();
-        // return BuildSphere_complex();
+        // return BuildSphere_simple();
+        return BuildSphere_complex();
         // return BuildCornellbox_complex();
         // return BuildCornellbox();
         // return BuildDebugBVHScene();

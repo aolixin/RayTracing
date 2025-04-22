@@ -25,7 +25,8 @@ enum RenderPath
 };
 
 #define RELEASE_PATH (RenderPath::Forward)
-#define TEST_PATH (RenderPath::TestOctree)
+
+#define TEST_PATH (RenderPath::TestKdTree)
 
 
 #ifdef TEST_ACCELERATION_STRUCTURE
@@ -36,8 +37,8 @@ enum RenderPath
 
 
 // #define USE_BVH
-#define USE_OCTREE
-// #define USE_KDTREE
+// #define USE_OCTREE
+#define USE_KDTREE
 
 
 #ifdef DEBUG_ACCELERATION_STRUCTURE
