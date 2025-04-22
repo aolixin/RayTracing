@@ -80,7 +80,10 @@ void Renderer::DestroyRenderer()
 void Renderer::SetupScene(std::shared_ptr<Scene> scene)
 {
     this->scene = scene;
-    if (renderPath == RenderPath::GI || renderPath == RenderPath::DebugBVH)
+    if (renderPath == RenderPath::GI ||
+        renderPath == RenderPath::DebugBVH ||
+        renderPath == RenderPath::DebugOctree ||
+        renderPath == RenderPath::DebugKdTree)
     {
         this->scene->SetupGIScene();
     }
@@ -183,6 +186,7 @@ void Renderer::Draw()
     }
     else if (renderPath == RenderPath::DebugBVH)
     {
+#if  defined(USE_BVH) && defined(DEBUG_BVH)
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         // glEnable(GL_CULL_FACE);
 
@@ -216,6 +220,79 @@ void Renderer::Draw()
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         // DrawSkybox();
+#endif
+    }
+    else if (renderPath == RenderPath::DebugOctree)
+    {
+#if defined(USE_OCTREE) && defined(DEBUG_OCTREE)
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        // glEnable(GL_CULL_FACE);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        // draw meshs
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        for (auto& render_node : scene->render_nodes)
+        {
+            render_node.Draw(context);
+        }
+
+        // draw bvh
+        unlitShader.use();
+        unlitShader.setMat4("projection", context.projection);
+        unlitShader.setMat4("view", context.view);
+        unlitShader.setMat4("model", glm::mat4(1.0f));
+        unlitShader.setVec3("objectColor", vec3(1.0f, 0.0f, 0.0f));
+
+        // glBindVertexArray(scene->myBVH.DebugVAO);
+        // glDrawElements(GL_TRIANGLES, scene->myBVH.DebugIndices.size(), GL_UNSIGNED_INT, 0);
+        // glBindVertexArray(0);
+
+        glLineWidth(2.0f);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glBindVertexArray(scene->myOctree.DebugVAO);
+        glDrawElements(GL_LINES, scene->myOctree.DebugIndices.size(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
+    }
+    else if (renderPath == RenderPath::DebugKdTree)
+    {
+#if defined(USE_KDTREE) && defined(DEBUG_KDTREE)
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        // glEnable(GL_CULL_FACE);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        // draw meshs
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        for (auto& render_node : scene->render_nodes)
+        {
+            render_node.Draw(context);
+        }
+
+        // draw bvh
+        unlitShader.use();
+        unlitShader.setMat4("projection", context.projection);
+        unlitShader.setMat4("view", context.view);
+        unlitShader.setMat4("model", glm::mat4(1.0f));
+        unlitShader.setVec3("objectColor", vec3(1.0f, 0.0f, 0.0f));
+
+        // glBindVertexArray(scene->myBVH.DebugVAO);
+        // glDrawElements(GL_TRIANGLES, scene->myBVH.DebugIndices.size(), GL_UNSIGNED_INT, 0);
+        // glBindVertexArray(0);
+
+        glLineWidth(2.0f);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glBindVertexArray(scene->myKdTree.DebugVAO);
+        glDrawElements(GL_LINES, scene->myKdTree.DebugIndices.size(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
     }
 }
 

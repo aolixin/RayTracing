@@ -149,7 +149,7 @@ public:
     }
 
 
-    int buildBVHWithSAH(int l, int r)
+    int BuildBVHWithSAH(int l, int r)
     {
         if (l > r) return 0;
 
@@ -309,8 +309,8 @@ public:
             std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpz);
 
 
-        int left = buildBVHWithSAH(l, Split);
-        int right = buildBVHWithSAH(Split + 1, r);
+        int left = BuildBVHWithSAH(l, Split);
+        int right = BuildBVHWithSAH(Split + 1, r);
 
         nodes[id].left = left;
         nodes[id].right = right;
@@ -470,5 +470,14 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
+
+    // 计算 BVH 树的内存占用，单位为 KB
+    float GetMemoryUsageInKB() const {
+        size_t triangleMemory = triangles.size() * sizeof(Triangle);
+        size_t nodeMemory = nodes.size() * sizeof(BVHNode);
+        size_t totalMemory = triangleMemory + nodeMemory;
+        return static_cast<float>(totalMemory) / 1024.0;
+    }
+
 #endif
 };

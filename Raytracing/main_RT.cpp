@@ -27,7 +27,7 @@ int main()
     int frameCount = 0;
     while (!renderer->RendererClose())
     {
-        if(renderer->renderPath == RenderPath::GI)
+        if(renderer->renderPath == RenderPath::GI || renderer->renderPath == RenderPath::DebugOctree)
         {
             cout << "Frame: " << frameCount++ << endl;
         }

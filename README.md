@@ -8,11 +8,10 @@
 6. sobol sequence √
 7. importance sample √
 8. 可视化 √
-9. 正确性验证
-10. 其他加速结构 & 算法优化
+9. 正确性验证 √
+10. 其他加速结构 & 算法优化 √
 11. imgui
 12. 更多测试场景
-13. compute shader
 
 
 
@@ -89,8 +88,6 @@ Disney BRDF
 
 
 SAH
-
-
 
 ![image-20250416152926720](img/image-20250416152926720.png)
 

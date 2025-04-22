@@ -7,6 +7,9 @@ shared_ptr<Scene> BuildSphere();
 
 // Debug
 shared_ptr<Scene> BuildDebugBVHScene();
+shared_ptr<Scene> BuildSimple();
+shared_ptr<Scene> BuildSimple_Sphere();
+
 
 shared_ptr<Scene> BuildScene()
 {
@@ -18,10 +21,29 @@ shared_ptr<Scene> BuildScene()
     else if (RENDER_PATH == RenderPath::DebugBVH)
     {
         // return BuildCornellbox();
-        return BuildDebugBVHScene();
+        // return BuildDebugBVHScene();
+        return BuildSimple_Sphere();
+    }
+    else if (RENDER_PATH == RenderPath::DebugOctree)
+    {
+        // return BuildDebugBVHScene();
+        return BuildSimple_Sphere();
+    }
+    else if (RENDER_PATH == RenderPath::DebugKdTree)
+    {
+        // return BuildDebugBVHScene();
+        return BuildSimple_Sphere();
+    }
+    else if (RENDER_PATH == RenderPath::DebugIA)
+    {
+        // return BuildDebugBVHScene();
+        return BuildSimple_Sphere();
     }
     else
+    {
+        cout << "Error: Invalid render path!" << endl;
         return nullptr;
+    }
 }
 
 
@@ -32,7 +54,7 @@ shared_ptr<Scene> BuildCornellbox()
 
     // bunny
     Shader phongShader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-    
+
     Material mat0(phongShader);
     mat0.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
     mat0.specular = 0.0f;
@@ -198,11 +220,99 @@ shared_ptr<Scene> BuildDebugBVHScene()
     Model model1("Resources/models/plane2.obj");
     myScene->Add(model1, mat1);
 
-    float* data = load_hdr_img("Resources/textures/hdr/test4.hdr", myScene->hdrWidth, myScene->hdrHeight);
-    myScene->envCubeMap = BuildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
 
-    if (data)
-        free(data);
+    return myScene;
+}
+
+
+shared_ptr<Scene> BuildSimple()
+{
+    shared_ptr<Scene> myScene = make_shared<Scene>();
+    glm::mat4 identity = glm::mat4(1.0f);
+
+
+    Shader phongShader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+
+
+    // left
+    Material mat1(phongShader);
+    mat1.baseColor = glm::vec3(0.8f, 0.2f, 0.2f);
+    mat1.specular = 0.0f;
+    Model left("Resources/models/cornellbox/left.obj");
+
+    // right
+    Material mat2(phongShader);
+    mat2.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
+    mat2.specular = 0.0f;
+    Model right("Resources/models/cornellbox/right.obj");
+
+    // floor
+    Material mat3(phongShader);
+    mat3.baseColor = glm::vec3(0.5f, 0.5f, 0.5f);
+    mat3.roughness = 0.5f;
+    mat3.metallic = 0.0f;
+    Model floor("Resources/models/cornellbox/floor.obj");
+
+    // light
+    Material mat4(phongShader);
+    mat4.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    mat4.emissive = glm::vec3(1.0f, 1.0f, 1.0f);
+    Model light("Resources/models/cornellbox/light.obj");
+
+    // short
+    Material mat5(phongShader);
+    mat5.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
+    mat5.specular = 0.0f;
+    Model shortBox("Resources/models/cornellbox/short.obj");
+
+
+    // tall
+    Material mat6(phongShader);
+    mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
+    mat6.specular = 0.0f;
+    Model tallBox("Resources/models/cornellbox/tall.obj");
+
+    myScene->Add(left, mat1);
+    myScene->Add(right, mat2);
+    myScene->Add(floor, mat3);
+    // myScene->Add(light, mat4);
+    myScene->Add(shortBox, mat5);
+    myScene->Add(tallBox, mat6);
+
+
+    return myScene;
+}
+
+
+shared_ptr<Scene> BuildSimple_Sphere()
+{
+    shared_ptr<Scene> myScene = make_shared<Scene>();
+    glm::mat4 identity = glm::mat4(1.0f);
+
+    // spheres
+    Shader shader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+    Model sphere("Resources/models/sphere_simple.obj");
+
+    // First sphere
+    Material m(shader);
+
+    // Second sphere
+    m.baseColor = vec3(1, 1, 1);
+    m.metallic = 0.9;
+    m.roughness = 0.2;
+    glm::mat4 trans8 = glm::translate(identity, glm::vec3(0.0f, -0.6f, 0.0f));
+    myScene->Add(sphere, m, trans8);
+
+
+    // plane
+    Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+    Material mat1(shader1);
+    mat1.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    mat1.specular = 0.9f;
+    mat1.roughness = 0.4f;
+    Model model1("Resources/models/plane.obj");
+    myScene->Add(model1, mat1);
+    
 
     return myScene;
 }

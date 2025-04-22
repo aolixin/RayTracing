@@ -1,15 +1,12 @@
 #pragma once
 
 #include <glad/glad.h> // holds all OpenGL type declarations
+#include <glm/glm.hpp>
 #define MAX_BONE_INFLUENCE 4
 
-
-#include "Shader.h"
-#include "Mesh.h"
-#include <string>
 #include <vector>
 using namespace std;
-
+using namespace glm;
 struct Vertex {
     // position
     glm::vec3 Position;

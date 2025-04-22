@@ -1,6 +1,8 @@
 #include "Scene.h"
+#include "GlobalFeat.h"
+#include <chrono>
 
-void Scene::Add(Model model, Material material,glm::mat4 modelMatrix)
+void Scene::Add(Model model, Material material, glm::mat4 modelMatrix)
 {
     // models.push_back(model);
     for (auto& mesh : model.meshes)
@@ -21,36 +23,73 @@ void Scene::SetupGIScene()
         triangles_expand.insert(triangles_expand.end(), render_node.mesh->triangles.begin(),
                                 render_node.mesh->triangles.end());
 
-        for(int i = start; i < triangles_expand.size(); i++)
+        for (int i = start; i < triangles_expand.size(); i++)
         {
             triangles_expand[i].materialID = materials_count;
             // trans
-            triangles_expand[i].vertex[0].Position = render_node.modelMatrix * vec4(triangles_expand[i].vertex[0].Position, 1.0f);
-            triangles_expand[i].vertex[1].Position = render_node.modelMatrix * vec4(triangles_expand[i].vertex[1].Position, 1.0f);
-            triangles_expand[i].vertex[2].Position = render_node.modelMatrix * vec4(triangles_expand[i].vertex[2].Position, 1.0f);
+            triangles_expand[i].vertex[0].Position = render_node.modelMatrix * vec4(
+                triangles_expand[i].vertex[0].Position, 1.0f);
+            triangles_expand[i].vertex[1].Position = render_node.modelMatrix * vec4(
+                triangles_expand[i].vertex[1].Position, 1.0f);
+            triangles_expand[i].vertex[2].Position = render_node.modelMatrix * vec4(
+                triangles_expand[i].vertex[2].Position, 1.0f);
         }
         materials_expand.push_back(*render_node.material);
         materials_count++;
     }
 
+    auto start = std::chrono::high_resolution_clock::now();
+
+#ifdef USE_BVH
     this->myBVH.triangles = this->triangles_expand;
     this->myBVH.BuildBVH(0, this->triangles_expand.size() - 1);
-    // this->myBVH.buildBVHWithSAH(0, this->triangles_expand.size() - 1);
-
-#include "GlobalFeat.h"
+    // this->myBVH.BuildBVHWithSAH(0, this->triangles_expand.size() - 1);
 #ifdef DEBUG_BVH
     // this->myBVH.BuildDebugBVHTree(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
-    this->myBVH.BuildDebugBVHTree_l(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
+    // this->myBVH.BuildDebugBVHTree_l(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::cout << "build time = " << duration << " ms" << std::endl;
+    
+    cout << "total memory: " << this->myBVH.GetMemoryUsageInKB() << endl;
 #endif
-    
-    
+#endif
+
+
+#ifdef USE_OCTREE
+    this->myOctree = Octree(this->triangles_expand);
+#ifdef DEBUG_OCTREE
+    // this->myOctree.BuildDebugOctree_l(DEBUG_OCTREE_START_DEPTH, DEBUG_OCTREE_END_DEPTH);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::cout << "build time = " << duration << " ms" << std::endl;
+    cout << "total memory: " << this->myOctree.getMemoryUsageInKB() << endl;
+#endif
+#endif
+
+
+#ifdef USE_KDTREE
+    this->myKdTree = KDTree(this->triangles_expand);
+#ifdef DEBUG_KDTREE
+    this->myKdTree.BuildDebugKdTree_l(DEBUG_KDTREE_START_DEPTH, DEBUG_KDTREE_END_DEPTH);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::cout << "build time = " << duration << " ms" << std::endl;
+#endif
+#endif
+
     // std::cout << "SAH BVHNode:    " << this->myBVH.nodes.size() << endl;
+
+
+    
     GenBuffers();
 }
 
 
 void Scene::GenBuffers()
 {
+#if defined(USE_BVH)
     vector<Triangle_encoded> triangles_encoded(this->myBVH.triangles.size());
     for (int i = 0; i < this->myBVH.triangles.size(); i++)
     {
@@ -118,9 +157,5 @@ void Scene::GenBuffers()
 
     nMaterials = materials_encoded.size();
     materials_encoded.clear();
-
-    // for (int i = 0; i < models.size(); i++)
-    // {
-    //     models[i].setupDataOfShader(trianglesTextureBuffer, nodesTextureBuffer, materialsTextureBuffer);
-    // }
+#endif
 }

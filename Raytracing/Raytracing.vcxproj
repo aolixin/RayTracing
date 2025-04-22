@@ -116,7 +116,6 @@
     <ClInclude Include="include\RenderContext.h" />
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\RenderNode.h" />
-    <ClInclude Include="include\resource.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\SceneConfig.h" />
     <ClInclude Include="include\Shader.h" />
@@ -125,6 +124,7 @@
     <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram3.cd" />
     <None Include="Resources\shaders\phong.frag" />
     <None Include="Resources\shaders\phong.vert" />
     <None Include="Resources\shaders\hdrToSkyobox.frag" />
@@ -134,6 +134,8 @@
     <None Include="Resources\shaders\unlit.frag" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Octree.h" />
+    <ClInclude Include="include\KDTree.h" />
     <Content Include="Resources\models\backpack\ao.jpg" />
     <Content Include="Resources\models\backpack\backpack.mtl" />
     <Content Include="Resources\models\backpack\diffuse.jpg" />
