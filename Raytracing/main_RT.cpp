@@ -1,4 +1,6 @@
-#if 1
+#include "GlobalFeat.h"
+
+#if 0
 
 #include "Shader.h"
 #include "Model.h"
@@ -6,7 +8,7 @@
 #include "Utils.h"
 #include "Scene.h"
 #include "SceneConfig.h"
-#include "GlobalFeat.h"
+
 
 // timing
 float deltaTime = 0.0f;
@@ -27,7 +29,7 @@ int main()
     int frameCount = 0;
     while (!renderer->RendererClose())
     {
-        if(renderer->renderPath == RenderPath::GI || renderer->renderPath == RenderPath::DebugOctree)
+        if(renderer->renderPath == RenderPath::GI)
         {
             cout << "Frame: " << frameCount++ << endl;
         }

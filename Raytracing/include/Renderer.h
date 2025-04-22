@@ -20,8 +20,9 @@ private:
     Shader postShader;
     Shader skyboxShader;
     Shader unlitShader;
-    
+
     Shader debug_ia_shader;
+    Shader testShader;
 
 
     GLuint frameBuffer0;
@@ -29,6 +30,8 @@ private:
 
     GLuint frameBuffer1;
     vector<GLuint> frameTextures1;
+
+    GLuint TestVAO,TestVBO;
 
 public:
     Renderer()
@@ -82,4 +85,29 @@ public:
     void PollEvents();
 
     void Terminate();
+
+#ifdef TEST_ACCELERATION_STRUCTURE
+    struct Ray;
+
+    struct HitResult;
+
+    BVHNode GetBVHNode(int i);
+
+    HitResult HitTriangle(Triangle triangle, Ray ray);
+
+    Triangle GetTriangle(int i);
+
+    HitResult HitArray(Ray ray, int l, int r);
+
+    float HitAABB(Ray r, vec3 AA, vec3 BB);
+
+    HitResult HitBVH(Ray ray);
+    
+    HitResult HitOctree(Ray ray);
+    
+    void TestDraw();
+
+    void DrawFramwBuffer();
+
+#endif
 };

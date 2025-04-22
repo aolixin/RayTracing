@@ -46,6 +46,7 @@
     <ClCompile Include="src\stb_image.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="main_Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BVH.h">
@@ -94,6 +95,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\Octree.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\KDTree.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

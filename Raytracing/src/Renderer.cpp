@@ -3,6 +3,9 @@
 
 #include "Renderer.h"
 
+#include <chrono>
+#include <stack>
+
 
 bool Renderer::already_init = false;
 std::shared_ptr<Renderer> Renderer::renderer = nullptr;
@@ -26,6 +29,8 @@ void Renderer::InitRenderer()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -66,7 +71,9 @@ void Renderer::InitRenderer()
     skyboxShader = Shader("Resources/shaders/skybox.vert", "Resources/shaders/skybox.frag");
     unlitShader = Shader("Resources/shaders/phong.vert", "Resources/shaders/unlit.frag");
 
+
     debug_ia_shader = Shader("Resources/shaders/screen.vert", "Resources/shaders/debug_ia.frag");
+    testShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/unlit.frag");
 
     frameBuffer0 = GetFrameBuffer(SCR_WIDTH, SCR_HEIGHT, frameTextures0, 1, 0);
 
@@ -80,10 +87,20 @@ void Renderer::DestroyRenderer()
 void Renderer::SetupScene(std::shared_ptr<Scene> scene)
 {
     this->scene = scene;
-    if (renderPath == RenderPath::GI ||
-        renderPath == RenderPath::DebugBVH ||
-        renderPath == RenderPath::DebugOctree ||
-        renderPath == RenderPath::DebugKdTree)
+    if (renderPath == RenderPath::GI
+
+#ifdef DEBUG_ACCELERATION_STRUCTURE
+        || renderPath == RenderPath::DebugBVH
+        || renderPath == RenderPath::DebugOctree
+        || renderPath == RenderPath::DebugKdTree
+#endif
+
+#ifdef TEST_ACCELERATION_STRUCTURE
+        || renderPath == RenderPath::TestBVH
+        || renderPath == RenderPath::TestOctree
+        || renderPath == RenderPath::TestKdTree
+#endif
+    )
     {
         this->scene->SetupGIScene();
     }
@@ -274,7 +291,7 @@ void Renderer::Draw()
             render_node.Draw(context);
         }
 
-        // draw bvh
+        // draw kd
         unlitShader.use();
         unlitShader.setMat4("projection", context.projection);
         unlitShader.setMat4("view", context.view);
@@ -414,3 +431,443 @@ void Renderer::DrawSkybox()
 
     glDepthFunc(GL_LESS);
 }
+
+#ifdef TEST_ACCELERATION_STRUCTURE
+
+struct Renderer::Ray
+{
+    vec3 startPoint;
+    vec3 direction;
+};
+
+struct Renderer::HitResult
+{
+    bool isHit;
+    bool isInside;
+    float distance;
+    vec3 hitPoint;
+    vec3 normal;
+    vec3 viewDir;
+};
+
+
+BVHNode Renderer::GetBVHNode(int i)
+{
+#if defined(USE_BVH)
+    return scene->myBVH.nodes[i];
+#endif
+    return BVHNode();
+}
+
+
+Renderer::HitResult Renderer::HitTriangle(Triangle triangle, Ray ray)
+{
+    HitResult res;
+    res.distance = INF;
+    res.isHit = false;
+    res.isInside = false;
+
+    vec3 p1 = triangle.vertex[0].Position;
+    vec3 p2 = triangle.vertex[1].Position;
+    vec3 p3 = triangle.vertex[2].Position;
+
+    vec3 S = ray.startPoint;
+    vec3 d = ray.direction;
+    vec3 N = normalize(cross(p2 - p1, p3 - p1));
+
+    if (dot(N, d) > 0.0f)
+    {
+        N = -N;
+        res.isInside = true;
+    }
+
+    if (abs(dot(N, d)) < 0.00001f) return res;
+
+    float t = (dot(N, p1) - dot(S, N)) / dot(d, N);
+    if (t < 0.0005f) return res;
+
+    vec3 P = S + d * t;
+
+
+    vec3 c1 = cross(p2 - p1, P - p1);
+    vec3 c2 = cross(p3 - p2, P - p2);
+    vec3 c3 = cross(p1 - p3, P - p3);
+    bool r1 = (dot(c1, N) > 0 && dot(c2, N) > 0 && dot(c3, N) > 0);
+    bool r2 = (dot(c1, N) < 0 && dot(c2, N) < 0 && dot(c3, N) < 0);
+
+
+    if (r1 || r2)
+    {
+        res.isHit = true;
+        res.hitPoint = P;
+        res.distance = t;
+        res.normal = N;
+        res.viewDir = d;
+
+        float alpha = (-(P.x - p2.x) * (p3.y - p2.y) + (P.y - p2.y) * (p3.x - p2.x)) / (-(p1.x - p2.x - 0.00005) * (p3.y
+            - p2.y + 0.00005) + (p1.y - p2.y + 0.00005) * (p3.x - p2.x + 0.00005));
+        float beta = (-(P.x - p3.x) * (p1.y - p3.y) + (P.y - p3.y) * (p1.x - p3.x)) / (-(p2.x - p3.x - 0.00005) * (p1.y
+            - p3.y + 0.00005) + (p2.y - p3.y + 0.00005) * (p1.x - p3.x + 0.00005));
+        float gama = 1.0 - alpha - beta;
+        vec3 Nsmooth = alpha * triangle.vertex[0].Normal + beta * triangle.vertex[1].Normal + gama * triangle.vertex[2].
+            Normal;
+        Nsmooth = normalize(Nsmooth);
+        res.normal = (res.isInside) ? (-Nsmooth) : (Nsmooth);
+    }
+
+    return res;
+}
+
+Triangle Renderer::GetTriangle(int i)
+{
+#if defined(USE_BVH)
+    return scene->myBVH.triangles[i];
+#elif defined(USE_OCTREE)
+    return scene->myOctree.triangles[i];
+#elif defined(USE_KDTREE)
+    return scene->myKdTree.triangles[i];
+#endif
+}
+
+Renderer::HitResult Renderer::HitArray(Ray ray, int l, int r)
+{
+    HitResult res;
+    res.isHit = false;
+    res.distance = INF;
+    for (int i = l; i <= r; i++)
+    {
+        Triangle triangle = GetTriangle(i);
+        HitResult r = HitTriangle(triangle, ray);
+        if (r.isHit && r.distance < res.distance)
+        {
+            res = r;
+        }
+    }
+    return res;
+}
+
+float Renderer::HitAABB(Ray r, vec3 AA, vec3 BB)
+{
+    vec3 invdir = vec3(1.0 / r.direction.x, 1.0 / r.direction.y, 1.0 / r.direction.z);
+
+    vec3 f = (BB - r.startPoint) * invdir;
+    vec3 n = (AA - r.startPoint) * invdir;
+
+    vec3 tmax = max(f, n);
+    vec3 tmin = min(f, n);
+
+    float t1 = std::min(tmax.x, std::min(tmax.y, tmax.z));
+    float t0 = std::max(tmin.x, std::max(tmin.y, tmin.z));
+
+    return (t1 >= t0) ? ((t0 > 0.0) ? (t0) : (t1)) : (-1.0);
+}
+
+Renderer::HitResult Renderer::HitBVH(Ray ray)
+{
+    HitResult res;
+    res.isHit = false;
+    res.distance = INF;
+
+    int stack[256];
+    int sp = 0;
+
+    stack[sp++] = 0;
+    while (sp > 0)
+    {
+        int top = stack[--sp];
+        BVHNode node = GetBVHNode(top);
+
+
+        if (node.n > 0)
+        {
+            int L = node.index;
+            int R = node.index + node.n - 1;
+            HitResult r = HitArray(ray, L, R);
+            if (r.isHit && r.distance < res.distance) res = r;
+            continue;
+        }
+
+
+        float d1 = INF;
+        float d2 = INF;
+        if (node.left > 0)
+        {
+            BVHNode leftNode = GetBVHNode(node.left);
+            d1 = HitAABB(ray, leftNode.AA, leftNode.BB);
+        }
+        if (node.right > 0)
+        {
+            BVHNode rightNode = GetBVHNode(node.right);
+            d2 = HitAABB(ray, rightNode.AA, rightNode.BB);
+        }
+
+
+        if (d1 > 0 && d2 > 0)
+        {
+            if (d1 < d2)
+            {
+                stack[sp++] = node.right;
+                stack[sp++] = node.left;
+            }
+            else
+            {
+                stack[sp++] = node.left;
+                stack[sp++] = node.right;
+            }
+        }
+        else if (d1 > 0)
+        {
+            stack[sp++] = node.left;
+        }
+        else if (d2 > 0)
+        {
+            stack[sp++] = node.right;
+        }
+    }
+
+    return res;
+}
+
+Renderer::HitResult Renderer::HitOctree(Ray ray)
+{
+    HitResult res;
+    res.isHit = false;
+    res.distance = INF;
+
+    stack<int> nodeStack;
+    nodeStack.push(0); // 从根节点开始
+
+    while (!nodeStack.empty())
+    {
+        int nodeId = nodeStack.top();
+        nodeStack.pop();
+
+        const OctreeNode& node = scene->myOctree.nodes[nodeId];
+
+        // 检查射线是否与当前节点的包围盒相交
+        float boxHitDistance = HitAABB(ray, node.center - vec3(node.halfSize), node.center + vec3(node.halfSize));
+        if (boxHitDistance < 0) continue; // 不相交，跳过该节点
+
+        // 如果是叶子节点，检查射线与节点中的三角形相交
+        if (node.triangleIndices.size() > 0)
+        {
+            for (int triangleIndex : node.triangleIndices)
+            {
+                Triangle triangle = GetTriangle(triangleIndex);
+                HitResult triangleHit = HitTriangle(triangle, ray);
+                if (triangleHit.isHit && triangleHit.distance < res.distance)
+                {
+                    res = triangleHit;
+                }
+            }
+        }
+        else
+        {
+            // 非叶子节点，将子节点压入栈中
+            for (int i = 0; i < 8; ++i)
+            {
+                if (node.children[i] != -1)
+                {
+                    nodeStack.push(node.children[i]);
+                }
+            }
+        }
+    }
+
+    return res;
+}
+
+
+void Renderer::TestDraw()
+{
+    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    RenderContext context;
+    context.projection = Perspective();
+    context.view = View();
+    context.viewPos = camera->Position;
+
+    if (renderPath == RenderPath::TestBVH)
+    {
+#if  defined(USE_BVH)
+        float pixelWidth = 2.0f / SCR_WIDTH;
+        float pixelHeight = 2.0f / SCR_HEIGHT;
+
+        auto allStart = std::chrono::high_resolution_clock::now();
+
+        // 预先计算，不要每次循环 inverse
+        mat4 cameraRotate = inverse(CameraRotate());
+
+        std::vector<vec2> hitPoints;
+        hitPoints.reserve(SCR_WIDTH * SCR_HEIGHT); // 提前分配内存，防止频繁realloc
+
+        for (int x = 0; x < SCR_WIDTH; ++x)
+        {
+            for (int y = 0; y < SCR_HEIGHT; ++y)
+            {
+                // 直接算出当前像素在NDC（Normalized Device Coordinates）中的位置
+                float ndcX = -1.0f + (x + 0.5f) * pixelWidth; // 注意加0.5f，采样中心
+                float ndcY = -1.0f + (y + 0.5f) * pixelHeight;
+
+                vec4 dir = vec4(ndcX, ndcY, -1.5f, 0.0f); // 方向向量w=0更合理
+                dir = cameraRotate * dir;
+
+                Ray ray;
+                ray.startPoint = camera->Position;
+                ray.direction = normalize(vec3(dir)); // 归一化方向
+
+                // 只总计时，不要每个像素单独计时
+                HitResult r = HitBVH(ray);
+
+                if(r.isHit)
+                {
+                    hitPoints.emplace_back(ndcX, ndcY);
+                }
+            }
+        }
+
+        auto allEnd = std::chrono::high_resolution_clock::now();
+        auto allDuration = std::chrono::duration_cast<std::chrono::milliseconds>(allEnd - allStart).count();
+        std::cout << "All rays tracing time = " << allDuration << " ms" << std::endl;
+
+
+        // Render hit points to the framebuffer
+
+        glGenVertexArrays(1, &TestVAO);
+        glGenBuffers(1, &TestVBO);
+        // 绑定 VAO
+        glBindVertexArray(TestVAO);
+        // 绑定 VBO，上传数据
+        glBindBuffer(GL_ARRAY_BUFFER, TestVBO);
+        glBufferData(GL_ARRAY_BUFFER, hitPoints.size() * sizeof(vec2), hitPoints.data(), GL_STATIC_DRAW);
+        // 设置顶点属性
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), (void*)0);
+        glEnableVertexAttribArray(0);
+        // 绑定完成，解绑 VAO（可以选择解绑，保险起见）
+        glBindVertexArray(0);
+
+
+        // 使用 unlitShader
+        testShader.use();
+        testShader.setMat4("projection", context.projection);
+        testShader.setMat4("view", context.view);
+        testShader.setMat4("model", glm::mat4(1.0f));
+        testShader.setVec3("objectColor", vec3(1.0f, 0.0f, 0.0f)); // 红色
+
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer0);
+        glClearColor(0.0f, 1.0f, 0.0f, 1.0f); // 绿色背景
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // 绘制点
+        glBindVertexArray(TestVAO);
+        glPointSize(3.0f); // 设置点大小
+        glDrawArrays(GL_POINTS, 0, hitPoints.size());
+        glBindVertexArray(0);
+
+        // 解绑 framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#endif
+    }
+    else if (renderPath == RenderPath::TestOctree)
+    {
+#if defined(USE_OCTREE)
+        float pixelWidth = 2.0f / SCR_WIDTH;
+        float pixelHeight = 2.0f / SCR_HEIGHT;
+
+        auto allStart = std::chrono::high_resolution_clock::now();
+
+        // 预先计算，不要每次循环 inverse
+        mat4 cameraRotate = inverse(CameraRotate());
+
+        std::vector<vec2> hitPoints;
+        hitPoints.reserve(SCR_WIDTH * SCR_HEIGHT); // 提前分配内存，防止频繁realloc
+
+        for (int x = 0; x < SCR_WIDTH; ++x)
+        {
+            for (int y = 0; y < SCR_HEIGHT; ++y)
+            {
+                // 直接算出当前像素在NDC（Normalized Device Coordinates）中的位置
+                float ndcX = -1.0f + (x + 0.5f) * pixelWidth; // 注意加0.5f，采样中心
+                float ndcY = -1.0f + (y + 0.5f) * pixelHeight;
+
+                vec4 dir = vec4(ndcX, ndcY, -1.5f, 0.0f); // 方向向量w=0更合理
+                dir = cameraRotate * dir;
+
+                Ray ray;
+                ray.startPoint = camera->Position;
+                ray.direction = normalize(vec3(dir)); // 归一化方向
+
+                // 只总计时，不要每个像素单独计时
+                HitResult r = HitOctree(ray);
+
+                if (r.isHit)
+                {
+                    hitPoints.emplace_back(ndcX, ndcY);
+                }
+            }
+        }
+
+        auto allEnd = std::chrono::high_resolution_clock::now();
+        auto allDuration = std::chrono::duration_cast<std::chrono::milliseconds>(allEnd - allStart).count();
+        std::cout << "All rays tracing time = " << allDuration << " ms" << std::endl;
+
+
+        // Render hit points to the framebuffer
+
+        glGenVertexArrays(1, &TestVAO);
+        glGenBuffers(1, &TestVBO);
+        // 绑定 VAO
+        glBindVertexArray(TestVAO);
+        // 绑定 VBO，上传数据
+        glBindBuffer(GL_ARRAY_BUFFER, TestVBO);
+        glBufferData(GL_ARRAY_BUFFER, hitPoints.size() * sizeof(vec2), hitPoints.data(), GL_STATIC_DRAW);
+        // 设置顶点属性
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), (void*)0);
+        glEnableVertexAttribArray(0);
+        // 绑定完成，解绑 VAO（可以选择解绑，保险起见）
+        glBindVertexArray(0);
+
+
+        // 使用 unlitShader
+        testShader.use();
+        testShader.setMat4("projection", context.projection);
+        testShader.setMat4("view", context.view);
+        testShader.setMat4("model", glm::mat4(1.0f));
+        testShader.setVec3("objectColor", vec3(1.0f, 0.0f, 0.0f)); // 红色
+
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer0);
+        glClearColor(0.0f, 1.0f, 0.0f, 1.0f); // 绿色背景
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // 绘制点
+        glBindVertexArray(TestVAO);
+        glPointSize(3.0f); // 设置点大小
+        glDrawArrays(GL_POINTS, 0, hitPoints.size());
+        glBindVertexArray(0);
+
+        // 解绑 framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#endif
+    }
+    else if (renderPath == RenderPath::TestKdTree)
+    {
+#if defined(USE_KDTREE) && defined(DEBUG_KDTREE)
+
+#endif
+    }
+}
+
+void Renderer::DrawFramwBuffer()
+{
+    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(1.0f, 0.05f, 0.05f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    screenShader.use();
+    screenShader.setTexture("screenTexture", frameTextures0[0], 6);
+    DrawQuad(screenShader);
+}
+
+
+#endif

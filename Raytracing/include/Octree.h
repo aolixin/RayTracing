@@ -8,11 +8,13 @@
 #include <vector>
 #include "GlobalFeat.h"
 #include <functional>
+#include <unordered_set>
 
 using namespace std;
 using namespace glm;
 
 #define INF 114514.0
+#define MIN_NODE_SIZE 0.01 // 新增：节点的最小尺寸限制
 
 // 八叉树节点结构体
 struct OctreeNode
@@ -74,25 +76,27 @@ public:
         {
             triangleIndices.push_back(i);
         }
-        buildOctree(rootId, triangleIndices);
+        unordered_set<int> addedTriangles;
+        buildOctree(rootId, triangleIndices, addedTriangles);
+
+        cout << "add triangles num = " << addedTriangles.size() << endl;
     }
 
 private:
-
     // 判断三角形是否与八叉树节点的边界框相交
     bool triangleIntersectsBox(const Triangle& triangle, const vec3& center, float halfSize)
     {
-        // 简单的 AABB 与三角形相交检测
+        // 松散八叉树，外层边界半径是内层边界的 1.5 倍
+        // float looseHalfSize = halfSize * 1.5f;
         vec3 minBound = center - vec3(halfSize, halfSize, halfSize);
         vec3 maxBound = center + vec3(halfSize, halfSize, halfSize);
 
-        const float EPSILON = 1e-6f; // 引入误差范围
 
         for (int i = 0; i < 3; ++i)
         {
-            if (triangle.vertex[i].Position.x >= minBound.x - EPSILON && triangle.vertex[i].Position.x <= maxBound.x + EPSILON &&
-                triangle.vertex[i].Position.y >= minBound.y - EPSILON && triangle.vertex[i].Position.y <= maxBound.y + EPSILON &&
-                triangle.vertex[i].Position.z >= minBound.z - EPSILON && triangle.vertex[i].Position.z <= maxBound.z + EPSILON)
+            if (triangle.vertex[i].Position.x >= minBound.x && triangle.vertex[i].Position.x <= maxBound.x &&
+                triangle.vertex[i].Position.y >= minBound.y && triangle.vertex[i].Position.y <= maxBound.y &&
+                triangle.vertex[i].Position.z >= minBound.z && triangle.vertex[i].Position.z <= maxBound.z)
             {
                 return true;
             }
@@ -101,11 +105,39 @@ private:
     }
 
     // 构建八叉树
-    void buildOctree(int nodeId, const vector<int>& triangleIndices)
+    void buildOctree(int nodeId, const vector<int>& triangleIndices, unordered_set<int>& addedTriangles)
     {
-        if (triangleIndices.size() <= maxTrianglesPerNode)
+        if (triangleIndices.size() <= maxTrianglesPerNode || nodes[nodeId].halfSize <= MIN_NODE_SIZE)
         {
-            nodes[nodeId].triangleIndices = triangleIndices;
+            for (int index : triangleIndices)
+            {
+                if (addedTriangles.find(index) == addedTriangles.end())
+                {
+                    nodes[nodeId].triangleIndices.push_back(index);
+                    addedTriangles.insert(index);
+                }
+            }
+            // if (nodes[nodeId].halfSize <= MIN_NODE_SIZE)
+            {
+                // 重新计算包围盒
+                vec3 AA = vec3(INF, INF, INF);
+                vec3 BB = vec3(-INF, -INF, -INF);
+                for (int index : nodes[nodeId].triangleIndices)
+                {
+                    const Triangle& triangle = triangles[index];
+                    for (int i = 0; i < 3; ++i)
+                    {
+                        AA.x = std::min(AA.x, triangle.vertex[i].Position.x);
+                        AA.y = std::min(AA.y, triangle.vertex[i].Position.y);
+                        AA.z = std::min(AA.z, triangle.vertex[i].Position.z);
+                        BB.x = std::max(BB.x, triangle.vertex[i].Position.x);
+                        BB.y = std::max(BB.y, triangle.vertex[i].Position.y);
+                        BB.z = std::max(BB.z, triangle.vertex[i].Position.z);
+                    }
+                }
+                nodes[nodeId].center = (AA + BB) / 2.0f;
+                nodes[nodeId].halfSize = std::max(std::max(BB.x - AA.x, BB.y - AA.y), BB.z - AA.z) / 2.0f;
+            }
             return;
         }
 
@@ -125,6 +157,7 @@ private:
         vector<vector<int>> childTriangleIndices(8);
         for (int index : triangleIndices)
         {
+            if (addedTriangles.find(index) != addedTriangles.end()) continue;
             const Triangle& triangle = triangles[index];
             for (int i = 0; i < 8; ++i)
             {
@@ -135,6 +168,8 @@ private:
             }
         }
 
+        float newHalf = nodes[nodeId].halfSize;
+        
         for (int i = 0; i < 8; ++i)
         {
             if (!childTriangleIndices[i].empty())
@@ -144,9 +179,14 @@ private:
                 nodes[childId].center = childCenters[i];
                 nodes[childId].halfSize = childHalfSize;
                 nodes[nodeId].children[i] = childId;
-                buildOctree(childId, childTriangleIndices[i]);
+                buildOctree(childId, childTriangleIndices[i], addedTriangles);
+                
+                newHalf = std::max(newHalf,nodes[childId].halfSize * 2.0f);
             }
         }
+
+        nodes[nodeId].halfSize = newHalf;
+
     }
 
 public:
@@ -216,7 +256,7 @@ public:
         };
 
         // 从根节点开始遍历
-        traverse(0, 1);
+        traverse(0, 0);
 
         glGenVertexArrays(1, &DebugVAO);
         glGenBuffers(1, &DebugVBO);
@@ -240,10 +280,12 @@ public:
 
 
     // 计算八叉树的内存占用，单位为 KB
-    float getMemoryUsageInKB() const {
+    float getMemoryUsageInKB() const
+    {
         size_t triangleMemory = triangles.size() * sizeof(Triangle);
         size_t nodeMemory = 0;
-        for (const auto& node : nodes) {
+        for (const auto& node : nodes)
+        {
             nodeMemory += sizeof(OctreeNode);
             nodeMemory += node.triangleIndices.size() * sizeof(int);
         }

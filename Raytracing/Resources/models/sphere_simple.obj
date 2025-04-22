@@ -1,7 +1,3 @@
-# Blender 4.2.2 LTS
-# www.blender.org
-mtllib sphere_simple.mtl
-o Sphere
 v 0.000000 0.831470 -0.555570
 v 0.000000 0.555570 -0.831470
 v 0.000000 0.195090 -0.980785

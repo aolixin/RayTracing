@@ -42,8 +42,8 @@ void Scene::SetupGIScene()
 
 #ifdef USE_BVH
     this->myBVH.triangles = this->triangles_expand;
-    this->myBVH.BuildBVH(0, this->triangles_expand.size() - 1);
-    // this->myBVH.BuildBVHWithSAH(0, this->triangles_expand.size() - 1);
+    // this->myBVH.BuildBVH(0, this->triangles_expand.size() - 1);
+    this->myBVH.BuildBVHWithSAH(0, this->triangles_expand.size() - 1);
 #ifdef DEBUG_BVH
     // this->myBVH.BuildDebugBVHTree(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
     // this->myBVH.BuildDebugBVHTree_l(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
@@ -52,7 +52,7 @@ void Scene::SetupGIScene()
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::cout << "build time = " << duration << " ms" << std::endl;
     
-    cout << "total memory: " << this->myBVH.GetMemoryUsageInKB() << endl;
+    cout << "total memory: " << this->myBVH.GetMemoryUsageInKB()<<" kb" << endl;
 #endif
 #endif
 
@@ -64,7 +64,7 @@ void Scene::SetupGIScene()
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::cout << "build time = " << duration << " ms" << std::endl;
-    cout << "total memory: " << this->myOctree.getMemoryUsageInKB() << endl;
+    cout << "total memory: " << this->myOctree.getMemoryUsageInKB() <<" kb"<< endl;
 #endif
 #endif
 
@@ -76,13 +76,13 @@ void Scene::SetupGIScene()
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::cout << "build time = " << duration << " ms" << std::endl;
+    cout << "total memory: " << this->myKdTree.getMemoryUsageInKB() << " kb" << endl;
 #endif
 #endif
 
     // std::cout << "SAH BVHNode:    " << this->myBVH.nodes.size() << endl;
 
 
-    
     GenBuffers();
 }
 

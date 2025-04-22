@@ -2,43 +2,45 @@
 #include "Utils.h"
 #include "GlobalFeat.h"
 
-shared_ptr<Scene> BuildCornellbox();
-shared_ptr<Scene> BuildSphere();
+std::shared_ptr<Scene> BuildCornellbox();
+std::shared_ptr<Scene> BuildSphere();
 
 // Debug
-shared_ptr<Scene> BuildDebugBVHScene();
-shared_ptr<Scene> BuildSimple();
-shared_ptr<Scene> BuildSimple_Sphere();
+std::shared_ptr<Scene> BuildDebugBVHScene();
+std::shared_ptr<Scene> BuildSimple();
+std::shared_ptr<Scene> BuildSimple_Sphere();
 
 
-shared_ptr<Scene> BuildScene()
+std::shared_ptr<Scene> BuildScene()
 {
     if (RENDER_PATH == RenderPath::Forward || RENDER_PATH == RenderPath::GI)
     {
+        return BuildSimple_Sphere();
         return BuildCornellbox();
         // return BuildSphere();
-    }
-    else if (RENDER_PATH == RenderPath::DebugBVH)
-    {
-        // return BuildCornellbox();
-        // return BuildDebugBVHScene();
-        return BuildSimple_Sphere();
-    }
-    else if (RENDER_PATH == RenderPath::DebugOctree)
-    {
-        // return BuildDebugBVHScene();
-        return BuildSimple_Sphere();
-    }
-    else if (RENDER_PATH == RenderPath::DebugKdTree)
-    {
-        // return BuildDebugBVHScene();
-        return BuildSimple_Sphere();
     }
     else if (RENDER_PATH == RenderPath::DebugIA)
     {
         // return BuildDebugBVHScene();
         return BuildSimple_Sphere();
     }
+    else if (RENDER_PATH == RenderPath::DebugBVH ||
+        RENDER_PATH == RenderPath::DebugOctree ||
+        RENDER_PATH == RenderPath::DebugKdTree)
+    {
+        // return BuildCornellbox();
+        // return BuildDebugBVHScene();
+        return BuildSimple_Sphere();
+    }
+    else if (RENDER_PATH == RenderPath::TestBVH ||
+        RENDER_PATH == RenderPath::TestOctree ||
+        RENDER_PATH == RenderPath::TestKdTree)
+    {
+        // return BuildCornellbox();
+        // return BuildDebugBVHScene();
+        return BuildSimple_Sphere();
+    }
+
     else
     {
         cout << "Error: Invalid render path!" << endl;
@@ -47,9 +49,9 @@ shared_ptr<Scene> BuildScene()
 }
 
 
-shared_ptr<Scene> BuildCornellbox()
+std::shared_ptr<Scene> BuildCornellbox()
 {
-    shared_ptr<Scene> myScene = make_shared<Scene>();
+    std::shared_ptr<Scene> myScene = make_shared<Scene>();
     glm::mat4 identity = glm::mat4(1.0f);
 
     // bunny
@@ -123,9 +125,9 @@ shared_ptr<Scene> BuildCornellbox()
 }
 
 
-shared_ptr<Scene> BuildSphere()
+std::shared_ptr<Scene> BuildSphere()
 {
-    shared_ptr<Scene> myScene = make_shared<Scene>();
+    std::shared_ptr<Scene> myScene = make_shared<Scene>();
     glm::mat4 identity = glm::mat4(1.0f);
 
     // spheres
@@ -200,9 +202,9 @@ shared_ptr<Scene> BuildSphere()
     return myScene;
 }
 
-shared_ptr<Scene> BuildDebugBVHScene()
+std::shared_ptr<Scene> BuildDebugBVHScene()
 {
-    shared_ptr<Scene> myScene = make_shared<Scene>();
+    std::shared_ptr<Scene> myScene = make_shared<Scene>();
     glm::mat4 identity = glm::mat4(1.0f);
 
     // bunny
@@ -225,9 +227,9 @@ shared_ptr<Scene> BuildDebugBVHScene()
 }
 
 
-shared_ptr<Scene> BuildSimple()
+std::shared_ptr<Scene> BuildSimple()
 {
-    shared_ptr<Scene> myScene = make_shared<Scene>();
+    std::shared_ptr<Scene> myScene = make_shared<Scene>();
     glm::mat4 identity = glm::mat4(1.0f);
 
 
@@ -284,9 +286,9 @@ shared_ptr<Scene> BuildSimple()
 }
 
 
-shared_ptr<Scene> BuildSimple_Sphere()
+std::shared_ptr<Scene> BuildSimple_Sphere()
 {
-    shared_ptr<Scene> myScene = make_shared<Scene>();
+    std::shared_ptr<Scene> myScene = make_shared<Scene>();
     glm::mat4 identity = glm::mat4(1.0f);
 
     // spheres
@@ -312,7 +314,7 @@ shared_ptr<Scene> BuildSimple_Sphere()
     mat1.roughness = 0.4f;
     Model model1("Resources/models/plane.obj");
     myScene->Add(model1, mat1);
-    
+
 
     return myScene;
 }

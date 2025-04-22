@@ -22,7 +22,9 @@ struct KdTreeNode
     vec3 AA, BB;
     int splitAxis;
 
-    KdTreeNode() : left(0), right(0), n(0), index(0), splitAxis(0) {}
+    KdTreeNode() : left(0), right(0), n(0), index(0), splitAxis(0)
+    {
+    }
 };
 
 // Kd树类
@@ -101,7 +103,8 @@ private:
 
         int axis = depth % 3;
         nodes[id].splitAxis = axis;
-        std::sort(triangles.begin() + l, triangles.begin() + r + 1, [axis](const Triangle& t1, const Triangle& t2) {
+        std::sort(triangles.begin() + l, triangles.begin() + r + 1, [axis](const Triangle& t1, const Triangle& t2)
+        {
             return cmp(t1, t2, axis);
         });
 
@@ -170,7 +173,7 @@ public:
         };
 
         // 从根节点开始遍历
-        traverse(0, 1);
+        traverse(0, 0);
 
         glGenVertexArrays(1, &DebugVAO);
         glGenBuffers(1, &DebugVBO);
@@ -190,6 +193,16 @@ public:
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+    }
+
+
+    // 计算Kd树的内存占用，单位为KB
+    float getMemoryUsageInKB() const
+    {
+        size_t triangleMemory = triangles.size() * sizeof(Triangle);
+        size_t nodeMemory = nodes.size() * sizeof(KdTreeNode);
+        size_t totalMemory = triangleMemory + nodeMemory;
+        return static_cast<float>(totalMemory) / 1024.0;
     }
 #endif
 };

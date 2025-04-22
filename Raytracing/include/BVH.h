@@ -449,7 +449,7 @@ public:
         };
 
         // 从根节点开始遍历
-        traverse(0, 1);
+        traverse(0, 0);
 
         glGenVertexArrays(1, &DebugVAO);
         glGenBuffers(1, &DebugVBO);
