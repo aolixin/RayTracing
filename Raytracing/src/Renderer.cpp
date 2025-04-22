@@ -631,6 +631,7 @@ Renderer::HitResult Renderer::HitBVH(Ray ray)
 Renderer::HitResult Renderer::HitOctree(Ray ray)
 {
     HitResult res;
+#if defined(USE_OCTREE)
     res.isHit = false;
     res.distance = INF;
 
@@ -673,7 +674,56 @@ Renderer::HitResult Renderer::HitOctree(Ray ray)
             }
         }
     }
+#endif
+    return res;
+}
 
+Renderer::HitResult Renderer::HitKDTree(Ray ray)
+{
+    HitResult res;
+#ifdef USE_KDTREE
+    res.isHit = false;
+    res.distance = INF;
+
+    std::stack<int> nodeStack;
+    nodeStack.push(0); // 从根节点开始
+
+    while (!nodeStack.empty())
+    {
+        int nodeId = nodeStack.top();
+        nodeStack.pop();
+
+        const KdTreeNode& node = scene->myKdTree.nodes[nodeId];
+
+        // 检查射线是否与当前节点的包围盒相交
+        float boxHitDistance = HitAABB(ray, node.AA, node.BB);
+        if (boxHitDistance < 0) continue; // 不相交，跳过该节点
+
+        // 如果是叶子节点，检查射线与节点中的三角形相交
+        if (node.n > 0)
+        {
+            int L = node.index;
+            int R = node.index + node.n - 1;
+            HitResult r = HitArray(ray, L, R);
+            if (r.isHit && r.distance < res.distance)
+            {
+                res = r;
+            }
+        }
+        else
+        {
+            // 非叶子节点，将子节点压入栈中
+            if (node.left > 0)
+            {
+                nodeStack.push(node.left);
+            }
+            if (node.right > 0)
+            {
+                nodeStack.push(node.right);
+            }
+        }
+    }
+#endif
     return res;
 }
 
@@ -852,7 +902,82 @@ void Renderer::TestDraw()
     else if (renderPath == RenderPath::TestKdTree)
     {
 #if defined(USE_KDTREE) && defined(DEBUG_KDTREE)
+        float pixelWidth = 2.0f / SCR_WIDTH;
+        float pixelHeight = 2.0f / SCR_HEIGHT;
 
+        auto allStart = std::chrono::high_resolution_clock::now();
+
+        // 预先计算，不要每次循环 inverse
+        mat4 cameraRotate = inverse(CameraRotate());
+
+        std::vector<vec2> hitPoints;
+        hitPoints.reserve(SCR_WIDTH * SCR_HEIGHT); // 提前分配内存，防止频繁realloc
+
+        for (int x = 0; x < SCR_WIDTH; ++x)
+        {
+            for (int y = 0; y < SCR_HEIGHT; ++y)
+            {
+                // 直接算出当前像素在NDC（Normalized Device Coordinates）中的位置
+                float ndcX = -1.0f + (x + 0.5f) * pixelWidth; // 注意加0.5f，采样中心
+                float ndcY = -1.0f + (y + 0.5f) * pixelHeight;
+
+                vec4 dir = vec4(ndcX, ndcY, -1.5f, 0.0f); // 方向向量w=0更合理
+                dir = cameraRotate * dir;
+
+                Ray ray;
+                ray.startPoint = camera->Position;
+                ray.direction = normalize(vec3(dir)); // 归一化方向
+
+                // 只总计时，不要每个像素单独计时
+                HitResult r = HitKDTree(ray);
+
+                if (r.isHit)
+                {
+                    hitPoints.emplace_back(ndcX, ndcY);
+                }
+            }
+        }
+
+        auto allEnd = std::chrono::high_resolution_clock::now();
+        auto allDuration = std::chrono::duration_cast<std::chrono::milliseconds>(allEnd - allStart).count();
+        std::cout << "All rays tracing time = " << allDuration << " ms" << std::endl;
+
+
+        // Render hit points to the framebuffer
+
+        glGenVertexArrays(1, &TestVAO);
+        glGenBuffers(1, &TestVBO);
+        // 绑定 VAO
+        glBindVertexArray(TestVAO);
+        // 绑定 VBO，上传数据
+        glBindBuffer(GL_ARRAY_BUFFER, TestVBO);
+        glBufferData(GL_ARRAY_BUFFER, hitPoints.size() * sizeof(vec2), hitPoints.data(), GL_STATIC_DRAW);
+        // 设置顶点属性
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), (void*)0);
+        glEnableVertexAttribArray(0);
+        // 绑定完成，解绑 VAO（可以选择解绑，保险起见）
+        glBindVertexArray(0);
+
+
+        // 使用 unlitShader
+        testShader.use();
+        testShader.setMat4("projection", context.projection);
+        testShader.setMat4("view", context.view);
+        testShader.setMat4("model", glm::mat4(1.0f));
+        testShader.setVec3("objectColor", vec3(1.0f, 0.0f, 0.0f)); // 红色
+
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer0);
+        glClearColor(0.0f, 1.0f, 0.0f, 1.0f); // 绿色背景
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // 绘制点
+        glBindVertexArray(TestVAO);
+        glPointSize(3.0f); // 设置点大小
+        glDrawArrays(GL_POINTS, 0, hitPoints.size());
+        glBindVertexArray(0);
+
+        // 解绑 framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
     }
 }

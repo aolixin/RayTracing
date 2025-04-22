@@ -8,21 +8,26 @@ std::shared_ptr<Scene> BuildSphere();
 // Debug
 std::shared_ptr<Scene> BuildDebugBVHScene();
 std::shared_ptr<Scene> BuildSimple();
-std::shared_ptr<Scene> BuildSimple_Sphere();
+std::shared_ptr<Scene> BuildSphere_simple();
+std::shared_ptr<Scene> BuildSphere_complex();
+
+std::shared_ptr<Scene> BuildCornellbox_complex();
 
 
 std::shared_ptr<Scene> BuildScene()
 {
     if (RENDER_PATH == RenderPath::Forward || RENDER_PATH == RenderPath::GI)
     {
-        return BuildSimple_Sphere();
+        return BuildSphere_complex();
+        return BuildCornellbox_complex();
+        return BuildSphere_simple();
         return BuildCornellbox();
         // return BuildSphere();
     }
     else if (RENDER_PATH == RenderPath::DebugIA)
     {
         // return BuildDebugBVHScene();
-        return BuildSimple_Sphere();
+        return BuildSphere_simple();
     }
     else if (RENDER_PATH == RenderPath::DebugBVH ||
         RENDER_PATH == RenderPath::DebugOctree ||
@@ -30,17 +35,20 @@ std::shared_ptr<Scene> BuildScene()
     {
         // return BuildCornellbox();
         // return BuildDebugBVHScene();
-        return BuildSimple_Sphere();
+        return BuildSphere_simple();
     }
+#ifdef TEST_ACCELERATION_STRUCTURE
     else if (RENDER_PATH == RenderPath::TestBVH ||
         RENDER_PATH == RenderPath::TestOctree ||
         RENDER_PATH == RenderPath::TestKdTree)
     {
+        return BuildSphere_simple();
+        // return BuildSphere_complex();
+        // return BuildCornellbox_complex();
         // return BuildCornellbox();
         // return BuildDebugBVHScene();
-        return BuildSimple_Sphere();
     }
-
+#endif
     else
     {
         cout << "Error: Invalid render path!" << endl;
@@ -88,17 +96,17 @@ std::shared_ptr<Scene> BuildCornellbox()
     Model light("Resources/models/cornellbox/light.obj");
 
     // short
-    Material mat5(phongShader);
-    mat5.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
-    mat5.specular = 0.0f;
-    Model shortBox("Resources/models/cornellbox/short.obj");
-
-
-    // tall
-    Material mat6(phongShader);
-    mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
-    mat6.specular = 0.0f;
-    Model tallBox("Resources/models/cornellbox/tall.obj");
+    // Material mat5(phongShader);
+    // mat5.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
+    // mat5.specular = 0.0f;
+    // Model shortBox("Resources/models/cornellbox/short.obj");
+    //
+    //
+    // // tall
+    // Material mat6(phongShader);
+    // mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
+    // mat6.specular = 0.0f;
+    // Model tallBox("Resources/models/cornellbox/tall.obj");
 
     myScene->Add(bunny, mat0);
     myScene->Add(left, mat1);
@@ -286,7 +294,7 @@ std::shared_ptr<Scene> BuildSimple()
 }
 
 
-std::shared_ptr<Scene> BuildSimple_Sphere()
+std::shared_ptr<Scene> BuildSphere_simple()
 {
     std::shared_ptr<Scene> myScene = make_shared<Scene>();
     glm::mat4 identity = glm::mat4(1.0f);
@@ -315,6 +323,71 @@ std::shared_ptr<Scene> BuildSimple_Sphere()
     Model model1("Resources/models/plane.obj");
     myScene->Add(model1, mat1);
 
+
+    return myScene;
+}
+
+std::shared_ptr<Scene> BuildSphere_complex()
+{
+    std::shared_ptr<Scene> myScene = make_shared<Scene>();
+    glm::mat4 identity = glm::mat4(1.0f);
+
+    // spheres
+    Shader shader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+    Model sphere("Resources/models/sphere.obj");
+
+    // First sphere
+    Material m(shader);
+    m.baseColor = vec3(1, 1, 1);
+
+    float xOffset = 1.0f;
+    
+    glm::mat4 trans = glm::translate(identity, glm::vec3(0.0f, -0.6f, 0.0f));
+    myScene->Add(sphere, m, trans);
+    trans = glm::translate(identity, glm::vec3(xOffset, -0.6f, 0.0f));
+    myScene->Add(sphere, m, trans);
+    trans = glm::translate(identity, glm::vec3(-xOffset, -0.6f, 0.0f));
+    myScene->Add(sphere, m, trans);
+
+    float yOffset = 0.6;
+    trans = glm::translate(identity, glm::vec3(0.0f, yOffset, 0.0f));
+    myScene->Add(sphere, m, trans);
+    trans = glm::translate(identity, glm::vec3(xOffset, yOffset, 0.0f));
+    myScene->Add(sphere, m, trans);
+    trans = glm::translate(identity, glm::vec3(-xOffset, yOffset, 0.0f));
+    myScene->Add(sphere, m, trans);
+    
+
+    // plane
+    Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+    Material mat1(shader1);
+    mat1.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    Model model1("Resources/models/plane.obj");
+    myScene->Add(model1, mat1);
+
+
+    return myScene;
+}
+
+std::shared_ptr<Scene> BuildCornellbox_complex()
+{
+    std::shared_ptr<Scene> myScene = make_shared<Scene>();
+    glm::mat4 identity = glm::mat4(1.0f);
+
+    // bunny
+    Shader phongShader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
+
+    Material mat0(phongShader);
+    mat0.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
+    mat0.specular = 0.0f;
+    Model bunny("Resources/models/bunny.obj");
+
+    myScene->Add(bunny, mat0, glm::translate(identity, glm::vec3(-1.0f, 0.0f, 0.0f)));
+    myScene->Add(bunny, mat0);
+    myScene->Add(bunny, mat0, glm::translate(identity, glm::vec3(1.0f, 0.0f, 0.0f)));
+
+
+    
 
     return myScene;
 }

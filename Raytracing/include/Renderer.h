@@ -104,6 +104,8 @@ public:
     HitResult HitBVH(Ray ray);
     
     HitResult HitOctree(Ray ray);
+
+    HitResult HitKDTree(Ray ray);
     
     void TestDraw();
 

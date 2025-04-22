@@ -1,7 +1,4 @@
 #include "GlobalFeat.h"
-
-#if 0
-
 #include "Shader.h"
 #include "Model.h"
 #include "Renderer.h"
@@ -14,6 +11,8 @@
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+
+#ifdef TEST_ACCELERATION_STRUCTURE
 int main()
 {
     const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RENDER_PATH);
@@ -22,7 +21,46 @@ int main()
 
     renderer->SetupScene(myScene);
 
-    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 4.0f));
+    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 7.0f));
+
+    renderer->camera = camera;
+
+    renderer->TestDraw();
+
+    int frameCount = 0;
+    while (!renderer->RendererClose())
+    {
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+
+        renderer->processInput(deltaTime);
+
+        renderer->DrawFramwBuffer();
+
+
+        renderer->SwapBuffers();
+        renderer->PollEvents();
+        // return 0;
+    }
+
+    renderer->Terminate();
+    return 0;
+}
+
+
+#else
+
+int main()
+{
+    const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RENDER_PATH);
+
+    shared_ptr<Scene> myScene = BuildScene();
+
+    renderer->SetupScene(myScene);
+
+    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 7.0f));
 
     renderer->camera = camera;
 

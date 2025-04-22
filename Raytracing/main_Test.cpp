@@ -1,4 +1,4 @@
-#if 1
+#if 0
 
 #include "Shader.h"
 #include "Model.h"
@@ -21,7 +21,7 @@ int main()
 
     renderer->SetupScene(myScene);
 
-    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 4.0f));
+    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 
     renderer->camera = camera;
 
@@ -30,11 +30,6 @@ int main()
     int frameCount = 0;
     while (!renderer->RendererClose())
     {
-        if (renderer->renderPath == RenderPath::GI)
-        {
-            cout << "Frame: " << frameCount++ << endl;
-        }
-        
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;

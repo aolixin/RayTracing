@@ -4,6 +4,7 @@
 
 #define TEST_ACCELERATION_STRUCTURE
 
+
 enum RenderPath
 {
     Forward = 0,
@@ -23,7 +24,16 @@ enum RenderPath
 #endif
 };
 
-#define RENDER_PATH (RenderPath::TestOctree)
+#define RELEASE_PATH (RenderPath::Forward)
+#define TEST_PATH (RenderPath::TestOctree)
+
+
+#ifdef TEST_ACCELERATION_STRUCTURE
+#define RENDER_PATH TEST_PATH
+#else
+#define RENDER_PATH RELEASE_PATH
+#endif
+
 
 // #define USE_BVH
 #define USE_OCTREE

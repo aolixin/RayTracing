@@ -42,14 +42,15 @@ void Scene::SetupGIScene()
 
 #ifdef USE_BVH
     this->myBVH.triangles = this->triangles_expand;
-    // this->myBVH.BuildBVH(0, this->triangles_expand.size() - 1);
-    this->myBVH.BuildBVHWithSAH(0, this->triangles_expand.size() - 1);
+    this->myBVH.BuildBVH(0, this->triangles_expand.size() - 1);
+    // this->myBVH.BuildBVHWithSAH(0, this->triangles_expand.size() - 1);
 #ifdef DEBUG_BVH
     // this->myBVH.BuildDebugBVHTree(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
     // this->myBVH.BuildDebugBVHTree_l(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    
     std::cout << "build time = " << duration << " ms" << std::endl;
     
     cout << "total memory: " << this->myBVH.GetMemoryUsageInKB()<<" kb" << endl;
@@ -72,7 +73,7 @@ void Scene::SetupGIScene()
 #ifdef USE_KDTREE
     this->myKdTree = KDTree(this->triangles_expand);
 #ifdef DEBUG_KDTREE
-    this->myKdTree.BuildDebugKdTree_l(DEBUG_KDTREE_START_DEPTH, DEBUG_KDTREE_END_DEPTH);
+    // this->myKdTree.BuildDebugKdTree_l(DEBUG_KDTREE_START_DEPTH, DEBUG_KDTREE_END_DEPTH);
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::cout << "build time = " << duration << " ms" << std::endl;
@@ -83,7 +84,7 @@ void Scene::SetupGIScene()
     // std::cout << "SAH BVHNode:    " << this->myBVH.nodes.size() << endl;
 
 
-    GenBuffers();
+    //GenBuffers();
 }
 
 

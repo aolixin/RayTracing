@@ -77,7 +77,7 @@ public:
             triangleIndices.push_back(i);
         }
         unordered_set<int> addedTriangles;
-        buildOctree(rootId, triangleIndices, addedTriangles);
+        BuildOctree(rootId, triangleIndices, addedTriangles);
 
         cout << "add triangles num = " << addedTriangles.size() << endl;
     }
@@ -105,7 +105,7 @@ private:
     }
 
     // ¹¹½¨°Ë²æÊ÷
-    void buildOctree(int nodeId, const vector<int>& triangleIndices, unordered_set<int>& addedTriangles)
+    void BuildOctree(int nodeId, const vector<int>& triangleIndices, unordered_set<int>& addedTriangles)
     {
         if (triangleIndices.size() <= maxTrianglesPerNode || nodes[nodeId].halfSize <= MIN_NODE_SIZE)
         {
@@ -179,7 +179,7 @@ private:
                 nodes[childId].center = childCenters[i];
                 nodes[childId].halfSize = childHalfSize;
                 nodes[nodeId].children[i] = childId;
-                buildOctree(childId, childTriangleIndices[i], addedTriangles);
+                BuildOctree(childId, childTriangleIndices[i], addedTriangles);
                 
                 newHalf = std::max(newHalf,nodes[childId].halfSize * 2.0f);
             }
