@@ -31,9 +31,6 @@
     <ClCompile Include="src\Mesh.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\RenderContext.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\RenderNode.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -46,7 +43,6 @@
     <ClCompile Include="src\stb_image.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="main_Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BVH.h">

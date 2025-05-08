@@ -43,8 +43,8 @@ public:
     std::shared_ptr<Camera> camera;
     std::shared_ptr<Scene> scene;
 
-    static constexpr unsigned int SCR_WIDTH = 1080;
-    static constexpr unsigned int SCR_HEIGHT = 720;
+    static constexpr unsigned int SCR_WIDTH = 1920;
+    static constexpr unsigned int SCR_HEIGHT = 1080;
     float lastX = SCR_WIDTH / 2.0f;
     float lastY = SCR_HEIGHT / 2.0f;
 
@@ -86,7 +86,12 @@ public:
 
     void Terminate();
 
-#ifdef TEST_ACCELERATION_STRUCTURE
+#ifdef DEBUG_MODE
+    int debugDepth = 0; 
+#endif
+
+
+#ifdef TEST_MODE
     struct Ray;
 
     struct HitResult;

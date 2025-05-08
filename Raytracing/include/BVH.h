@@ -401,6 +401,7 @@ public:
     {
         std::vector<GLfloat> vertices;
         // std::vector<GLuint> indices;
+        DebugIndices.clear();
         // 递归函数来遍历 BVH 树
         std::function<void(int, int)> traverse = [&](int nodeId, int currentDepth)
         {

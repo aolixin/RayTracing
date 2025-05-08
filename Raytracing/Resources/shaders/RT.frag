@@ -848,6 +848,11 @@ void main()
     // primary hit
     HitResult res = HitBVH(ray);
     vec3 color;
+    
+//    if(res.isHit){
+//        FragColor = vec4(res.normal, 1.0);
+//        return;
+//    }
 
     if (!res.isHit) {
         color = vec3(0);

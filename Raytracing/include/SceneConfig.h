@@ -18,9 +18,9 @@ std::shared_ptr<Scene> BuildScene()
 {
     if (RENDER_PATH == RenderPath::Forward || RENDER_PATH == RenderPath::GI)
     {
-        return BuildSphere_complex();
-        return BuildCornellbox_complex();
-        return BuildSphere_simple();
+        // return BuildSphere_complex();
+        // return BuildCornellbox_complex();
+        // return BuildSphere_simple();
         return BuildCornellbox();
         // return BuildSphere();
     }
@@ -29,15 +29,17 @@ std::shared_ptr<Scene> BuildScene()
         // return BuildDebugBVHScene();
         return BuildSphere_simple();
     }
+#ifdef DEBUG_MODE
     else if (RENDER_PATH == RenderPath::DebugBVH ||
         RENDER_PATH == RenderPath::DebugOctree ||
         RENDER_PATH == RenderPath::DebugKdTree)
     {
         // return BuildCornellbox();
-        // return BuildDebugBVHScene();
-        return BuildSphere_simple();
+        return BuildDebugBVHScene();
+        // return BuildSphere_simple();
     }
-#ifdef TEST_ACCELERATION_STRUCTURE
+#endif
+#ifdef TEST_MODE
     else if (RENDER_PATH == RenderPath::TestBVH ||
         RENDER_PATH == RenderPath::TestOctree ||
         RENDER_PATH == RenderPath::TestKdTree)
@@ -96,23 +98,23 @@ std::shared_ptr<Scene> BuildCornellbox()
     Model light("Resources/models/cornellbox/light.obj");
 
     // short
-    // Material mat5(phongShader);
-    // mat5.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
-    // mat5.specular = 0.0f;
-    // Model shortBox("Resources/models/cornellbox/short.obj");
-    //
-    //
-    // // tall
-    // Material mat6(phongShader);
-    // mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
-    // mat6.specular = 0.0f;
-    // Model tallBox("Resources/models/cornellbox/tall.obj");
+    Material mat5(phongShader);
+    mat5.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
+    mat5.specular = 0.0f;
+    Model shortBox("Resources/models/cornellbox/short.obj");
+    
+    
+    // tall
+    Material mat6(phongShader);
+    mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
+    mat6.specular = 0.0f;
+    Model tallBox("Resources/models/cornellbox/tall.obj");
 
     myScene->Add(bunny, mat0);
     myScene->Add(left, mat1);
     myScene->Add(right, mat2);
     myScene->Add(floor, mat3);
-    // myScene->Add(light, mat4);
+    myScene->Add(light, mat4);
     // myScene->Add(shortBox, mat5);
     // myScene->Add(tallBox, mat6);
 
@@ -341,7 +343,7 @@ std::shared_ptr<Scene> BuildSphere_complex()
     m.baseColor = vec3(1, 1, 1);
 
     float xOffset = 1.0f;
-    
+
     glm::mat4 trans = glm::translate(identity, glm::vec3(0.0f, -0.6f, 0.0f));
     myScene->Add(sphere, m, trans);
     trans = glm::translate(identity, glm::vec3(xOffset, -0.6f, 0.0f));
@@ -356,7 +358,7 @@ std::shared_ptr<Scene> BuildSphere_complex()
     myScene->Add(sphere, m, trans);
     trans = glm::translate(identity, glm::vec3(-xOffset, yOffset, 0.0f));
     myScene->Add(sphere, m, trans);
-    
+
 
     // plane
     Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
@@ -386,8 +388,6 @@ std::shared_ptr<Scene> BuildCornellbox_complex()
     myScene->Add(bunny, mat0);
     myScene->Add(bunny, mat0, glm::translate(identity, glm::vec3(1.0f, 0.0f, 0.0f)));
 
-
-    
 
     return myScene;
 }

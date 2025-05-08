@@ -38,7 +38,7 @@ void Renderer::InitRenderer()
 
     // glfw window creation
     // --------------------
-    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "RT", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -89,13 +89,13 @@ void Renderer::SetupScene(std::shared_ptr<Scene> scene)
     this->scene = scene;
     if (renderPath == RenderPath::GI
 
-#ifdef DEBUG_ACCELERATION_STRUCTURE
+#ifdef DEBUG_MODE
         || renderPath == RenderPath::DebugBVH
         || renderPath == RenderPath::DebugOctree
         || renderPath == RenderPath::DebugKdTree
 #endif
 
-#ifdef TEST_ACCELERATION_STRUCTURE
+#ifdef TEST_MODE
         || renderPath == RenderPath::TestBVH
         || renderPath == RenderPath::TestOctree
         || renderPath == RenderPath::TestKdTree
@@ -201,6 +201,8 @@ void Renderer::Draw()
 
         DrawQuad(postShader);
     }
+
+#ifdef DEBUG_MODE
     else if (renderPath == RenderPath::DebugBVH)
     {
 #if  defined(USE_BVH) && defined(DEBUG_BVH)
@@ -231,6 +233,15 @@ void Renderer::Draw()
         glLineWidth(2.0f);
         glColor3f(1.0f, 0.0f, 0.0f);
         glBindVertexArray(scene->myBVH.DebugVAO);
+
+        frameCount++;
+        if(frameCount / 400 > 0 )
+        {
+            frameCount = 0;
+            debugDepth += 1;
+            scene->myBVH.BuildDebugBVHTree_l(debugDepth,debugDepth);
+        }
+        
         glDrawElements(GL_LINES, scene->myBVH.DebugIndices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
@@ -269,6 +280,15 @@ void Renderer::Draw()
         glLineWidth(2.0f);
         glColor3f(1.0f, 0.0f, 0.0f);
         glBindVertexArray(scene->myOctree.DebugVAO);
+
+        frameCount++;
+        if(frameCount / 400 > 0 )
+        {
+            frameCount = 0;
+            debugDepth += 1;
+            scene->myOctree.BuildDebugOctree_l(debugDepth,debugDepth);
+        }
+        
         glDrawElements(GL_LINES, scene->myOctree.DebugIndices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
@@ -305,12 +325,22 @@ void Renderer::Draw()
         glLineWidth(2.0f);
         glColor3f(1.0f, 0.0f, 0.0f);
         glBindVertexArray(scene->myKdTree.DebugVAO);
+
+        frameCount++;
+        if(frameCount / 400 > 0 )
+        {
+            frameCount = 0;
+            debugDepth += 1;
+            scene->myKdTree.BuildDebugKdTree_l(debugDepth,debugDepth);
+        }
+        
         glDrawElements(GL_LINES, scene->myKdTree.DebugIndices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif
     }
+#endif
 }
 
 glm::mat4 Renderer::Perspective()
@@ -432,7 +462,7 @@ void Renderer::DrawSkybox()
     glDepthFunc(GL_LESS);
 }
 
-#ifdef TEST_ACCELERATION_STRUCTURE
+#ifdef TEST_MODE
 
 struct Renderer::Ray
 {

@@ -40,14 +40,16 @@ void Scene::SetupGIScene()
 
     auto start = std::chrono::high_resolution_clock::now();
 
+
 #ifdef USE_BVH
     this->myBVH.triangles = this->triangles_expand;
-    // this->myBVH.BuildBVH(0, this->triangles_expand.size() - 1);
-    this->myBVH.BuildBVHWithSAH(0, this->triangles_expand.size() - 1);
+    this->myBVH.BuildBVH(0, this->triangles_expand.size() - 1);
+    // this->myBVH.BuildBVHWithSAH(0, this->triangles_expand.size() - 1);
 #ifdef DEBUG_BVH
     // this->myBVH.BuildDebugBVHTree(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
-    // this->myBVH.BuildDebugBVHTree_l(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
-
+    this->myBVH.BuildDebugBVHTree_l(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);
+#endif
+#ifdef TEST_MODE
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end - start).count();
     
@@ -61,7 +63,10 @@ void Scene::SetupGIScene()
 #ifdef USE_OCTREE
     this->myOctree = Octree(this->triangles_expand);
 #ifdef DEBUG_OCTREE
-    // this->myOctree.BuildDebugOctree_l(DEBUG_OCTREE_START_DEPTH, DEBUG_OCTREE_END_DEPTH);
+    this->myOctree.BuildDebugOctree_l(DEBUG_OCTREE_START_DEPTH, DEBUG_OCTREE_END_DEPTH);
+
+#endif
+#ifdef TEST_MODE
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end - start).count();
     std::cout << "build time = " << duration << " ms" << std::endl;
@@ -73,7 +78,9 @@ void Scene::SetupGIScene()
 #ifdef USE_KDTREE
     this->myKdTree = KDTree(this->triangles_expand);
 #ifdef DEBUG_KDTREE
-    // this->myKdTree.BuildDebugKdTree_l(DEBUG_KDTREE_START_DEPTH, DEBUG_KDTREE_END_DEPTH);
+    this->myKdTree.BuildDebugKdTree_l(DEBUG_KDTREE_START_DEPTH, DEBUG_KDTREE_END_DEPTH);
+#endif
+#ifdef TEST_MODE
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end - start).count();
     std::cout << "build time = " << duration << " ms" << std::endl;
@@ -83,8 +90,9 @@ void Scene::SetupGIScene()
 
     // std::cout << "SAH BVHNode:    " << this->myBVH.nodes.size() << endl;
 
-
-    //GenBuffers();
+#ifdef RELEASE_MODE
+    GenBuffers();
+#endif
 }
 
 
