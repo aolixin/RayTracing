@@ -1,26 +1,26 @@
 #pragma once
 
 #define DEBUG_MODE
-// #define TEST_MODE
-// #define RELEASE_MODE
+//#define TEST_MODE
+//#define RELEASE_MODE
 
 
 enum RenderPath
 {
-    Forward = 0,
-    GI = 1,
-    DebugIA = 2,
+	Forward = 0,
+	GI = 1,
+	DebugIA = 2,
 
 #ifdef DEBUG_MODE
-    DebugBVH = 3,
-    DebugOctree = 4,
-    DebugKdTree = 5,
+	DebugBVH = 3,
+	DebugOctree = 4,
+	DebugKdTree = 5,
 #endif
 
 #ifdef TEST_MODE
-    TestBVH = 6,
-    TestOctree = 7,
-    TestKdTree = 8,
+	TestBVH = 6,
+	TestOctree = 7,
+	TestKdTree = 8,
 #endif
 };
 
