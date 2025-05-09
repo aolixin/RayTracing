@@ -10,15 +10,15 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{b7e487b5-7d55-44c5-866c-f68bb002c96d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\imgui">
+      <UniqueIdentifier>{d58978f7-532b-47a9-bbb1-6811349a9413}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\imgui">
+      <UniqueIdentifier>{eeaa3ea7-8735-4ba5-9ddd-075bbe7a6469}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Raytracing.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PBRTest.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer.cpp">
@@ -43,6 +43,28 @@
     <ClCompile Include="src\stb_image.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\imgui.cpp">
+      <Filter>src\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_demo.cpp">
+      <Filter>src\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_draw.cpp">
+      <Filter>src\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_impl_glfw.cpp">
+      <Filter>src\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_impl_opengl3.cpp">
+      <Filter>src\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_tables.cpp">
+      <Filter>src\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_widgets.cpp">
+      <Filter>src\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BVH.h">
@@ -95,6 +117,24 @@
     </ClInclude>
     <ClInclude Include="include\KDTree.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imconfig.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui_impl_glfw.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui_impl_opengl3.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui_impl_opengl3_loader.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui_internal.h">
+      <Filter>include\imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

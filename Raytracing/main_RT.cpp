@@ -1,3 +1,5 @@
+#if 0
+
 #include "GlobalFeat.h"
 #include "Shader.h"
 #include "Model.h"
@@ -127,5 +129,7 @@ int main()
     return 0;
 }
 
+
+#endif
 
 #endif

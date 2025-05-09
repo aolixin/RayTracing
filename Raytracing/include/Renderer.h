@@ -43,8 +43,8 @@ public:
     std::shared_ptr<Camera> camera;
     std::shared_ptr<Scene> scene;
 
-    static constexpr unsigned int SCR_WIDTH = 1920;
-    static constexpr unsigned int SCR_HEIGHT = 1080;
+    static constexpr unsigned int SCR_WIDTH = 800;
+    static constexpr unsigned int SCR_HEIGHT = 600;
     float lastX = SCR_WIDTH / 2.0f;
     float lastY = SCR_HEIGHT / 2.0f;
 
