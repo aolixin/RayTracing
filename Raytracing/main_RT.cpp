@@ -1,5 +1,10 @@
 #if 1
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include <stdio.h>
+#define GL_SILENCE_DEPRECATION
 #include "GlobalFeat.h"
 #include "Shader.h"
 #include "Model.h"
@@ -9,12 +14,27 @@
 #include "SceneConfig.h"
 
 
-// timing
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
+
+
+void MainSingleFrame(shared_ptr<Renderer> renderer, float deltaTime) {
+	renderer->processInput(deltaTime);
+
+#ifdef TEST_MODE
+	renderer->DrawFramwBuffer();
+#elif defined(DEBUG_MODE)
+	renderer->Draw();
+#else
+	renderer->Draw();
+#endif
+	renderer->SwapBuffers();
+	renderer->PollEvents();
+}
+
 
 int main()
 {
+	float deltaTime = 0.0f;
+	float lastFrame = 0.0f;
 	const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RENDER_PATH);
 
 	shared_ptr<Scene> myScene = BuildScene();
@@ -28,7 +48,7 @@ int main()
 		-15.0f);
 #else
 	shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
-
+	
 #endif
 
 	renderer->camera = camera;
@@ -45,24 +65,7 @@ int main()
 		lastFrame = currentFrame;
 
 
-		renderer->processInput(deltaTime);
-
-#ifdef TEST_MODE
-
-		renderer->DrawFramwBuffer();
-
-#elif defined(DEBUG_MODE)
-
-		renderer->Draw();
-
-#else
-
-		renderer->Draw();
-
-#endif
-		renderer->SwapBuffers();
-		renderer->PollEvents();
-		// return 0;
+		MainSingleFrame(renderer, deltaTime);
 	}
 
 	renderer->Terminate();
