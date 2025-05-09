@@ -15,16 +15,7 @@
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
-//#include <GLFW/glfw3.h> // Will drag system OpenGL headers
-
-
-#include "GlobalFeat.h"
-#include "Shader.h"
-#include "Model.h"
-#include "Renderer.h"
-#include "Utils.h"
-#include "Scene.h"
-#include "SceneConfig.h"
+#include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -42,10 +33,6 @@ static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
-
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
 
 // Main code
 int main(int, char**)
@@ -130,21 +117,6 @@ int main(int, char**)
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-
-    const shared_ptr<Renderer> renderer = Renderer::GetRenderer(RENDER_PATH);
-
-    shared_ptr<Scene> myScene = BuildScene();
-
-    renderer->SetupScene(myScene);
-
-    shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(-3.0f, 1.2f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), -55.0f,
-        -15.0f);
-
-    renderer->camera = camera;
-
-    int frameCount = 0;
-
-
     // Main loop
 #ifdef __EMSCRIPTEN__
     // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
@@ -152,7 +124,7 @@ int main(int, char**)
     io.IniFilename = nullptr;
     EMSCRIPTEN_MAINLOOP_BEGIN
 #else
-    while (!renderer->RendererClose())
+    while (!glfwWindowShouldClose(window))
 #endif
     {
         // Poll and handle events (inputs, window resize, etc.)
@@ -216,24 +188,7 @@ int main(int, char**)
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        float currentFrame = static_cast<float>(glfwGetTime());
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-
-
-        renderer->processInput(deltaTime);
-
-        //renderer->Draw();
-
-        renderer->SwapBuffers();
-        renderer->PollEvents();
-
-
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-
-
 
         glfwSwapBuffers(window);
     }
