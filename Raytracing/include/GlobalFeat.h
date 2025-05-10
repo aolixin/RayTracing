@@ -1,8 +1,8 @@
 #pragma once
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 //#define TEST_MODE
-//#define RELEASE_MODE
+//#define RT_MODE
 
 constexpr unsigned int SCR_WIDTH = 1920;
 constexpr unsigned int SCR_HEIGHT = 1080;
@@ -10,72 +10,53 @@ constexpr unsigned int SCR_HEIGHT = 1080;
 constexpr unsigned int RENDER_WIDTH = 800;
 constexpr unsigned int RENDER_HEIGHT = 600;
 
+extern int mode_idx;
+
+extern int AS_idx;
 
 enum RenderPath
 {
-	Forward = 0,
-	GI = 1,
-	DebugIA = 2,
+	RT,
+	Forward,
+	DebugIA,
 
-#ifdef DEBUG_MODE
-	DebugBVH = 3,
-	DebugOctree = 4,
-	DebugKdTree = 5,
-#endif
+	DebugBVH,
+	DebugOctree,
+	DebugKdTree,
 
-#ifdef TEST_MODE
-	TestBVH = 6,
-	TestOctree = 7,
-	TestKdTree = 8,
-#endif
+	TestBVH,
+	TestOctree,
+	TestKdTree,
+
+	Count
 };
 
-#define RELEASE_PATH (RenderPath::GI)
+extern RenderPath renderPath;
+
+#define RELEASE_PATH (RenderPath::RT)
 
 #define TEST_PATH (RenderPath::TestBVH)
 
 #define DEBUG_PATH (RenderPath::DebugBVH)
 
 
-#ifdef TEST_MODE
 
-#define RENDER_PATH TEST_PATH
-
-#elif defined(DEBUG_MODE)
-
-#define RENDER_PATH DEBUG_PATH
-
-#else
-
-#define RENDER_PATH RELEASE_PATH
-
-#endif
-
-
-#define USE_BVH
+//#define USE_BVH
 // #define USE_OCTREE
 // #define USE_KDTREE
 
 
-#ifdef DEBUG_MODE
 
-#ifdef USE_BVH
 #define DEBUG_BVH
-#define DEBUG_BVH_START_DEPTH 0
-#define DEBUG_BVH_END_DEPTH 0
-#endif
+extern int  DEBUG_BVH_START_DEPTH;
+extern int  DEBUG_BVH_END_DEPTH;
 
-#ifdef USE_OCTREE
 #define DEBUG_OCTREE
-#define DEBUG_OCTREE_START_DEPTH 0
-#define DEBUG_OCTREE_END_DEPTH 0
-#endif
+extern int  DEBUG_OCTREE_START_DEPTH;
+extern int   DEBUG_OCTREE_END_DEPTH;
 
-#ifdef USE_KDTREE
 #define DEBUG_KDTREE
-#define DEBUG_KDTREE_START_DEPTH 0
-#define DEBUG_KDTREE_END_DEPTH 0
-#endif
+extern int DEBUG_KDTREE_START_DEPTH;
+extern int DEBUG_KDTREE_END_DEPTH;
 
 
-#endif

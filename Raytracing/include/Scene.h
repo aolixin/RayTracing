@@ -14,47 +14,41 @@ using namespace std;
 class Scene
 {
 public:
-    GLuint trianglesTextureBuffer;
-    GLuint nodesTextureBuffer;
-    GLuint materialsTextureBuffer;
+	GLuint trianglesTextureBuffer;
+	GLuint nodesTextureBuffer;
+	GLuint materialsTextureBuffer;
 
-    GLuint envCubeMap;
-    GLuint hdrMap;
-    GLuint hdrCache;
+	GLuint envCubeMap;
+	GLuint hdrMap;
+	GLuint hdrCache;
 
-    int hdrWidth = 0;
-    int hdrHeight = 0;
+	int hdrWidth = 0;
+	int hdrHeight = 0;
 
-    int nTriangles = -1;
-    int nNodes = -1;
-    int nMaterials = -1;
+	int nTriangles = -1;
+	int nNodes = -1;
+	int nMaterials = -1;
 
-    int materials_count = 0;
+	int materials_count = 0;
 
 public:
-    vector<RenderNode>render_nodes;
-    // vector<Model> models;
-    vector<Triangle> triangles_expand;
-    vector<Material> materials_expand;
+	vector<RenderNode>render_nodes;
+	// vector<Model> models;
+	vector<Triangle> triangles_expand;
+	vector<Material> materials_expand;
 
-#ifdef USE_BVH
-    BVH myBVH;
-#endif
+	BVH myBVH;
 
-#ifdef USE_OCTREE
-    Octree myOctree;
-#endif
+	Octree myOctree;
 
-#ifdef USE_KDTREE
-    KDTree myKdTree;
-#endif
-    
-    
-    void Add(Model model,Material material,glm::mat4 modelMatrix = glm::mat4(1.0f));
+	KDTree myKdTree;
 
-    void SetupGIScene();
 
-    void Draw();
+	void Add(Model model, Material material, glm::mat4 modelMatrix = glm::mat4(1.0f));
 
-    void GenBuffers();
+	void SetupGIScene();
+
+	void Draw();
+
+	void GenBuffers();
 };

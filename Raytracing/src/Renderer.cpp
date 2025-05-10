@@ -11,12 +11,13 @@ bool Renderer::already_init = false;
 std::shared_ptr<Renderer> Renderer::renderer = nullptr;
 GLFWwindow* Renderer::window = nullptr;
 
-std::shared_ptr<Renderer> Renderer::GetRenderer(RenderPath path)
+std::shared_ptr<Renderer> Renderer::GetRenderer(RenderPath path, GLFWwindow* window)
 {
 	if (renderer == nullptr)
 	{
 		renderer = std::make_shared<Renderer>();
 		renderer->renderPath = path;
+		Renderer::window = window;
 		renderer->InitRenderer();
 	}
 	return renderer;
@@ -25,40 +26,11 @@ std::shared_ptr<Renderer> Renderer::GetRenderer(RenderPath path)
 void Renderer::InitRenderer()
 {
 	if (already_init)return;
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-	// glfw window creation
-	// --------------------
-	window = glfwCreateWindow(RENDER_WIDTH, RENDER_HEIGHT, "RT", NULL, NULL);
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return;
-	}
-	glfwMakeContextCurrent(window);
-
-	if (renderPath != RenderPath::GI)
+	if (renderPath != RenderPath::RT)
 	{
 		RegisterCallback();
 	}
-
-
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return;
-	}
-
-
-	glEnable(GL_DEPTH_TEST);
 
 	// init shader
 	RTShader = Shader("Resources/shaders/screen.vert", "Resources/shaders/RT.frag");
@@ -83,20 +55,6 @@ void Renderer::DestroyRenderer()
 void Renderer::SetupScene(std::shared_ptr<Scene> scene)
 {
 	this->scene = scene;
-	if (renderPath == RenderPath::GI
-
-#ifdef DEBUG_MODE
-		|| renderPath == RenderPath::DebugBVH
-		|| renderPath == RenderPath::DebugOctree
-		|| renderPath == RenderPath::DebugKdTree
-#endif
-
-#ifdef TEST_MODE
-		|| renderPath == RenderPath::TestBVH
-		|| renderPath == RenderPath::TestOctree
-		|| renderPath == RenderPath::TestKdTree
-#endif
-		)
 	{
 		this->scene->SetupGIScene();
 	}
@@ -123,7 +81,7 @@ void Renderer::Draw(GLuint targetFrameBuffer)
 		}
 		DrawSkybox();
 	}
-	else if (renderPath == RenderPath::GI)
+	else if (renderPath == RenderPath::RT)
 	{
 		// pass1
 		glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
@@ -179,7 +137,7 @@ void Renderer::Draw(GLuint targetFrameBuffer)
 		postShader.setTexture("screenTexture", frameTextures1[0], 6);
 		DrawQuad(postShader);
 	}
-	else if (renderPath == RenderPath::DebugIA)
+	else if (renderPath <= RenderPath::DebugIA)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, targetFrameBuffer);
 		glDisable(GL_DEPTH_TEST);
@@ -198,11 +156,8 @@ void Renderer::Draw(GLuint targetFrameBuffer)
 
 		DrawQuad(postShader);
 	}
-
-#ifdef DEBUG_MODE
 	else if (renderPath == RenderPath::DebugBVH)
 	{
-#if  defined(USE_BVH) && defined(DEBUG_BVH)
 		glBindFramebuffer(GL_FRAMEBUFFER, targetFrameBuffer);
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
@@ -224,10 +179,6 @@ void Renderer::Draw(GLuint targetFrameBuffer)
 		unlitShader.setMat4("model", glm::mat4(1.0f));
 		unlitShader.setVec3("objectColor", vec3(1.0f, 0.0f, 0.0f));
 
-		// glBindVertexArray(scene->myBVH.DebugVAO);
-		// glDrawElements(GL_TRIANGLES, scene->myBVH.DebugIndices.size(), GL_UNSIGNED_INT, 0);
-		// glBindVertexArray(0);
-
 		glLineWidth(2.0f);
 		glColor3f(1.0f, 0.0f, 0.0f);
 		glBindVertexArray(scene->myBVH.DebugVAO);
@@ -245,11 +196,11 @@ void Renderer::Draw(GLuint targetFrameBuffer)
 
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-#endif
+
 	}
 	else if (renderPath == RenderPath::DebugOctree)
 	{
-#if defined(USE_OCTREE) && defined(DEBUG_OCTREE)
+
 		glBindFramebuffer(GL_FRAMEBUFFER, targetFrameBuffer);
 		glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
 		// glEnable(GL_CULL_FACE);
@@ -291,11 +242,10 @@ void Renderer::Draw(GLuint targetFrameBuffer)
 		glBindVertexArray(0);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-#endif
+
 	}
 	else if (renderPath == RenderPath::DebugKdTree)
 	{
-#if defined(USE_KDTREE) && defined(DEBUG_KDTREE)
 		glBindFramebuffer(GL_FRAMEBUFFER, targetFrameBuffer);
 		glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
 		// glEnable(GL_CULL_FACE);
@@ -337,9 +287,9 @@ void Renderer::Draw(GLuint targetFrameBuffer)
 		glBindVertexArray(0);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-#endif
+
 	}
-#endif
+
 }
 
 void Renderer::FrameBufferToScreen(GLuint frameBufferTexture) {
@@ -434,7 +384,7 @@ void Renderer::processInput(float deltaTime)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	if (renderPath == RenderPath::GI)
+	if (renderPath == RenderPath::RT)
 	{
 		return;
 	}
@@ -472,7 +422,7 @@ void Renderer::DrawSkybox()
 	glDepthFunc(GL_LESS);
 }
 
-#ifdef TEST_MODE
+
 
 struct Renderer::Ray
 {
@@ -493,10 +443,7 @@ struct Renderer::HitResult
 
 BVHNode Renderer::GetBVHNode(int i)
 {
-#if defined(USE_BVH)
 	return scene->myBVH.nodes[i];
-#endif
-	return BVHNode();
 }
 
 
@@ -560,13 +507,12 @@ Renderer::HitResult Renderer::HitTriangle(Triangle triangle, Ray ray)
 
 Triangle Renderer::GetTriangle(int i)
 {
-#if defined(USE_BVH)
-	return scene->myBVH.triangles[i];
-#elif defined(USE_OCTREE)
-	return scene->myOctree.triangles[i];
-#elif defined(USE_KDTREE)
-	return scene->myKdTree.triangles[i];
-#endif
+	if (AS_idx == 0)
+		return scene->myBVH.triangles[i];
+	else if (AS_idx == 1)
+		return scene->myOctree.triangles[i];
+	else if (AS_idx == 2)
+		return scene->myKdTree.triangles[i];
 }
 
 Renderer::HitResult Renderer::HitArray(Ray ray, int l, int r)
@@ -671,7 +617,6 @@ Renderer::HitResult Renderer::HitBVH(Ray ray)
 Renderer::HitResult Renderer::HitOctree(Ray ray)
 {
 	HitResult res;
-#if defined(USE_OCTREE)
 	res.isHit = false;
 	res.distance = INF;
 
@@ -714,14 +659,12 @@ Renderer::HitResult Renderer::HitOctree(Ray ray)
 			}
 		}
 	}
-#endif
 	return res;
 }
 
 Renderer::HitResult Renderer::HitKDTree(Ray ray)
 {
 	HitResult res;
-#ifdef USE_KDTREE
 	res.isHit = false;
 	res.distance = INF;
 
@@ -763,7 +706,6 @@ Renderer::HitResult Renderer::HitKDTree(Ray ray)
 			}
 		}
 	}
-#endif
 	return res;
 }
 
@@ -778,7 +720,6 @@ void Renderer::TestDraw(GLuint targetFrameBuffer)
 
 	if (renderPath == RenderPath::TestBVH)
 	{
-#if  defined(USE_BVH)
 		float pixelWidth = 2.0f / SCR_WIDTH;
 		float pixelHeight = 2.0f / SCR_HEIGHT;
 
@@ -856,11 +797,9 @@ void Renderer::TestDraw(GLuint targetFrameBuffer)
 		// 解绑 framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-#endif
 	}
 	else if (renderPath == RenderPath::TestOctree)
 	{
-#if defined(USE_OCTREE)
 		float pixelWidth = 2.0f / SCR_WIDTH;
 		float pixelHeight = 2.0f / SCR_HEIGHT;
 
@@ -937,11 +876,10 @@ void Renderer::TestDraw(GLuint targetFrameBuffer)
 
 		// 解绑 framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-#endif
+
 	}
 	else if (renderPath == RenderPath::TestKdTree)
 	{
-#if defined(USE_KDTREE) && defined(DEBUG_KDTREE)
 		float pixelWidth = 2.0f / SCR_WIDTH;
 		float pixelHeight = 2.0f / SCR_HEIGHT;
 
@@ -1018,9 +956,9 @@ void Renderer::TestDraw(GLuint targetFrameBuffer)
 
 		// 解绑 framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-#endif
 	}
 }
+
 
 void Renderer::DrawFramwBuffer(GLuint targetFrameBuffer)
 {
@@ -1033,6 +971,3 @@ void Renderer::DrawFramwBuffer(GLuint targetFrameBuffer)
 	screenShader.setTexture("screenTexture", frameTextures0[0], 6);
 	DrawQuad(screenShader);
 }
-
-
-#endif

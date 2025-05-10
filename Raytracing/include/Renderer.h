@@ -54,7 +54,7 @@ public:
 	static bool already_init;
 
 public:
-	static std::shared_ptr<Renderer> GetRenderer(RenderPath path = RenderPath::Forward);
+	static std::shared_ptr<Renderer> GetRenderer(RenderPath path = RenderPath::Forward, GLFWwindow* window = nullptr);
 
 	void InitRenderer();
 
@@ -87,12 +87,11 @@ public:
 
 	void Terminate();
 
-#ifdef DEBUG_MODE
+
 	int debugDepth = 0;
-#endif
 
 
-#ifdef TEST_MODE
+
 	struct Ray;
 
 	struct HitResult;
@@ -117,5 +116,5 @@ public:
 
 	void DrawFramwBuffer(GLuint targetFrameBuffer = 0);
 
-#endif
+
 };

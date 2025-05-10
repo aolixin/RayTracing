@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GlobalFeat.cpp" />
     <ClCompile Include="main_RT.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\imgui.cpp" />
