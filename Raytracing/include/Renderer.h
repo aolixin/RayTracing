@@ -15,106 +15,107 @@
 class Renderer
 {
 private:
-    Shader RTShader;
-    Shader screenShader;
-    Shader postShader;
-    Shader skyboxShader;
-    Shader unlitShader;
+	Shader RTShader;
+	Shader screenShader;
+	Shader postShader;
+	Shader skyboxShader;
+	Shader unlitShader;
 
-    Shader debug_ia_shader;
-    Shader testShader;
+	Shader debug_ia_shader;
+	Shader testShader;
 
 
-    GLuint frameBuffer0;
-    vector<GLuint> frameTextures0;
+	GLuint frameBuffer0;
+	vector<GLuint> frameTextures0;
 
-    GLuint frameBuffer1;
-    vector<GLuint> frameTextures1;
+	GLuint frameBuffer1;
+	vector<GLuint> frameTextures1;
 
-    GLuint TestVAO,TestVBO;
-
-public:
-    Renderer()
-    {
-    }
-
-    RenderPath renderPath = RenderPath::Forward;
-    static std::shared_ptr<Renderer> renderer;
-    std::shared_ptr<Camera> camera;
-    std::shared_ptr<Scene> scene;
-
-    static constexpr unsigned int SCR_WIDTH = 800;
-    static constexpr unsigned int SCR_HEIGHT = 600;
-    float lastX = SCR_WIDTH / 2.0f;
-    float lastY = SCR_HEIGHT / 2.0f;
-
-    bool firstMouse = true;
-    int frameCount = 0;
-
-    static GLFWwindow* window;
-    static bool already_init;
+	GLuint TestVAO, TestVBO;
 
 public:
-    static std::shared_ptr<Renderer> GetRenderer(RenderPath path = RenderPath::Forward);
+	Renderer()
+	{
+	}
 
-    void InitRenderer();
-
-    void SetupScene(std::shared_ptr<Scene> scene);
-
-    void Draw();
-
-    static void DestroyRenderer();
-
-    void RegisterCallback();
-
-    int RendererClose();
-
-    void processInput(float deltaTime);
-
-    void DrawSkybox();
+	RenderPath renderPath = RenderPath::Forward;
+	static std::shared_ptr<Renderer> renderer;
+	std::shared_ptr<Camera> camera;
+	std::shared_ptr<Scene> scene;
 
 
-    glm::mat4 Perspective();
+	float lastX = RENDER_WIDTH / 2.0f;
+	float lastY = RENDER_HEIGHT / 2.0f;
 
-    glm::mat4 View();
+	bool firstMouse = true;
+	int frameCount = 0;
 
-    glm::mat4 CameraRotate();
+	static GLFWwindow* window;
+	static bool already_init;
 
-    void SwapBuffers();
+public:
+	static std::shared_ptr<Renderer> GetRenderer(RenderPath path = RenderPath::Forward);
 
-    void PollEvents();
+	void InitRenderer();
 
-    void Terminate();
+	void SetupScene(std::shared_ptr<Scene> scene);
+
+	void Draw(GLuint targetFrameBuffer = 0);
+
+	void FrameBufferToScreen(GLuint frameBufferTexture);
+
+	static void DestroyRenderer();
+
+	void RegisterCallback();
+
+	int RendererClose();
+
+	void processInput(float deltaTime);
+
+	void DrawSkybox();
+
+
+	glm::mat4 Perspective();
+
+	glm::mat4 View();
+
+	glm::mat4 CameraRotate();
+
+	void SwapBuffers();
+
+	void PollEvents();
+
+	void Terminate();
 
 #ifdef DEBUG_MODE
-    int debugDepth = 0; 
+	int debugDepth = 0;
 #endif
 
 
 #ifdef TEST_MODE
-    struct Ray;
+	struct Ray;
 
-    struct HitResult;
+	struct HitResult;
 
-    BVHNode GetBVHNode(int i);
+	BVHNode GetBVHNode(int i);
 
-    HitResult HitTriangle(Triangle triangle, Ray ray);
+	HitResult HitTriangle(Triangle triangle, Ray ray);
 
-    Triangle GetTriangle(int i);
+	Triangle GetTriangle(int i);
 
-    HitResult HitArray(Ray ray, int l, int r);
+	HitResult HitArray(Ray ray, int l, int r);
 
-    float HitAABB(Ray r, vec3 AA, vec3 BB);
+	float HitAABB(Ray r, vec3 AA, vec3 BB);
 
-    HitResult HitBVH(Ray ray);
-    
-    HitResult HitOctree(Ray ray);
+	HitResult HitBVH(Ray ray);
 
-    HitResult HitKDTree(Ray ray);
-    
-    void TestDraw();
+	HitResult HitOctree(Ray ray);
 
-    void DrawFramwBuffer();
+	HitResult HitKDTree(Ray ray);
+
+	void TestDraw(GLuint targetFrameBuffer = 0);
+
+	void DrawFramwBuffer(GLuint targetFrameBuffer = 0);
 
 #endif
 };

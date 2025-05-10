@@ -4,6 +4,12 @@
 //#define TEST_MODE
 //#define RELEASE_MODE
 
+constexpr unsigned int SCR_WIDTH = 1920;
+constexpr unsigned int SCR_HEIGHT = 1080;
+
+constexpr unsigned int RENDER_WIDTH = 800;
+constexpr unsigned int RENDER_HEIGHT = 600;
+
 
 enum RenderPath
 {

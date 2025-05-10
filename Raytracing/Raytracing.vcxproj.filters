@@ -160,5 +160,29 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="ClassDiagram3.cd" />
+    <None Include="Resources\shaders\debug_BVH.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\debug_ia.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\framebuffersToscreen.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\hdrToLdr.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\hdrToLdr.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\post.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\RT.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\screen.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

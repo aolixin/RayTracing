@@ -3,376 +3,376 @@
 #include "Utils.h"
 
 GLfloat cubeVertices[] = {
-    -1.0f, -1.0f, -1.0f,
-    1.0f, -1.0f, -1.0f,
-    1.0f, 1.0f, -1.0f,
-    -1.0f, 1.0f, -1.0f,
-    -1.0f, -1.0f, 1.0f,
-    1.0f, -1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f, 1.0f,
+	-1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, 1.0f, -1.0f,
+	-1.0f, 1.0f, -1.0f,
+	-1.0f, -1.0f, 1.0f,
+	1.0f, -1.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	-1.0f, 1.0f, 1.0f,
 };
 
 GLuint cubeIndices[] = {
-    0, 1, 2, 2, 3, 0,
-    4, 5, 6, 6, 7, 4,
-    3, 2, 6, 6, 7, 3,
-    0, 1, 5, 5, 4, 0,
-    0, 3, 7, 7, 4, 0,
-    1, 2, 6, 6, 5, 1
+	0, 1, 2, 2, 3, 0,
+	4, 5, 6, 6, 7, 4,
+	3, 2, 6, 6, 7, 3,
+	0, 1, 5, 5, 4, 0,
+	0, 3, 7, 7, 4, 0,
+	1, 2, 6, 6, 5, 1
 };
 
 
 GLfloat quadVertices[] = {
-    // positions   // texCoords
-    -1.0f, 1.0f, 0.0f, 1.0f,
-    -1.0f, -1.0f, 0.0f, 0.0f,
-    1.0f, -1.0f, 1.0f, 0.0f,
+	// positions   // texCoords
+	-1.0f, 1.0f, 0.0f, 1.0f,
+	-1.0f, -1.0f, 0.0f, 0.0f,
+	1.0f, -1.0f, 1.0f, 0.0f,
 
-    -1.0f, 1.0f, 0.0f, 1.0f,
-    1.0f, -1.0f, 1.0f, 0.0f,
-    1.0f, 1.0f, 1.0f, 1.0f
+	-1.0f, 1.0f, 0.0f, 1.0f,
+	1.0f, -1.0f, 1.0f, 0.0f,
+	1.0f, 1.0f, 1.0f, 1.0f
 };
 
 GLuint quadIndices[] = {
-    0, 1, 2, // µÚÒ»¸öÈý½ÇÐÎ
-    3, 4, 5 // µÚ¶þ¸öÈý½ÇÐÎ
+	0, 1, 2, // ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	3, 4, 5 // ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 };
 
 
 void DrawCube(const Shader& shader)
 {
-    // shader.use();
-    GLuint VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+	// shader.use();
+	GLuint VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
 
 
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+	GLuint VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
 
-    GLuint EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
+	GLuint EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
 
 
-    glBindVertexArray(VAO);
+	glBindVertexArray(VAO);
 
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-    glBindVertexArray(0);
+	glBindVertexArray(0);
 }
 
 void DrawQuad(const Shader& shader)
 {
-    // shader.use();
-    GLuint VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+	// shader.use();
+	GLuint VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
 
 
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+	GLuint VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
 
-    GLuint EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadIndices), quadIndices, GL_STATIC_DRAW);
+	GLuint EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadIndices), quadIndices, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0);
 
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
 
-    glBindVertexArray(VAO);
+	glBindVertexArray(VAO);
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    glBindVertexArray(0);
+	glBindVertexArray(0);
 }
 
 GLuint GetFrameBuffer(int SCR_WIDTH, int SCR_HEIGHT, std::vector<GLuint>& frameTextures,
-                      int nColorAttachments, int nDepthAttachments)
+	int nColorAttachments, int nDepthAttachments)
 
 {
-    // framebuffer configuration
-    // -------------------------
-    unsigned int framebuffer;
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	// framebuffer configuration
+	// -------------------------
+	unsigned int framebuffer;
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
-    for (int i = 0; i < nColorAttachments; i++)
-    {
-        // create a color attachment texture
-        unsigned int textureColorbuffer;
-        glGenTextures(1, &textureColorbuffer);
-        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureColorbuffer, 0);
-        frameTextures.push_back(textureColorbuffer);
-    }
+	for (int i = 0; i < nColorAttachments; i++)
+	{
+		// create a color attachment texture
+		unsigned int textureColorbuffer;
+		glGenTextures(1, &textureColorbuffer);
+		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureColorbuffer, 0);
+		frameTextures.push_back(textureColorbuffer);
+	}
 
-    for (int i = 0; i < nDepthAttachments; i++)
-    {
-        unsigned int rbo;
-        glGenRenderbuffers(1, &rbo);
-        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-    }
+	for (int i = 0; i < nDepthAttachments; i++)
+	{
+		unsigned int rbo;
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	}
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    return framebuffer;
+	return framebuffer;
 }
 
 float* load_hdr_img(const std::string path, int& width, int& height)
 {
-    stbi_set_flip_vertically_on_load(false);
-    int nrComponents;
-    float* data = stbi_loadf(path.c_str(), &width, &height, &nrComponents, 0);
-    return data;
+	stbi_set_flip_vertically_on_load(false);
+	int nrComponents;
+	float* data = stbi_loadf(path.c_str(), &width, &height, &nrComponents, 0);
+	return data;
 }
 
 GLuint GenGpuTex(float* data, int width, int height)
 {
-    // submit hdr to gpu
-    unsigned int hdrTexture;
-    if (data)
-    {
-        glGenTextures(1, &hdrTexture);
-        glBindTexture(GL_TEXTURE_2D, hdrTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
+	// submit hdr to gpu
+	unsigned int hdrTexture;
+	if (data)
+	{
+		glGenTextures(1, &hdrTexture);
+		glBindTexture(GL_TEXTURE_2D, hdrTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    }
-    return hdrTexture;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	return hdrTexture;
 }
 
 GLuint BuildEnvCubMap(float* data, int width, int height)
 {
-    // submit hdr to gpu
-    unsigned int hdrTexture;
-    if (data)
-    {
-        glGenTextures(1, &hdrTexture);
-        glBindTexture(GL_TEXTURE_2D, hdrTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
+	// submit hdr to gpu
+	unsigned int hdrTexture;
+	if (data)
+	{
+		glGenTextures(1, &hdrTexture);
+		glBindTexture(GL_TEXTURE_2D, hdrTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    }
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
 
-    // build cubemap
-    Shader buildSkyboxShader("Resources/shaders/hdrToSkyobox.vert", "Resources/shaders/hdrToSkyobox.frag");
-    //fbo
-    unsigned int framebuffer;
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	// build cubemap
+	Shader buildSkyboxShader("Resources/shaders/hdrToSkyobox.vert", "Resources/shaders/hdrToSkyobox.frag");
+	//fbo
+	unsigned int framebuffer;
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
-    unsigned int envCubemap;
-    glGenTextures(1, &envCubemap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
-    for (unsigned int i = 0; i < 6; ++i)
-    {
-        // note that we store each face with 16 bit floating point values
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F,
-                     1024, 1024, 0, GL_RGB, GL_FLOAT, nullptr);
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned int envCubemap;
+	glGenTextures(1, &envCubemap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		// note that we store each face with 16 bit floating point values
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F,
+			1024, 1024, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, envCubemap, 0);
-
-
-    unsigned int rbo;
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 512, 512);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1024, 1024);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-    //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, envCubemap, 0);
 
 
-    glDepthFunc(GL_LEQUAL);
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	// glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 512, 512);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1024, 1024);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-    buildSkyboxShader.use();
-    //hdrSkyboxShader.setMat4("projection", projection);
-    //hdrSkyboxShader.setMat4("view", view);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, hdrTexture);
-    buildSkyboxShader.setInt("equirectangularMap", 0);
-    //------------------------------------------------------
-    glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
-    glm::mat4 captureViews[] =
-    {
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
-    };
 
-    buildSkyboxShader.setMat4("projection", captureProjection);
+	glDepthFunc(GL_LEQUAL);
 
-    glViewport(0, 0, 1024, 1024); // don't forget to configure the viewport to the capture dimensions.
-    for (unsigned int i = 0; i < 6; ++i)
-    {
-        buildSkyboxShader.setMat4("view", captureViews[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                               GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 
-        DrawCube(buildSkyboxShader); // renders a 1x1 cube
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	buildSkyboxShader.use();
+	//hdrSkyboxShader.setMat4("projection", projection);
+	//hdrSkyboxShader.setMat4("view", view);
 
-    return envCubemap;
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, hdrTexture);
+	buildSkyboxShader.setInt("equirectangularMap", 0);
+	//------------------------------------------------------
+	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
+	glm::mat4 captureViews[] =
+	{
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
+	};
+
+	buildSkyboxShader.setMat4("projection", captureProjection);
+
+	glViewport(0, 0, 1024, 1024); // don't forget to configure the viewport to the capture dimensions.
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		buildSkyboxShader.setMat4("view", captureViews[i]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+			GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		DrawCube(buildSkyboxShader); // renders a 1x1 cube
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return envCubemap;
 }
 
 
 float* calculateHdrCache(float* HDR, int width, int height)
 {
-    float lumSum = 0.0;
+	float lumSum = 0.0;
 
-    // ³õÊ¼»¯ h ÐÐ w ÁÐµÄ¸ÅÂÊÃÜ¶È pdf ²¢ Í³¼Æ×ÜÁÁ¶È
-    std::vector<std::vector<float>> pdf(height);
-    for (auto& line : pdf) line.resize(width);
-    for (int i = 0; i < height; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
-            float R = HDR[3 * (i * width + j)];
-            float G = HDR[3 * (i * width + j) + 1];
-            float B = HDR[3 * (i * width + j) + 2];
-            float lum = 0.2 * R + 0.7 * G + 0.1 * B;
-            pdf[i][j] = lum;
-            lumSum += lum;
-        }
-    }
+	// ï¿½ï¿½Ê¼ï¿½ï¿½ h ï¿½ï¿½ w ï¿½ÐµÄ¸ï¿½ï¿½ï¿½ï¿½Ü¶ï¿½ pdf ï¿½ï¿½ Í³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	std::vector<std::vector<float>> pdf(height);
+	for (auto& line : pdf) line.resize(width);
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			float R = HDR[3 * (i * width + j)];
+			float G = HDR[3 * (i * width + j) + 1];
+			float B = HDR[3 * (i * width + j) + 2];
+			float lum = 0.2 * R + 0.7 * G + 0.1 * B;
+			pdf[i][j] = lum;
+			lumSum += lum;
+		}
+	}
 
-    free(HDR);
+	free(HDR);
 
-    // ¸ÅÂÊÃÜ¶È¹éÒ»»¯
-    for (int i = 0; i < height; i++)
-        for (int j = 0; j < width; j++)
-            pdf[i][j] /= lumSum;
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ü¶È¹ï¿½Ò»ï¿½ï¿½
+	for (int i = 0; i < height; i++)
+		for (int j = 0; j < width; j++)
+			pdf[i][j] /= lumSum;
 
-    // ÀÛ¼ÓÃ¿Ò»ÁÐµÃµ½ x µÄ±ßÔµ¸ÅÂÊÃÜ¶È
-    std::vector<float> pdf_x_margin;
-    pdf_x_margin.resize(width);
-    for (int j = 0; j < width; j++)
-        for (int i = 0; i < height; i++)
-            pdf_x_margin[j] += pdf[i][j];
+	// ï¿½Û¼ï¿½Ã¿Ò»ï¿½ÐµÃµï¿½ x ï¿½Ä±ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½Ü¶ï¿½
+	std::vector<float> pdf_x_margin;
+	pdf_x_margin.resize(width);
+	for (int j = 0; j < width; j++)
+		for (int i = 0; i < height; i++)
+			pdf_x_margin[j] += pdf[i][j];
 
-    // ¼ÆËã x µÄ±ßÔµ·Ö²¼º¯Êý
-    std::vector<float> cdf_x_margin = pdf_x_margin;
-    for (int i = 1; i < width; i++)
-        cdf_x_margin[i] += cdf_x_margin[i - 1];
+	// ï¿½ï¿½ï¿½ï¿½ x ï¿½Ä±ï¿½Ôµï¿½Ö²ï¿½ï¿½ï¿½ï¿½ï¿½
+	std::vector<float> cdf_x_margin = pdf_x_margin;
+	for (int i = 1; i < width; i++)
+		cdf_x_margin[i] += cdf_x_margin[i - 1];
 
-    // ¼ÆËã y ÔÚ X=x ÏÂµÄÌõ¼þ¸ÅÂÊÃÜ¶Èº¯Êý
-    std::vector<std::vector<float>> pdf_y_condiciton = pdf;
-    for (int j = 0; j < width; j++)
-        for (int i = 0; i < height; i++)
-            pdf_y_condiciton[i][j] /= pdf_x_margin[j];
+	// ï¿½ï¿½ï¿½ï¿½ y ï¿½ï¿½ X=x ï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¶Èºï¿½ï¿½ï¿½
+	std::vector<std::vector<float>> pdf_y_condiciton = pdf;
+	for (int j = 0; j < width; j++)
+		for (int i = 0; i < height; i++)
+			pdf_y_condiciton[i][j] /= pdf_x_margin[j];
 
-    // ¼ÆËã y ÔÚ X=x ÏÂµÄÌõ¼þ¸ÅÂÊ·Ö²¼º¯Êý
-    std::vector<std::vector<float>> cdf_y_condiciton = pdf_y_condiciton;
-    for (int j = 0; j < width; j++)
-        for (int i = 1; i < height; i++)
-            cdf_y_condiciton[i][j] += cdf_y_condiciton[i - 1][j];
+	// ï¿½ï¿½ï¿½ï¿½ y ï¿½ï¿½ X=x ï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê·Ö²ï¿½ï¿½ï¿½ï¿½ï¿½
+	std::vector<std::vector<float>> cdf_y_condiciton = pdf_y_condiciton;
+	for (int j = 0; j < width; j++)
+		for (int i = 1; i < height; i++)
+			cdf_y_condiciton[i][j] += cdf_y_condiciton[i - 1][j];
 
-    // cdf_y_condiciton ×ªÖÃÎª°´ÁÐ´æ´¢
-    // cdf_y_condiciton[i] ±íÊ¾ y ÔÚ X=i ÏÂµÄÌõ¼þ¸ÅÂÊ·Ö²¼º¯Êý
-    std::vector<std::vector<float>> temp = cdf_y_condiciton;
-    cdf_y_condiciton = std::vector<std::vector<float>>(width);
-    for (auto& line : cdf_y_condiciton) line.resize(height);
-    for (int j = 0; j < width; j++)
-        for (int i = 0; i < height; i++)
-            cdf_y_condiciton[j][i] = temp[i][j];
+	// cdf_y_condiciton ×ªï¿½ï¿½Îªï¿½ï¿½ï¿½Ð´æ´¢
+	// cdf_y_condiciton[i] ï¿½ï¿½Ê¾ y ï¿½ï¿½ X=i ï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê·Ö²ï¿½ï¿½ï¿½ï¿½ï¿½
+	std::vector<std::vector<float>> temp = cdf_y_condiciton;
+	cdf_y_condiciton = std::vector<std::vector<float>>(width);
+	for (auto& line : cdf_y_condiciton) line.resize(height);
+	for (int j = 0; j < width; j++)
+		for (int i = 0; i < height; i++)
+			cdf_y_condiciton[j][i] = temp[i][j];
 
-    // Çî¾Ù xi_1, xi_2 Ô¤¼ÆËãÑù±¾ xy
-    // sample_x[i][j] ±íÊ¾ xi_1=i/height, xi_2=j/width Ê± (x,y) ÖÐµÄ x
-    // sample_y[i][j] ±íÊ¾ xi_1=i/height, xi_2=j/width Ê± (x,y) ÖÐµÄ y
-    // sample_p[i][j] ±íÊ¾È¡ (i, j) µãÊ±µÄ¸ÅÂÊÃÜ¶È
-    std::vector<std::vector<float>> sample_x(height);
-    for (auto& line : sample_x) line.resize(width);
-    std::vector<std::vector<float>> sample_y(height);
-    for (auto& line : sample_y) line.resize(width);
-    std::vector<std::vector<float>> sample_p(height);
-    for (auto& line : sample_p) line.resize(width);
-    for (int j = 0; j < width; j++)
-    {
-        for (int i = 0; i < height; i++)
-        {
-            float xi_1 = float(i) / height;
-            float xi_2 = float(j) / width;
+	// ï¿½ï¿½ï¿½ xi_1, xi_2 Ô¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ xy
+	// sample_x[i][j] ï¿½ï¿½Ê¾ xi_1=i/height, xi_2=j/width Ê± (x,y) ï¿½Ðµï¿½ x
+	// sample_y[i][j] ï¿½ï¿½Ê¾ xi_1=i/height, xi_2=j/width Ê± (x,y) ï¿½Ðµï¿½ y
+	// sample_p[i][j] ï¿½ï¿½Ê¾È¡ (i, j) ï¿½ï¿½Ê±ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½Ü¶ï¿½
+	std::vector<std::vector<float>> sample_x(height);
+	for (auto& line : sample_x) line.resize(width);
+	std::vector<std::vector<float>> sample_y(height);
+	for (auto& line : sample_y) line.resize(width);
+	std::vector<std::vector<float>> sample_p(height);
+	for (auto& line : sample_p) line.resize(width);
+	for (int j = 0; j < width; j++)
+	{
+		for (int i = 0; i < height; i++)
+		{
+			float xi_1 = float(i) / height;
+			float xi_2 = float(j) / width;
 
-            // ÓÃ xi_1 ÔÚ cdf_x_margin ÖÐ lower bound µÃµ½Ñù±¾ x
-            int x = std::lower_bound(cdf_x_margin.begin(), cdf_x_margin.end(), xi_1) - cdf_x_margin.begin();
-            // ÓÃ xi_2 ÔÚ X=x µÄÇé¿öÏÂµÃµ½Ñù±¾ y
-            int y = std::lower_bound(cdf_y_condiciton[x].begin(), cdf_y_condiciton[x].end(), xi_2) - cdf_y_condiciton[x]
-                .begin();
+			// ï¿½ï¿½ xi_1 ï¿½ï¿½ cdf_x_margin ï¿½ï¿½ lower bound ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ x
+			int x = std::lower_bound(cdf_x_margin.begin(), cdf_x_margin.end(), xi_1) - cdf_x_margin.begin();
+			// ï¿½ï¿½ xi_2 ï¿½ï¿½ X=x ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÂµÃµï¿½ï¿½ï¿½ï¿½ï¿½ y
+			int y = std::lower_bound(cdf_y_condiciton[x].begin(), cdf_y_condiciton[x].end(), xi_2) - cdf_y_condiciton[x]
+				.begin();
 
-            // ´æ´¢ÎÆÀí×ø±ê xy ºÍ xy Î»ÖÃ¶ÔÓ¦µÄ¸ÅÂÊÃÜ¶È
-            sample_x[i][j] = float(x) / width;
-            sample_y[i][j] = float(y) / height;
-            sample_p[i][j] = pdf[i][j];
-        }
-    }
+				// ï¿½æ´¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ xy ï¿½ï¿½ xy Î»ï¿½Ã¶ï¿½Ó¦ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½Ü¶ï¿½
+				sample_x[i][j] = float(x) / width;
+				sample_y[i][j] = float(y) / height;
+				sample_p[i][j] = pdf[i][j];
+		}
+	}
 
-    // ÕûºÏ½á¹ûµ½ÎÆÀí
-    // R,G Í¨µÀ´æ´¢Ñù±¾ (x,y) ¶ø B Í¨µÀ´æ´¢ pdf(i, j)
-    float* cache = new float[width * height * 3];
-    //for (int i = 0; i < width * height * 3; i++) cache[i] = 0.0;
+	// ï¿½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// R,G Í¨ï¿½ï¿½ï¿½æ´¢ï¿½ï¿½ï¿½ï¿½ (x,y) ï¿½ï¿½ B Í¨ï¿½ï¿½ï¿½æ´¢ pdf(i, j)
+	float* cache = new float[width * height * 3];
+	//for (int i = 0; i < width * height * 3; i++) cache[i] = 0.0;
 
-    for (int i = 0; i < height; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
-            cache[3 * (i * width + j)] = sample_x[i][j]; // R
-            cache[3 * (i * width + j) + 1] = sample_y[i][j]; // G
-            cache[3 * (i * width + j) + 2] = sample_p[i][j]; // B
-        }
-    }
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			cache[3 * (i * width + j)] = sample_x[i][j]; // R
+			cache[3 * (i * width + j) + 1] = sample_y[i][j]; // G
+			cache[3 * (i * width + j) + 2] = sample_p[i][j]; // B
+		}
+	}
 
-    return cache;
+	return cache;
 }

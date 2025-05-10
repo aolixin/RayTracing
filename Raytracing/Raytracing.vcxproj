@@ -62,10 +62,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram3.cd" />
+    <None Include="Resources\shaders\debug_BVH.frag" />
+    <None Include="Resources\shaders\debug_ia.frag" />
+    <None Include="Resources\shaders\framebuffersToscreen.frag" />
+    <None Include="Resources\shaders\hdrToLdr.frag" />
+    <None Include="Resources\shaders\hdrToLdr.vert" />
     <None Include="Resources\shaders\phong.frag" />
     <None Include="Resources\shaders\phong.vert" />
     <None Include="Resources\shaders\hdrToSkyobox.frag" />
     <None Include="Resources\shaders\hdrToSkyobox.vert" />
+    <None Include="Resources\shaders\post.frag" />
+    <None Include="Resources\shaders\RT.frag" />
+    <None Include="Resources\shaders\screen.vert" />
     <None Include="Resources\shaders\skybox.frag" />
     <None Include="Resources\shaders\skybox.vert" />
     <None Include="Resources\shaders\unlit.frag" />
