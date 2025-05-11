@@ -16,8 +16,8 @@ std::shared_ptr<Renderer> Renderer::GetRenderer(RenderPath path, GLFWwindow* win
 	if (renderer == nullptr)
 	{
 		renderer = std::make_shared<Renderer>();
-		renderer->renderPath = path;
-		Renderer::window = window;
+		//renderer->renderPath = path;
+		renderer->window = window;
 		renderer->InitRenderer();
 	}
 	return renderer;
@@ -48,6 +48,15 @@ void Renderer::InitRenderer()
 	frameBuffer1 = GetFrameBuffer(RENDER_WIDTH, RENDER_HEIGHT, frameTextures1, 1, 0);
 }
 
+void Renderer::ResetRender(/*std::shared_ptr<Camera> newCamera, std::shared_ptr<Scene> newScene*/) {
+	lastX = RENDER_WIDTH / 2.0f;
+	lastY = RENDER_HEIGHT / 2.0f;
+
+	firstMouse = true;
+	frameCount = 0;
+	debugDepth = 0;
+}
+
 void Renderer::DestroyRenderer()
 {
 }
@@ -62,6 +71,7 @@ void Renderer::SetupScene(std::shared_ptr<Scene> scene)
 
 void Renderer::Draw(GLuint targetFrameBuffer)
 {
+	glEnable(GL_DEPTH_TEST);
 	RenderContext context;
 	context.projection = Perspective();
 	context.view = View();
@@ -69,9 +79,11 @@ void Renderer::Draw(GLuint targetFrameBuffer)
 
 	if (renderPath == RenderPath::Forward)
 	{
+		glEnable(GL_DEPTH_TEST);
 		glBindFramebuffer(GL_FRAMEBUFFER, targetFrameBuffer);
 		glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
 		// glEnable(GL_CULL_FACE);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -137,7 +149,7 @@ void Renderer::Draw(GLuint targetFrameBuffer)
 		postShader.setTexture("screenTexture", frameTextures1[0], 6);
 		DrawQuad(postShader);
 	}
-	else if (renderPath <= RenderPath::DebugIA)
+	else if (renderPath == RenderPath::DebugIA)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, targetFrameBuffer);
 		glDisable(GL_DEPTH_TEST);
@@ -158,13 +170,14 @@ void Renderer::Draw(GLuint targetFrameBuffer)
 	}
 	else if (renderPath == RenderPath::DebugBVH)
 	{
+		glEnable(GL_DEPTH_TEST);
 		glBindFramebuffer(GL_FRAMEBUFFER, targetFrameBuffer);
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
+		
 		// draw meshs
 
 		for (auto& render_node : scene->render_nodes)
@@ -507,11 +520,11 @@ Renderer::HitResult Renderer::HitTriangle(Triangle triangle, Ray ray)
 
 Triangle Renderer::GetTriangle(int i)
 {
-	if (AS_idx == 0)
+	if (renderPath <= RenderPath::DebugBVH || renderPath == RenderPath::TestBVH)
 		return scene->myBVH.triangles[i];
-	else if (AS_idx == 1)
+	else if (renderPath == RenderPath::DebugOctree || renderPath == RenderPath::TestOctree)
 		return scene->myOctree.triangles[i];
-	else if (AS_idx == 2)
+	else if (renderPath == RenderPath::DebugKdTree || renderPath == RenderPath::TestKdTree)
 		return scene->myKdTree.triangles[i];
 }
 

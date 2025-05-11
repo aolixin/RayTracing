@@ -1,11 +1,8 @@
 #include "GlobalFeat.h"
 
-RenderPath renderPath = RenderPath::TestBVH;
+RenderPath renderPath = RenderPath::RT;
 
-
-int mode_idx = 2;
-
-int AS_idx = 0;
+//int pathIdx = 0;
 
 int  DEBUG_BVH_START_DEPTH = 0;
 int  DEBUG_BVH_END_DEPTH = 0;

@@ -190,8 +190,6 @@ private:
     }
 
 public:
-#ifdef DEBUG_OCTREE
-public:
     GLuint DebugVAO, DebugVBO, DebugEBO;
     std::vector<GLuint> DebugIndices;
     // 调试函数，用于可视化八叉树的边界框
@@ -293,5 +291,5 @@ public:
         return static_cast<float>(totalMemory) / 1024.0;
     }
 
-#endif
+
 };

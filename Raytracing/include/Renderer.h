@@ -33,30 +33,33 @@ private:
 
 	GLuint TestVAO, TestVBO;
 
+
+
+	int frameCount = 0;
+	static bool already_init;
+
 public:
 	Renderer()
 	{
 	}
 
-	RenderPath renderPath = RenderPath::Forward;
+	//RenderPath renderPath = RenderPath::Forward;
 	static std::shared_ptr<Renderer> renderer;
 	std::shared_ptr<Camera> camera;
 	std::shared_ptr<Scene> scene;
 
-
+	static GLFWwindow* window;
+	bool firstMouse = true;
 	float lastX = RENDER_WIDTH / 2.0f;
 	float lastY = RENDER_HEIGHT / 2.0f;
 
-	bool firstMouse = true;
-	int frameCount = 0;
-
-	static GLFWwindow* window;
-	static bool already_init;
 
 public:
 	static std::shared_ptr<Renderer> GetRenderer(RenderPath path = RenderPath::Forward, GLFWwindow* window = nullptr);
 
 	void InitRenderer();
+
+	void ResetRender(/*std::shared_ptr<Camera> newCamera, std::shared_ptr<Scene> newScene*/);
 
 	void SetupScene(std::shared_ptr<Scene> scene);
 
@@ -88,10 +91,10 @@ public:
 	void Terminate();
 
 
+
+private:
+
 	int debugDepth = 0;
-
-
-
 	struct Ray;
 
 	struct HitResult;
@@ -112,6 +115,8 @@ public:
 
 	HitResult HitKDTree(Ray ray);
 
+
+public:
 	void TestDraw(GLuint targetFrameBuffer = 0);
 
 	void DrawFramwBuffer(GLuint targetFrameBuffer = 0);

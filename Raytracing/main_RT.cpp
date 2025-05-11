@@ -14,6 +14,40 @@
 #include "SceneConfig.h"
 
 
+//void ChangeRenderPath(GLFWwindow* gameWindow, GLFWwindow* editorWindow, GLuint gameFrameBuffer,
+//	shared_ptr<Renderer> renderer, shared_ptr<Scene>& myScene, shared_ptr<Camera>& camera, RenderPath path) {
+//
+//	glfwMakeContextCurrent(gameWindow);
+//
+//	renderPath = path;
+//	renderer->ResetRender();
+//	myScene = BuildScene();
+//	renderer->SetupScene(myScene);
+//
+//	//shared_ptr<Camera> camera;
+//	if (renderPath <= DebugIA)
+//	{
+//		camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 5.0f));
+//		//camera = make_shared<Camera>(glm::vec3(-3.0f, 1.2f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), -55.0f, -15.0f);
+//	}
+//	else if (renderPath <= DebugKdTree)
+//	{
+//		camera = make_shared<Camera>(glm::vec3(-3.0f, 1.2f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), -55.0f, -15.0f);
+//	}
+//	else if (renderPath <= TestKdTree)
+//	{
+//		camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 7.0f));
+//	}
+//
+//	renderer->camera = camera;
+//	if (renderPath >= RenderPath::TestBVH && renderPath <= RenderPath::TestKdTree)
+//	{
+//		renderer->TestDraw(gameFrameBuffer);
+//	}
+//
+//	glfwMakeContextCurrent(editorWindow);
+//}
+
 int main()
 {
 	// game
@@ -49,6 +83,7 @@ int main()
 	}
 
 	// renderer
+
 	const shared_ptr<Renderer> renderer = Renderer::GetRenderer(renderPath, gameWindow);
 	shared_ptr<Scene> myScene = BuildScene();
 	renderer->SetupScene(myScene);
@@ -79,7 +114,6 @@ int main()
 	}
 
 
-
 	// imgui
 	// Setup Dear ImGui context
 	GLFWwindow* editorWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Dear ImGui GLFW+OpenGL3 example", nullptr, gameWindow);
@@ -89,7 +123,6 @@ int main()
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
@@ -104,6 +137,30 @@ int main()
 	bool show_another_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	auto changeRenderPath = [&](RenderPath path) {
+		glfwMakeContextCurrent(gameWindow);
+		renderPath = path;
+		renderer->ResetRender();
+		myScene = BuildScene();
+		renderer->SetupScene(myScene);
+
+		if (renderPath <= DebugIA) {
+			camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 5.0f));
+		}
+		else if (renderPath <= DebugKdTree) {
+			camera = make_shared<Camera>(glm::vec3(-3.0f, 1.2f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), -55.0f, -15.0f);
+		}
+		else if (renderPath <= TestKdTree) {
+			camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 7.0f));
+		}
+
+		renderer->camera = camera;
+		if (renderPath >= RenderPath::TestBVH && renderPath <= RenderPath::TestKdTree)
+		{
+			renderer->TestDraw(gameFrameBuffer);
+		}
+		glfwMakeContextCurrent(editorWindow);
+		};
 
 	while (!renderer->RendererClose())
 	{
@@ -129,11 +186,10 @@ int main()
 
 		renderer->FrameBufferToScreen(gameFrameBufferTextures[0]);
 
+		renderer->SwapBuffers();
+		renderer->PollEvents();
 
-		//renderer->SwapBuffers();
-		//renderer->PollEvents();
-
-
+		// editor
 		glfwMakeContextCurrent(editorWindow);
 		glfwPollEvents();
 		//glfwShowWindow(editorWindow);
@@ -145,7 +201,7 @@ int main()
 		}
 
 
-		// editor
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -163,26 +219,14 @@ int main()
 
 			ImGui::Begin("editor");
 
-
-			if (ImGui::Combo("Mode##Selector", &mode_idx, "RT\0Debug\0Test\0"))
+			static int pathIdx = renderPath;
+			if (ImGui::Combo("Mode##Selector", &pathIdx, "RT\0Forward\0DebugIA\0DebugBVH\0DebugOctree\0DebugKdTree\0TestBVH\0TestOctree\0TestKdTree\0"))
 			{
-				switch (mode_idx)
-				{
-				case 0: cout << 0 << endl; break;
-				case 1: cout << 1 << endl; break;
-				case 2: cout << 2 << endl; break;
-				}
+				changeRenderPath(RenderPath(pathIdx));
+
 			}
 
-			if (ImGui::Combo("Colors##Selector", &AS_idx, "BVH\0Octree\0KDTree\0"))
-			{
-				switch (AS_idx)
-				{
-				case 0: cout << 0 << endl; break;
-				case 1: cout << 1 << endl; break;
-				case 2: cout << 2 << endl; break;
-				}
-			}
+
 			ImGui::End();
 		}
 

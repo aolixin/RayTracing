@@ -25,9 +25,9 @@ public:
 	int hdrWidth = 0;
 	int hdrHeight = 0;
 
-	int nTriangles = -1;
-	int nNodes = -1;
-	int nMaterials = -1;
+	int nTriangles = 0;
+	int nNodes = 0;
+	int nMaterials = 0;
 
 	int materials_count = 0;
 
@@ -44,11 +44,13 @@ public:
 	KDTree myKdTree;
 
 
-	void Add(Model model, Material material, glm::mat4 modelMatrix = glm::mat4(1.0f));
+	void Add(std::shared_ptr<Model>&model, Material material, glm::mat4 modelMatrix = glm::identity<glm::mat4>());
 
 	void SetupGIScene();
 
-	void Draw();
+	//void Draw();
 
 	void GenBuffers();
+
+	~Scene();
 };

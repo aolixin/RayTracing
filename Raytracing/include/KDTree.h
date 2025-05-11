@@ -117,7 +117,7 @@ private:
     }
 
 public:
-#ifdef DEBUG_KDTREE
+
     GLuint DebugVAO, DebugVBO, DebugEBO;
     std::vector<GLuint> DebugIndices;
 
@@ -204,5 +204,5 @@ public:
         size_t totalMemory = triangleMemory + nodeMemory;
         return static_cast<float>(totalMemory) / 1024.0;
     }
-#endif
+
 };

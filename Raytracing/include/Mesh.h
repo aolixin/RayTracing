@@ -17,40 +17,40 @@ using namespace std;
 
 
 struct Texture {
-    unsigned int id;
-    string type;
-    string path;
+	unsigned int id;
+	string type;
+	string path;
 };
 
 class Mesh {
 public:
-    bool hasPassedTriangles = false;
-    // mesh Data
-    vector<Vertex>       vertices;
-    vector<unsigned int> indices;
-    vector<Texture>      textures;
+	bool hasPassedTriangles = false;
+	// mesh Data
+	vector<Vertex>       vertices;
+	vector<unsigned int> indices;
+	vector<Texture>      textures;
 
-    Material             material; 
+	Material             material;
 
-    vector<Triangle>     triangles;
+	vector<Triangle>     triangles;
 
-    // BVH                  myBVH;
+	// BVH                  myBVH;
 
-    unsigned int VAO;
+	GLuint VAO;
 
-    Shader* myShader;
+	//Shader* myShader;
 
-    // constructor
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures,vector<Triangle>triangles);
+	// constructor
+	Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
+	Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures, vector<Triangle>triangles);
 
-
+	~Mesh();
 private:
-    // render data 
-    unsigned int VBO, EBO;
+	// render data 
 
-    // initializes all the buffer objects/arrays
-    void SetupMesh();
 
-    
+	// initializes all the buffer objects/arrays
+	void SetupMesh();
+	GLuint VBO, EBO;
+
 };

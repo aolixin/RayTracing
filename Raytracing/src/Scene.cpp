@@ -2,13 +2,12 @@
 #include "GlobalFeat.h"
 #include <chrono>
 
-void Scene::Add(Model model, Material material, glm::mat4 modelMatrix)
+void Scene::Add(std::shared_ptr<Model>& model, Material material, glm::mat4 modelMatrix)
 {
 	// models.push_back(model);
-	for (auto& mesh : model.meshes)
 	{
 		render_nodes.emplace_back(
-			make_shared<Mesh>(mesh),
+			model,
 			make_shared<Material>(material),
 			modelMatrix
 		);
@@ -20,8 +19,9 @@ void Scene::SetupGIScene()
 	for (const auto& render_node : render_nodes)
 	{
 		int start = triangles_expand.size();
-		triangles_expand.insert(triangles_expand.end(), render_node.mesh->triangles.begin(),
-			render_node.mesh->triangles.end());
+		for (auto& mesh : render_node.model->meshes)
+			triangles_expand.insert(triangles_expand.end(), mesh->triangles.begin(),
+				mesh->triangles.end());
 
 		for (int i = start; i < triangles_expand.size(); i++)
 		{
@@ -40,7 +40,7 @@ void Scene::SetupGIScene()
 
 	auto start = std::chrono::high_resolution_clock::now();
 
-	if (AS_idx == 0)
+	if (renderPath == RenderPath::RT || renderPath == RenderPath::DebugBVH || renderPath == RenderPath::TestBVH)
 	{
 		this->myBVH.triangles = this->triangles_expand;
 		this->myBVH.BuildBVH(0, this->triangles_expand.size() - 1);
@@ -60,7 +60,7 @@ void Scene::SetupGIScene()
 		}
 	}
 
-	else if (AS_idx == 1)
+	else if (renderPath == RenderPath::DebugOctree || renderPath == RenderPath::TestOctree)
 	{
 		this->myOctree = Octree(this->triangles_expand);
 		if (renderPath == RenderPath::DebugOctree)
@@ -75,7 +75,7 @@ void Scene::SetupGIScene()
 		}
 
 	}
-	else if (AS_idx == 2) {
+	else if (renderPath == RenderPath::DebugKdTree || renderPath == RenderPath::TestKdTree) {
 		this->myKdTree = KDTree(this->triangles_expand);
 		if (renderPath == RenderPath::DebugKdTree)
 		{
@@ -91,7 +91,7 @@ void Scene::SetupGIScene()
 
 	// std::cout << "SAH BVHNode:    " << this->myBVH.nodes.size() << endl;
 
-	if (renderPath <= RenderPath::RT)
+	if (renderPath == RenderPath::RT)
 		GenBuffers();
 
 }
@@ -99,7 +99,7 @@ void Scene::SetupGIScene()
 
 void Scene::GenBuffers()
 {
-#if defined(USE_BVH)
+
 	vector<Triangle_encoded> triangles_encoded(this->myBVH.triangles.size());
 	for (int i = 0; i < this->myBVH.triangles.size(); i++)
 	{
@@ -167,5 +167,32 @@ void Scene::GenBuffers()
 
 	nMaterials = materials_encoded.size();
 	materials_encoded.clear();
-#endif
+
+}
+
+
+Scene::~Scene() {
+	glDeleteTextures(1, &trianglesTextureBuffer);
+	glDeleteTextures(1, &nodesTextureBuffer);
+	glDeleteTextures(1, &materialsTextureBuffer);
+	glDeleteBuffers(1, &trianglesTextureBuffer);
+	glDeleteBuffers(1, &nodesTextureBuffer);
+	glDeleteBuffers(1, &materialsTextureBuffer);
+	hdrWidth = 0;
+	hdrHeight = 0;
+
+	nTriangles = 0;
+	nNodes = 0;
+	nMaterials = 0;
+
+	materials_count = 0;
+
+	render_nodes.clear();
+	triangles_expand.clear();
+	materials_expand.clear();
+
+
+
+
+	cout << "Scene destructor" << endl;
 }

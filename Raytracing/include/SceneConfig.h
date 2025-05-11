@@ -1,6 +1,7 @@
 #pragma once
 #include "Utils.h"
-#include "GlobalFeat.h"
+#include "Scene.h"
+#include <memory.h>
 
 std::shared_ptr<Scene> BuildCornellbox();
 std::shared_ptr<Scene> BuildSphere();
@@ -27,7 +28,7 @@ std::shared_ptr<Scene> BuildScene()
 	else if (renderPath == RenderPath::DebugIA)
 	{
 		// return BuildDebugBVHScene();
-		return BuildSphere_simple();
+		return BuildCornellbox();
 	}
 	else if (renderPath == RenderPath::DebugBVH ||
 		renderPath == RenderPath::DebugOctree ||
@@ -58,7 +59,7 @@ std::shared_ptr<Scene> BuildScene()
 std::shared_ptr<Scene> BuildCornellbox()
 {
 	std::shared_ptr<Scene> myScene = make_shared<Scene>();
-	glm::mat4 identity = glm::mat4(1.0f);
+	glm::mat4 identity = glm::identity<glm::mat4>();
 
 	// bunny
 	Shader phongShader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
@@ -66,45 +67,45 @@ std::shared_ptr<Scene> BuildCornellbox()
 	Material mat0(phongShader);
 	mat0.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
 	mat0.specular = 0.0f;
-	Model bunny("Resources/models/bunny.obj");
+	std::shared_ptr<Model> bunny = make_shared<Model>("Resources/models/bunny.obj");
 
 	// left
 	Material mat1(phongShader);
 	mat1.baseColor = glm::vec3(0.8f, 0.2f, 0.2f);
 	mat1.specular = 0.0f;
-	Model left("Resources/models/cornellbox/left.obj");
+	std::shared_ptr<Model> left = make_shared<Model>("Resources/models/cornellbox/left.obj");
 
 	// right
 	Material mat2(phongShader);
 	mat2.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
 	mat2.specular = 0.0f;
-	Model right("Resources/models/cornellbox/right.obj");
+	std::shared_ptr<Model> right = make_shared<Model>("Resources/models/cornellbox/right.obj");
 
 	// floor
 	Material mat3(phongShader);
 	mat3.baseColor = glm::vec3(0.5f, 0.5f, 0.5f);
 	mat3.roughness = 0.5f;
 	mat3.metallic = 0.0f;
-	Model floor("Resources/models/cornellbox/floor.obj");
+	std::shared_ptr<Model> floor = make_shared<Model>("Resources/models/cornellbox/floor.obj");
 
 	// light
 	Material mat4(phongShader);
 	mat4.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	mat4.emissive = glm::vec3(1.0f, 1.0f, 1.0f);
-	Model light("Resources/models/cornellbox/light.obj");
+	std::shared_ptr<Model> light = make_shared<Model>("Resources/models/cornellbox/light.obj");
 
 	// short
 	Material mat5(phongShader);
 	mat5.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
 	mat5.specular = 0.0f;
-	Model shortBox("Resources/models/cornellbox/short.obj");
+	std::shared_ptr<Model> shortBox = make_shared<Model>("Resources/models/cornellbox/short.obj");
 
 
 	// tall
 	Material mat6(phongShader);
 	mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
 	mat6.specular = 0.0f;
-	Model tallBox("Resources/models/cornellbox/tall.obj");
+	std::shared_ptr<Model> tallBox = make_shared<Model>("Resources/models/cornellbox/tall.obj");
 
 	myScene->Add(bunny, mat0);
 	myScene->Add(left, mat1);
@@ -134,11 +135,11 @@ std::shared_ptr<Scene> BuildCornellbox()
 std::shared_ptr<Scene> BuildSphere()
 {
 	std::shared_ptr<Scene> myScene = make_shared<Scene>();
-	glm::mat4 identity = glm::mat4(1.0f);
+	glm::mat4 identity = glm::identity<glm::mat4>();
 
 	// spheres
 	Shader shader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-	Model sphere("Resources/models/sphere.obj");
+	std::shared_ptr<Model> sphere = make_shared<Model>("Resources/models/sphere.obj");
 
 	// First sphere
 	Material m(shader);
@@ -190,7 +191,7 @@ std::shared_ptr<Scene> BuildSphere()
 	mat1.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	mat1.specular = 0.9f;
 	mat1.roughness = 0.4f;
-	Model model1("Resources/models/plane.obj");
+	std::shared_ptr<Model> model1 = make_shared<Model>("Resources/models/plane.obj");
 	myScene->Add(model1, mat1);
 
 	float* data = load_hdr_img("Resources/textures/hdr/test4.hdr", myScene->hdrWidth, myScene->hdrHeight);
@@ -211,22 +212,22 @@ std::shared_ptr<Scene> BuildSphere()
 std::shared_ptr<Scene> BuildDebugBVHScene()
 {
 	std::shared_ptr<Scene> myScene = make_shared<Scene>();
-	glm::mat4 identity = glm::mat4(1.0f);
+	glm::mat4 identity = glm::identity<glm::mat4>();
 
 	// bunny
 	Shader shader0("Resources/shaders/phong.vert", "Resources/shaders/unlit.frag");
 	Material mat0(shader0);
 	mat0.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
 	mat0.specular = 0.0f;
-	Model model0("Resources/models/bunny.obj");
+	std::shared_ptr<Model> model0 = make_shared<Model>("Resources/models/bunny.obj");
 	myScene->Add(model0, mat0);
 
 	// plane
-	Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/unlit.frag");
-	Material mat1(shader1);
-	mat1.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
-	Model model1("Resources/models/plane2.obj");
-	myScene->Add(model1, mat1);
+	//Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/unlit.frag");
+	//Material mat1(shader1);
+	//mat1.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
+	//std::shared_ptr<Model> model1 = make_shared<Model>("Resources/models/plane2.obj");
+	//myScene->Add(model1, mat1);
 
 
 	return myScene;
@@ -236,7 +237,7 @@ std::shared_ptr<Scene> BuildDebugBVHScene()
 std::shared_ptr<Scene> BuildSimple()
 {
 	std::shared_ptr<Scene> myScene = make_shared<Scene>();
-	glm::mat4 identity = glm::mat4(1.0f);
+	glm::mat4 identity = glm::identity<glm::mat4>();
 
 
 	Shader phongShader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
@@ -246,39 +247,39 @@ std::shared_ptr<Scene> BuildSimple()
 	Material mat1(phongShader);
 	mat1.baseColor = glm::vec3(0.8f, 0.2f, 0.2f);
 	mat1.specular = 0.0f;
-	Model left("Resources/models/cornellbox/left.obj");
+	std::shared_ptr<Model> left = make_shared<Model>("Resources/models/cornellbox/left.obj");
 
 	// right
 	Material mat2(phongShader);
 	mat2.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
 	mat2.specular = 0.0f;
-	Model right("Resources/models/cornellbox/right.obj");
+	std::shared_ptr<Model> right = make_shared<Model>("Resources/models/cornellbox/right.obj");
 
 	// floor
 	Material mat3(phongShader);
 	mat3.baseColor = glm::vec3(0.5f, 0.5f, 0.5f);
 	mat3.roughness = 0.5f;
 	mat3.metallic = 0.0f;
-	Model floor("Resources/models/cornellbox/floor.obj");
+	std::shared_ptr<Model> floor = make_shared<Model>("Resources/models/cornellbox/floor.obj");
 
 	// light
 	Material mat4(phongShader);
 	mat4.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	mat4.emissive = glm::vec3(1.0f, 1.0f, 1.0f);
-	Model light("Resources/models/cornellbox/light.obj");
+	std::shared_ptr<Model> light = make_shared<Model>("Resources/models/cornellbox/light.obj");
 
 	// short
 	Material mat5(phongShader);
 	mat5.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
 	mat5.specular = 0.0f;
-	Model shortBox("Resources/models/cornellbox/short.obj");
+	std::shared_ptr<Model> shortBox = make_shared<Model>("Resources/models/cornellbox/short.obj");
 
 
 	// tall
 	Material mat6(phongShader);
 	mat6.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
 	mat6.specular = 0.0f;
-	Model tallBox("Resources/models/cornellbox/tall.obj");
+	std::shared_ptr<Model> tallBox = make_shared<Model>("Resources/models/cornellbox/tall.obj");
 
 	myScene->Add(left, mat1);
 	myScene->Add(right, mat2);
@@ -295,11 +296,11 @@ std::shared_ptr<Scene> BuildSimple()
 std::shared_ptr<Scene> BuildSphere_simple()
 {
 	std::shared_ptr<Scene> myScene = make_shared<Scene>();
-	glm::mat4 identity = glm::mat4(1.0f);
+	glm::mat4 identity = glm::identity<glm::mat4>();
 
 	// spheres
 	Shader shader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-	Model sphere("Resources/models/sphere_simple.obj");
+	std::shared_ptr<Model> sphere = make_shared<Model>("Resources/models/sphere_simple.obj");
 
 	// First sphere
 	Material m(shader);
@@ -318,7 +319,7 @@ std::shared_ptr<Scene> BuildSphere_simple()
 	mat1.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	mat1.specular = 0.9f;
 	mat1.roughness = 0.4f;
-	Model model1("Resources/models/plane.obj");
+	std::shared_ptr<Model> model1 = make_shared<Model>("Resources/models/plane.obj");
 	myScene->Add(model1, mat1);
 
 
@@ -328,11 +329,11 @@ std::shared_ptr<Scene> BuildSphere_simple()
 std::shared_ptr<Scene> BuildSphere_complex()
 {
 	std::shared_ptr<Scene> myScene = make_shared<Scene>();
-	glm::mat4 identity = glm::mat4(1.0f);
+	glm::mat4 identity = glm::identity<glm::mat4>();
 
 	// spheres
 	Shader shader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-	Model sphere("Resources/models/sphere.obj");
+	std::shared_ptr<Model> sphere = make_shared<Model>("Resources/models/sphere.obj");
 
 	// First sphere
 	Material m(shader);
@@ -360,7 +361,7 @@ std::shared_ptr<Scene> BuildSphere_complex()
 	Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
 	Material mat1(shader1);
 	mat1.baseColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	Model model1("Resources/models/plane.obj");
+	std::shared_ptr<Model> model1 = make_shared<Model>("Resources/models/plane.obj");
 	myScene->Add(model1, mat1);
 
 
@@ -370,7 +371,7 @@ std::shared_ptr<Scene> BuildSphere_complex()
 std::shared_ptr<Scene> BuildCornellbox_complex()
 {
 	std::shared_ptr<Scene> myScene = make_shared<Scene>();
-	glm::mat4 identity = glm::mat4(1.0f);
+	glm::mat4 identity = glm::identity<glm::mat4>();
 
 	// bunny
 	Shader phongShader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
@@ -378,7 +379,7 @@ std::shared_ptr<Scene> BuildCornellbox_complex()
 	Material mat0(phongShader);
 	mat0.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
 	mat0.specular = 0.0f;
-	Model bunny("Resources/models/bunny.obj");
+	std::shared_ptr<Model> bunny = make_shared<Model>("Resources/models/bunny.obj");
 
 	myScene->Add(bunny, mat0, glm::translate(identity, glm::vec3(-1.0f, 0.0f, 0.0f)));
 	myScene->Add(bunny, mat0);
