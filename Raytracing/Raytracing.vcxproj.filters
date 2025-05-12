@@ -65,6 +65,15 @@
     <ClCompile Include="GlobalFeat.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\BVH.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KdTree.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Octree.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BVH.h">

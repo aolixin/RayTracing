@@ -14,39 +14,7 @@
 #include "SceneConfig.h"
 
 
-//void ChangeRenderPath(GLFWwindow* gameWindow, GLFWwindow* editorWindow, GLuint gameFrameBuffer,
-//	shared_ptr<Renderer> renderer, shared_ptr<Scene>& myScene, shared_ptr<Camera>& camera, RenderPath path) {
-//
-//	glfwMakeContextCurrent(gameWindow);
-//
-//	renderPath = path;
-//	renderer->ResetRender();
-//	myScene = BuildScene();
-//	renderer->SetupScene(myScene);
-//
-//	//shared_ptr<Camera> camera;
-//	if (renderPath <= DebugIA)
-//	{
-//		camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 5.0f));
-//		//camera = make_shared<Camera>(glm::vec3(-3.0f, 1.2f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), -55.0f, -15.0f);
-//	}
-//	else if (renderPath <= DebugKdTree)
-//	{
-//		camera = make_shared<Camera>(glm::vec3(-3.0f, 1.2f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), -55.0f, -15.0f);
-//	}
-//	else if (renderPath <= TestKdTree)
-//	{
-//		camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 7.0f));
-//	}
-//
-//	renderer->camera = camera;
-//	if (renderPath >= RenderPath::TestBVH && renderPath <= RenderPath::TestKdTree)
-//	{
-//		renderer->TestDraw(gameFrameBuffer);
-//	}
-//
-//	glfwMakeContextCurrent(editorWindow);
-//}
+
 
 int main()
 {
@@ -223,9 +191,35 @@ int main()
 			if (ImGui::Combo("Mode##Selector", &pathIdx, "RT\0Forward\0DebugIA\0DebugBVH\0DebugOctree\0DebugKdTree\0TestBVH\0TestOctree\0TestKdTree\0"))
 			{
 				changeRenderPath(RenderPath(pathIdx));
-
 			}
 
+			{
+				ImGui::Separator();
+				ImGui::Text("Test Metrics:");
+				ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
+				ImGui::Text("Frame Time: %.3f ms", deltaTime * 1000.0f);
+			}
+
+			if (renderPath >= RenderPath::TestBVH && renderPath <= RenderPath::TestKdTree)
+			{
+				ImGui::Separator();
+				// time
+				ImGui::Text("Build Time: %.3f ms", test_build_time);
+
+				// memory
+				ImGui::Text("Memory Usage:");
+				ImGui::Text("Total Memory: %.2f MB", test_total_memory / (1024.0f * 1024.0f));
+				ImGui::Text("Node Memory: %.2f MB", test_node_memory / (1024.0f * 1024.0f));
+				ImGui::Text("Triangle Memory: %.2f MB", test_tri_memory / (1024.0f * 1024.0f));
+				
+				// nodes
+				ImGui::Separator();
+				ImGui::Text("Structure Info:");
+				ImGui::Text("Node Count: %d", test_node_count);
+				ImGui::Text("Triangle Count: %d", test_tri_count);
+				ImGui::Text("Average Memory per Node: %.2f KB", test_node_memory / (1024.0f * test_node_count));
+				ImGui::Text("Average Memory per Triangle: %.2f KB", test_tri_memory / (1024.0f * test_tri_count));
+			}
 
 			ImGui::End();
 		}

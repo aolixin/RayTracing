@@ -55,8 +55,15 @@ void Scene::SetupGIScene()
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end - start).count();
 
 			std::cout << "build time = " << duration << " ms" << std::endl;
+			test_build_time = duration;
 
 			cout << "total memory: " << this->myBVH.GetMemoryUsageInKB() << " kb" << endl;
+			test_total_memory = this->myBVH.GetMemoryUsageInKB() * 1024;
+			//test_node_memory = this->myBVH.GetNodeMemoryUsageInKB() * 1024;
+			//test_tri_memory = this->myBVH.GetTriangleMemoryUsageInKB() * 1024;
+			test_node_count = this->myBVH.nodes.size();
+			test_tri_count = this->myBVH.triangles.size();
+
 		}
 	}
 
@@ -71,7 +78,13 @@ void Scene::SetupGIScene()
 			auto end = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end - start).count();
 			std::cout << "build time = " << duration << " ms" << std::endl;
+			test_build_time = duration;
 			cout << "total memory: " << this->myOctree.getMemoryUsageInKB() << " kb" << endl;
+			test_total_memory = this->myOctree.getMemoryUsageInKB() * 1024;
+			//test_node_memory = this->myOctree.getNodeMemoryUsageInKB() * 1024;
+			//test_tri_memory = this->myOctree.getTriangleMemoryUsageInKB() * 1024;
+			test_node_count = this->myOctree.nodes.size();
+			test_tri_count = this->myOctree.triangles.size();
 		}
 
 	}
@@ -85,7 +98,13 @@ void Scene::SetupGIScene()
 			auto end = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end - start).count();
 			std::cout << "build time = " << duration << " ms" << std::endl;
+			test_build_time = duration;
 			cout << "total memory: " << this->myKdTree.getMemoryUsageInKB() << " kb" << endl;
+			test_total_memory = this->myKdTree.getMemoryUsageInKB() * 1024;
+			//test_node_memory = this->myKdTree.getNodeMemoryUsageInKB() * 1024;
+			//test_tri_memory = this->myKdTree.getTriangleMemoryUsageInKB() * 1024;
+			test_node_count = this->myKdTree.nodes.size();
+			test_tri_count = this->myKdTree.triangles.size();
 		}
 	}
 
