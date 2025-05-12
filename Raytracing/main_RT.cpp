@@ -112,13 +112,16 @@ int main()
 		myScene = BuildScene();
 		renderer->SetupScene(myScene);
 
-		if (renderPath <= DebugIA) {
-			camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 5.0f));
+		if (renderPath <= DebugIA)
+		{
+			camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 		}
-		else if (renderPath <= DebugKdTree) {
+		else if (renderPath <= DebugKdTree)
+		{
 			camera = make_shared<Camera>(glm::vec3(-3.0f, 1.2f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), -55.0f, -15.0f);
 		}
-		else if (renderPath <= TestKdTree) {
+		else if (renderPath <= TestKdTree)
+		{
 			camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 7.0f));
 		}
 

@@ -291,5 +291,22 @@ public:
         return static_cast<float>(totalMemory) / 1024.0;
     }
 
+	float getNodeMemoryUsageInKB() const
+	{
+		size_t nodeMemory = 0;
+		for (const auto& node : nodes)
+		{
+			nodeMemory += sizeof(OctreeNode);
+			nodeMemory += node.triangleIndices.size() * sizeof(int);
+		}
+		return static_cast<float>(nodeMemory) / 1024.0;
+	}
+
+	float getTriangleMemoryUsageInKB() const
+	{
+		size_t triangleMemory = triangles.size() * sizeof(Triangle);
+		return static_cast<float>(triangleMemory) / 1024.0;
+	}
+
 
 };

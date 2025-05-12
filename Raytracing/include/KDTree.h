@@ -205,4 +205,15 @@ public:
         return static_cast<float>(totalMemory) / 1024.0;
     }
 
+    float getNodeMemoryUsageInKB() const
+    {
+		size_t nodeMemory = nodes.size() * sizeof(KdTreeNode);
+		return static_cast<float>(nodeMemory) / 1024.0;
+    }
+
+    float getTriangleMemoryUsageInKB() const
+    {
+        size_t triangleMemory = triangles.size() * sizeof(Triangle);
+        return static_cast<float>(triangleMemory) / 1024.0;
+    }
 };
