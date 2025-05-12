@@ -10,7 +10,7 @@
 8. 可视化 √
 9. 正确性验证 √
 10. 其他加速结构 & 算法优化 √
-11. imgui
+11. imgui √
 12. 更多测试场景
 
 
@@ -133,7 +133,17 @@ BVH
 
 
 
+
+
+
+
+![image-20250512171950847](img/image-20250512171950847.png)
+
 ## 参考
+
+
+
+
 
 https://github.com/AKGWSB/EzRT?tab=readme-ov-file
 

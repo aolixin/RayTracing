@@ -23,6 +23,9 @@ int main()
 	float lastFrame = 0.0f;
 	int frameCount = 0;
 
+	static int pathIdx = renderPath;
+	static int sceneIdx = 0;
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -53,7 +56,7 @@ int main()
 	// renderer
 
 	const shared_ptr<Renderer> renderer = Renderer::GetRenderer(renderPath, gameWindow);
-	shared_ptr<Scene> myScene = BuildScene();
+	shared_ptr<Scene> myScene = BuildScene(sceneIdx);
 	renderer->SetupScene(myScene);
 
 	vector<GLuint> gameFrameBufferTextures;
@@ -105,11 +108,12 @@ int main()
 	bool show_another_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	auto changeRenderPath = [&](RenderPath path) {
+	auto changeRenderPath = [&]() {
 		glfwMakeContextCurrent(gameWindow);
-		renderPath = path;
+
+		renderPath = RenderPath(pathIdx);
 		renderer->ResetRender();
-		myScene = BuildScene();
+		myScene = BuildScene(sceneIdx);
 		renderer->SetupScene(myScene);
 
 		if (renderPath <= DebugIA)
@@ -160,7 +164,7 @@ int main()
 
 		// editor
 		glfwMakeContextCurrent(editorWindow);
-		
+
 		//glfwShowWindow(editorWindow);
 		glfwSwapInterval(1);
 		if (glfwGetWindowAttrib(editorWindow, GLFW_ICONIFIED) != 0)
@@ -184,15 +188,19 @@ int main()
 			ImGui::End();
 
 
-
-
 			ImGui::Begin("editor");
 
-			static int pathIdx = renderPath;
+
 			if (ImGui::Combo("Mode##Selector", &pathIdx, "RT\0Forward\0DebugIA\0DebugBVH\0DebugOctree\0DebugKdTree\0TestBVH\0TestOctree\0TestKdTree\0"))
 			{
-				changeRenderPath(RenderPath(pathIdx));
+				changeRenderPath();
 			}
+
+			if (ImGui::Combo("Scene##Selector", &sceneIdx, "Room\0RoomAndBox\0RoomAndBunny\0PlaneAndBunny\0Sphere_simple\0Sphere_complex\0"))
+			{
+				changeRenderPath();
+			}
+
 
 			{
 				ImGui::Separator();
@@ -212,7 +220,7 @@ int main()
 				ImGui::Text("Total Memory: %.2f MB", test_total_memory / (1024.0f * 1024.0f));
 				ImGui::Text("Node Memory: %.2f MB", test_node_memory / (1024.0f * 1024.0f));
 				ImGui::Text("Triangle Memory: %.2f MB", test_tri_memory / (1024.0f * 1024.0f));
-				
+
 				// nodes
 				ImGui::Separator();
 				ImGui::Text("Structure Info:");
