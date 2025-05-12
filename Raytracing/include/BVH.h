@@ -479,4 +479,14 @@ public:
 		return static_cast<float>(totalMemory) / 1024.0;
 	}
 
+	float GetNodeMemoryUsageInKB() const {
+		size_t nodeMemory = nodes.size() * sizeof(BVHNode);
+		return static_cast<float>(nodeMemory) / 1024.0;
+	}
+
+	float GetTriangleMemoryUsageInKB() const {
+		size_t triangleMemory = triangles.size() * sizeof(Triangle);
+		return static_cast<float>(triangleMemory) / 1024.0;
+	}
+
 };

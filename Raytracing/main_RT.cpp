@@ -130,7 +130,7 @@ int main()
 		glfwMakeContextCurrent(editorWindow);
 		};
 
-	while (!renderer->RendererClose())
+	while (!glfwWindowShouldClose(editorWindow) && !glfwWindowShouldClose(gameWindow))
 	{
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
@@ -139,7 +139,7 @@ int main()
 
 		// game
 		glfwMakeContextCurrent(gameWindow);
-		//glfwHideWindow(renderer->window);
+		glfwHideWindow(renderer->window);
 
 
 		renderer->processInput(deltaTime);
@@ -151,9 +151,7 @@ int main()
 			renderer->DrawFramwBuffer(gameFrameBuffer);
 		}
 
-
 		//renderer->FrameBufferToScreen(gameFrameBufferTextures[0]);
-
 		//renderer->SwapBuffers();
 		//renderer->PollEvents();
 

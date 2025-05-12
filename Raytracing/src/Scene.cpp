@@ -59,8 +59,8 @@ void Scene::SetupGIScene()
 
 			cout << "total memory: " << this->myBVH.GetMemoryUsageInKB() << " kb" << endl;
 			test_total_memory = this->myBVH.GetMemoryUsageInKB() * 1024;
-			//test_node_memory = this->myBVH.GetNodeMemoryUsageInKB() * 1024;
-			//test_tri_memory = this->myBVH.GetTriangleMemoryUsageInKB() * 1024;
+			test_node_memory = this->myBVH.GetNodeMemoryUsageInKB() * 1024;
+			test_tri_memory = this->myBVH.GetTriangleMemoryUsageInKB() * 1024;
 			test_node_count = this->myBVH.nodes.size();
 			test_tri_count = this->myBVH.triangles.size();
 
