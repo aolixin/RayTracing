@@ -152,14 +152,14 @@ int main()
 		}
 
 
-		renderer->FrameBufferToScreen(gameFrameBufferTextures[0]);
+		//renderer->FrameBufferToScreen(gameFrameBufferTextures[0]);
 
-		renderer->SwapBuffers();
-		renderer->PollEvents();
+		//renderer->SwapBuffers();
+		//renderer->PollEvents();
 
 		// editor
 		glfwMakeContextCurrent(editorWindow);
-		glfwPollEvents();
+		
 		//glfwShowWindow(editorWindow);
 		glfwSwapInterval(1);
 		if (glfwGetWindowAttrib(editorWindow, GLFW_ICONIFIED) != 0)
@@ -226,6 +226,7 @@ int main()
 
 		ImGui::Render();
 		glfwSwapBuffers(editorWindow);
+		glfwPollEvents();
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
