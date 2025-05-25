@@ -16,14 +16,19 @@ std::shared_ptr<Scene> BuildPlaneAndBunny();
 std::shared_ptr<Scene> BuildSphere_simple();
 std::shared_ptr<Scene> BuildSphere_complex();
 
+
+std::shared_ptr<Scene> BuildBunny();
+
 vector<function<std::shared_ptr<Scene>()>>sceneList = {
 	BuildRoom,
 	BuildRoomAndBox,
 	BuildRoomAndBunny,
-	
+
 	BuildPlaneAndBunny,
 	BuildSphere_simple,
-	BuildSphere_complex
+	BuildSphere_complex,
+
+	BuildBunny
 };
 
 
@@ -35,32 +40,6 @@ std::shared_ptr<Scene> BuildScene(int idx = 0)
 		return nullptr;
 	}
 	return sceneList[idx]();
-
-	//if (renderPath == RenderPath::Forward || renderPath == RenderPath::RT)
-	//{
-	//	return BuildRoomAndBunny();
-	//}
-	//else if (renderPath == RenderPath::DebugIA)
-	//{
-	//	return BuildRoomAndBunny();
-	//}
-	//else if (renderPath == RenderPath::DebugBVH ||
-	//	renderPath == RenderPath::DebugOctree ||
-	//	renderPath == RenderPath::DebugKdTree)
-	//{
-	//	return BuildPlaneAndBunny();
-	//}
-	//else if (renderPath == RenderPath::TestBVH ||
-	//	renderPath == RenderPath::TestOctree ||
-	//	renderPath == RenderPath::TestKdTree)
-	//{
-	//	return BuildSphere_complex();
-	//}
-	//else
-	//{
-	//	cout << "Error: Invalid render path!" << endl;
-	//	return nullptr;
-	//}
 }
 
 
@@ -71,8 +50,6 @@ std::shared_ptr<Scene> BuildRoom()
 
 	// bunny
 	Shader phongShader("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
-
-
 
 	// left
 	Material mat1(phongShader);
@@ -259,7 +236,7 @@ std::shared_ptr<Scene> BuildPlaneAndBunny()
 	glm::mat4 identity = glm::identity<glm::mat4>();
 
 	// bunny
-	Shader shader0("Resources/shaders/phong.vert", "Resources/shaders/unlit.frag");
+	Shader shader0("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
 	Material mat0(shader0);
 	mat0.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
 	mat0.specular = 0.0f;
@@ -267,7 +244,7 @@ std::shared_ptr<Scene> BuildPlaneAndBunny()
 	myScene->Add(model0, mat0);
 
 	// plane
-	Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/unlit.frag");
+	Shader shader1("Resources/shaders/phong.vert", "Resources/shaders/phong.frag");
 	Material mat1(shader1);
 	mat1.baseColor = glm::vec3(0.8f, 0.8f, 0.8f);
 	mat1.metallic = 1.0f;
@@ -350,23 +327,43 @@ std::shared_ptr<Scene> BuildSphere_complex()
 
 	// First sphere
 	Material m(shader);
-	m.baseColor = vec3(1, 1, 1);
+	m.metallic = 0.9;
+	
+
 
 	float xOffset = 1.0f;
-
-	glm::mat4 trans = glm::translate(identity, glm::vec3(0.0f, -0.6f, 0.0f));
-	myScene->Add(sphere, m, trans);
-	trans = glm::translate(identity, glm::vec3(xOffset, -0.6f, 0.0f));
-	myScene->Add(sphere, m, trans);
-	trans = glm::translate(identity, glm::vec3(-xOffset, -0.6f, 0.0f));
-	myScene->Add(sphere, m, trans);
-
 	float yOffset = 0.6;
-	trans = glm::translate(identity, glm::vec3(0.0f, yOffset, 0.0f));
+
+	glm::mat4  trans = glm::translate(identity, glm::vec3(xOffset, -0.6f, 0.0f));
+	m.baseColor = vec3(0.2, 0.8, 0.2);
+	m.roughness = 0.1;
 	myScene->Add(sphere, m, trans);
+
+	trans = glm::translate(identity, glm::vec3(0.0f, -0.6f, 0.0f));
+	m.baseColor = vec3(0.8, 0.2, 0.2);
+	m.roughness = 0.2;
+	myScene->Add(sphere, m, trans);
+
+	trans = glm::translate(identity, glm::vec3(-xOffset, -0.6f, 0.0f));
+	m.baseColor = vec3(0.2, 0.2, 0.8);
+	m.roughness = 0.3;
+	myScene->Add(sphere, m, trans);
+
+
+
 	trans = glm::translate(identity, glm::vec3(xOffset, yOffset, 0.0f));
+	m.baseColor = vec3(0.8, 0.2, 0.8);
+	m.roughness = 0.1;
 	myScene->Add(sphere, m, trans);
+
+	trans = glm::translate(identity, glm::vec3(0.0f, yOffset, 0.0f));
+	m.baseColor = vec3(0.2, 0.8, 0.8);
+	m.roughness = 0.2;
+	myScene->Add(sphere, m, trans);
+
 	trans = glm::translate(identity, glm::vec3(-xOffset, yOffset, 0.0f));
+	m.baseColor = vec3(0.8, 0.8, 0.2);
+	m.roughness = 0.3;
 	myScene->Add(sphere, m, trans);
 
 
@@ -390,6 +387,35 @@ std::shared_ptr<Scene> BuildSphere_complex()
 		free(data);
 
 	return myScene;
+
+	return myScene;
+}
+
+
+std::shared_ptr<Scene> BuildBunny()
+{
+	std::shared_ptr<Scene> myScene = make_shared<Scene>();
+	glm::mat4 identity = glm::identity<glm::mat4>();
+
+	// bunny
+	Shader shader0("Resources/shaders/phong.vert", "Resources/shaders/unlit.frag");
+	Material mat0(shader0);
+	mat0.baseColor = glm::vec3(0.2f, 0.8f, 0.2f);
+	mat0.specular = 0.0f;
+	std::shared_ptr<Model> model0 = make_shared<Model>("Resources/models/bunny.obj");
+	myScene->Add(model0, mat0);
+
+	float* data = load_hdr_img("Resources/textures/hdr/test3.hdr", myScene->hdrWidth, myScene->hdrHeight);
+	myScene->envCubeMap = BuildEnvCubMap(data, myScene->hdrWidth, myScene->hdrHeight);
+
+	myScene->hdrMap = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
+
+	data = calculateHdrCache(data, myScene->hdrWidth, myScene->hdrHeight);
+
+	myScene->hdrCache = GenGpuTex(data, myScene->hdrWidth, myScene->hdrHeight);
+
+	if (data)
+		free(data);
 
 	return myScene;
 }

@@ -44,7 +44,7 @@ void Scene::SetupGIScene()
 	{
 		this->myBVH.triangles = this->triangles_expand;
 		this->myBVH.BuildBVH(0, this->triangles_expand.size() - 1);
-		// this->myBVH.BuildBVHWithSAH(0, this->triangles_expand.size() - 1);
+		 //this->myBVH.BuildBVHWithSAH(0, this->triangles_expand.size() - 1);
 		if (renderPath == RenderPath::DebugBVH)
 		{
 			// this->myBVH.BuildDebugBVHTree(DEBUG_BVH_START_DEPTH,DEBUG_BVH_END_DEPTH);

@@ -239,23 +239,23 @@ public:
 				Triangle& t = triangles[i];
 				int bias = (i == r) ? 0 : 1;
 
-				rightMax[i - l].x = std::max(leftMax[i - l + bias].x,
+				rightMax[i - l].x = std::max(rightMax[i - l + bias].x,
 					std::max(t.vertex[0].Position.x,
 						std::max(t.vertex[1].Position.x, t.vertex[2].Position.x)));
-				rightMax[i - l].y = std::max(leftMax[i - l + bias].y,
+				rightMax[i - l].y = std::max(rightMax[i - l + bias].y,
 					std::max(t.vertex[0].Position.y,
 						std::max(t.vertex[1].Position.y, t.vertex[2].Position.y)));
-				rightMax[i - l].z = std::max(leftMax[i - l + bias].z,
+				rightMax[i - l].z = std::max(rightMax[i - l + bias].z,
 					std::max(t.vertex[0].Position.z,
 						std::max(t.vertex[1].Position.z, t.vertex[2].Position.z)));
 
-				rightMin[i - l].x = std::min(leftMax[i - l + bias].x,
+				rightMin[i - l].x = std::min(rightMax[i - l + bias].x,
 					std::min(t.vertex[0].Position.x,
 						std::min(t.vertex[1].Position.x, t.vertex[2].Position.x)));
-				rightMin[i - l].y = std::min(leftMax[i - l + bias].y,
+				rightMin[i - l].y = std::min(rightMax[i - l + bias].y,
 					std::min(t.vertex[0].Position.y,
 						std::min(t.vertex[1].Position.y, t.vertex[2].Position.y)));
-				rightMin[i - l].z = std::min(leftMax[i - l + bias].z,
+				rightMin[i - l].z = std::min(rightMax[i - l + bias].z,
 					std::min(t.vertex[0].Position.z,
 						std::min(t.vertex[1].Position.z, t.vertex[2].Position.z)));
 			}

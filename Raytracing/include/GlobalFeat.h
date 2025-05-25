@@ -42,6 +42,8 @@ extern int DEBUG_KDTREE_END_DEPTH;
 
 // test metrics
 extern float test_build_time;    // 构建时间（毫秒）
+extern float test_Intersect_time; // 相交时间（毫秒）
+
 extern size_t test_total_memory; // 总内存使用（字节）
 extern size_t test_node_memory;  // 节点内存使用（字节）
 extern size_t test_tri_memory;   // 三角形内存使用（字节）

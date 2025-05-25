@@ -770,9 +770,10 @@ void Renderer::TestDraw(GLuint targetFrameBuffer)
 		}
 
 		auto allEnd = std::chrono::high_resolution_clock::now();
-		auto allDuration = std::chrono::duration_cast<std::chrono::milliseconds>(allEnd - allStart).count();
+		//auto allDuration = std::chrono::duration_cast<std::chrono::milliseconds>(allEnd - allStart).count();
+		auto allDuration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(allEnd - allStart).count();
 		std::cout << "All rays tracing time = " << allDuration << " ms" << std::endl;
-
+		test_Intersect_time = allDuration;
 
 		// Render hit points to the framebuffer
 
@@ -850,9 +851,9 @@ void Renderer::TestDraw(GLuint targetFrameBuffer)
 		}
 
 		auto allEnd = std::chrono::high_resolution_clock::now();
-		auto allDuration = std::chrono::duration_cast<std::chrono::milliseconds>(allEnd - allStart).count();
+		auto allDuration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(allEnd - allStart).count();
 		std::cout << "All rays tracing time = " << allDuration << " ms" << std::endl;
-
+		test_Intersect_time = allDuration;
 
 		// Render hit points to the framebuffer
 
@@ -930,9 +931,9 @@ void Renderer::TestDraw(GLuint targetFrameBuffer)
 		}
 
 		auto allEnd = std::chrono::high_resolution_clock::now();
-		auto allDuration = std::chrono::duration_cast<std::chrono::milliseconds>(allEnd - allStart).count();
+		auto allDuration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(allEnd - allStart).count();
 		std::cout << "All rays tracing time = " << allDuration << " ms" << std::endl;
-
+		test_Intersect_time = allDuration;
 
 		// Render hit points to the framebuffer
 

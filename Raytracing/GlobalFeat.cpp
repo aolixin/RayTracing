@@ -4,6 +4,8 @@ RenderPath renderPath = RenderPath::RT;
 
 // 测试指标初始化
 float test_build_time = 0.0f;    // 构建时间（毫秒）
+float test_Intersect_time = 0.0f;
+
 size_t test_total_memory = 0;    // 总内存使用（字节）
 size_t test_node_memory = 0;     // 节点内存使用（字节）
 size_t test_tri_memory = 0;      // 三角形内存使用（字节）

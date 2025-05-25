@@ -87,7 +87,7 @@ int main()
 
 	// imgui
 	// Setup Dear ImGui context
-	GLFWwindow* editorWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Dear ImGui GLFW+OpenGL3 example", nullptr, gameWindow);
+	GLFWwindow* editorWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Raytracing", nullptr, gameWindow);
 	IMGUI_CHECKVERSION();
 	glfwMakeContextCurrent(editorWindow);
 	glfwSwapInterval(1); // Enable vsync
@@ -196,7 +196,7 @@ int main()
 				changeRenderPath();
 			}
 
-			if (ImGui::Combo("Scene##Selector", &sceneIdx, "Room\0RoomAndBox\0RoomAndBunny\0PlaneAndBunny\0Sphere_simple\0Sphere_complex\0"))
+			if (ImGui::Combo("Scene##Selector", &sceneIdx, "Room\0RoomAndBox\0RoomAndBunny\0PlaneAndBunny\0Sphere_simple\0Sphere_complex\0Bunny\0"))
 			{
 				changeRenderPath();
 			}
@@ -204,7 +204,7 @@ int main()
 
 			{
 				ImGui::Separator();
-				ImGui::Text("Test Metrics:");
+				ImGui::Text("Test Items:");
 				ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
 				ImGui::Text("Frame Time: %.3f ms", deltaTime * 1000.0f);
 			}
@@ -213,13 +213,15 @@ int main()
 			{
 				ImGui::Separator();
 				// time
+				ImGui::Text("Time Usage:");
 				ImGui::Text("Build Time: %.3f ms", test_build_time);
+				ImGui::Text("Intersect Test Time: %.3f ms", test_Intersect_time);
 
 				// memory
 				ImGui::Text("Memory Usage:");
-				ImGui::Text("Total Memory: %.2f MB", test_total_memory / (1024.0f * 1024.0f));
-				ImGui::Text("Node Memory: %.2f MB", test_node_memory / (1024.0f * 1024.0f));
-				ImGui::Text("Triangle Memory: %.2f MB", test_tri_memory / (1024.0f * 1024.0f));
+				ImGui::Text("Total Memory: %.2f KB", test_total_memory / (1024.0f));
+				ImGui::Text("Node Memory: %.2f KB", test_node_memory / (1024.0f));
+				ImGui::Text("Triangle Memory: %.2f KB", test_tri_memory / (1024.0f));
 
 				// nodes
 				ImGui::Separator();
